@@ -1,0 +1,33 @@
+.home-container {
+  margin-left: 220px;
+  padding: 20px;
+}
+
+.cards {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  padding: 20px;
+  text-align: left;
+  transition: transform 0.2s;
+  border-left: 90px solid #00909E; /* Borde izquierdo de color */
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card h2 {
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: #7f8c8d;
+}
