@@ -10,13 +10,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    idConfiguracion: {
+    idCurso: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Configuracion',
-        key: 'idConfiguracion'
+        model: 'idCurso', // Nombre de la tabla de la clave foránea
+        key: 'idCurso'
       }
+    
     },
     Tipo_grafico: {
       type: DataTypes.STRING(255),

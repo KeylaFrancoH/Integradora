@@ -17,12 +17,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    idConfiguracion: {
+    idCurso: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Configuracion', // Nombre de la tabla de la clave foránea
-        key: 'idConfiguracion'
+        model: 'idCurso', // Nombre de la tabla de la clave foránea
+        key: 'idCurso'
       }
     }
   }, {

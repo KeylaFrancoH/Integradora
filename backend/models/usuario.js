@@ -33,8 +33,8 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'usuario', // Nombre exacto de la tabla en la base de datos
-    timestamps: false, // Desactiva la creación automática de timestamps (createdAt, updatedAt)
+    tableName: 'usuario', 
+    timestamps: false, 
     indexes: [
       {
         name: 'PRIMARY',

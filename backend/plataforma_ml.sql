@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS Plataforma_ML;
 USE Plataforma_ML;
- 
+
 CREATE TABLE IF NOT EXISTS Usuario (
     idUsuario INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(255) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS Contenido (
     FOREIGN KEY (idCurso) REFERENCES Curso(idCurso)
 );
  
-CREATE TABLE IF NOT EXISTS Tema (
+CREATE TABLE IF NOT EXISTS Tema ( -- Tema se refiere a la creacion de subtemas dentro de curso, en el cual al ser parte del av, en realidad serian nuestros temas
     idTema INT AUTO_INCREMENT PRIMARY KEY,
     idContenido INT,
     Titulo VARCHAR(255) NOT NULL,
@@ -49,16 +49,16 @@ CREATE TABLE IF NOT EXISTS Formula (
     idFormula INT AUTO_INCREMENT PRIMARY KEY,
     nombreFormula VARCHAR(255),
     formula  VARCHAR(255),
-    idTema INT,
-     FOREIGN KEY (idTema) REFERENCES Tema(idTema)
+    idCurso INT,
+     FOREIGN KEY (idCurso) REFERENCES Curso(idCurso)
 );
  
 CREATE TABLE IF NOT EXISTS Grafico (
     idGrafico INT AUTO_INCREMENT PRIMARY KEY,
-    idTema INT,
+    idCurso INT,
     Tipo_grafico VARCHAR(255),
     etiqueta BOOLEAN,
-    FOREIGN KEY (idTema) REFERENCES Tema(idTema)
+     FOREIGN KEY (idCurso) REFERENCES Curso(idCurso)
 );
  
 CREATE TABLE IF NOT EXISTS Archivo (
@@ -126,3 +126,4 @@ CREATE TABLE IF NOT EXISTS Variable (
     FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion),
     FOREIGN KEY (idEjercicio) REFERENCES ConfiguracionEjercicio(idEjercicio)
 );
+

@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Sequelize = require('sequelize');
 const config = require('../config/config.json');
+const bcrypt = require("bcryptjs");
 const sequelize = new Sequelize(config.integradora.database, config.integradora.username, config.integradora.password, {
   host: config.integradora.host,
   dialect: 'mysql'
@@ -39,27 +40,32 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   const { Nombre, Apellido, Correo, Contrasena, idAdmin } = req.body;
   try {
-    const newUser = await User.create({ Nombre, Apellido, Correo, Contrasena, idAdmin });
+    const palabraSecretaTextoPlano = Contrasena;
+    const rondasDeSal = 2;
+    const palabraSecretaEncriptada = await bcrypt.hash(palabraSecretaTextoPlano, rondasDeSal);
+    const newUser = await User.create({ Nombre, Apellido, Correo, Contrasena: palabraSecretaEncriptada, idAdmin });
     res.status(201).json(newUser);
   } catch (error) {
     console.error('Error al crear usuario:', error);
     res.status(500).json({ error: 'Error al crear usuario' });
   }
 });
-
 // UPDATE user by id
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { Nombre, Apellido, Correo, Contrasena, idAdmin } = req.body;
   try {
     const user = await User.findByPk(id);
+    const palabraSecretaTextoPlano = Contrasena;
+    const rondasDeSal = 2;
+    const palabraSecretaEncriptada = await bcrypt.hash(palabraSecretaTextoPlano, rondasDeSal);
     if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
     user.Nombre = Nombre;
     user.Apellido = Apellido;
     user.Correo = Correo;
-    user.Contrasena = Contrasena;
+    user.Contrasena = palabraSecretaEncriptada;
     user.idAdmin = idAdmin;
     await user.save();
     res.json(user);

@@ -37,9 +37,9 @@ router.get('/:id', async (req, res) => {
 
 // POST para agregar un nuevo gráfico
 router.post('/', async (req, res) => {
-  const { idConfiguracion, Tipo_grafico, etiqueta } = req.body;
+  const { idCurso, Tipo_grafico, etiqueta } = req.body;
   try {
-    const newGrafico = await Grafico.create({ idConfiguracion, Tipo_grafico, etiqueta });
+    const newGrafico = await Grafico.create({ idCurso, Tipo_grafico, etiqueta });
     res.status(201).json(newGrafico);
   } catch (error) {
     console.error('Error al crear gráfico:', error);
@@ -48,15 +48,18 @@ router.post('/', async (req, res) => {
 });
 
 // PUT para actualizar un gráfico por ID
+
 router.put('/:id', async (req, res) => {
-  const { idConfiguracion, Tipo_grafico, etiqueta } = req.body;
+  const { id } = req.params;
+  const {  idCurso, Tipo_grafico, etiqueta  } = req.body;
   try {
-    const [updated] = await Grafico.update({ idConfiguracion, Tipo_grafico, etiqueta }, {
-      where: { idGrafico: req.params.id }
-    });
-    if (updated) {
-      const updatedGrafico = await Grafico.findByPk(req.params.id);
-      res.status(200).json(updatedGrafico);
+    const GraficoToUpdate = await Grafico.findByPk(id);
+    if (GraficoToUpdate) {
+      GraficoToUpdate.Tipo_grafico = Tipo_grafico;
+      GraficoToUpdate.etiqueta = etiqueta;
+      GraficoToUpdate.idCurso = idCurso;
+      await GraficoToUpdate.save();
+      res.status(200).json(GraficoToUpdate);
     } else {
       res.status(404).json({ error: 'Gráfico no encontrado' });
     }

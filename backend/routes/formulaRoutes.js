@@ -38,9 +38,9 @@ router.get('/:id', async (req, res) => {
 
 // POST para agregar una nueva fórmula
 router.post('/', async (req, res) => {
-  const { nombreFormula, formula, idConfiguracion } = req.body;
+  const { nombreFormula, formula, idCurso } = req.body;
   try {
-    const newFormula = await Formula.create({ nombreFormula, formula, idConfiguracion });
+    const newFormula = await Formula.create({ nombreFormula, formula, idCurso });
     res.status(201).json(newFormula);
   } catch (error) {
     console.error('Error al crear fórmula:', error);
@@ -51,13 +51,13 @@ router.post('/', async (req, res) => {
 // PUT para actualizar una fórmula existente
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { nombreFormula, formula, idConfiguracion } = req.body;
+  const { nombreFormula, formula, idCurso } = req.body;
   try {
     const formulaToUpdate = await Formula.findByPk(id);
     if (formulaToUpdate) {
       formulaToUpdate.nombreFormula = nombreFormula;
       formulaToUpdate.formula = formula;
-      formulaToUpdate.idConfiguracion = idConfiguracion;
+      formulaToUpdate.idCurso = idCurso;
       await formulaToUpdate.save();
       res.status(200).json(formulaToUpdate);
     } else {
