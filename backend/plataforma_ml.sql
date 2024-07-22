@@ -1,3 +1,4 @@
+#drop schema Plataforma_ML;
 CREATE SCHEMA IF NOT EXISTS Plataforma_ML;
 USE Plataforma_ML;
 
@@ -126,4 +127,7 @@ CREATE TABLE IF NOT EXISTS Variable (
     FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion),
     FOREIGN KEY (idEjercicio) REFERENCES ConfiguracionEjercicio(idEjercicio)
 );
+
+use plataforma_ml.usuario INSERT INTO usuario (Nombre, Apellido, Correo, Contrasena, idAdmin) 
+VALUES ('Juan', 'Perez', 'juan.perez@example.com', 'contrasena123', 0);
 

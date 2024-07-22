@@ -1,7 +1,16 @@
 import React from 'react';
 import './addtopic.css';
+import { useNavigate, useParams } from 'react-router-dom';
+
+
 
 const AddTopic = () => {
+  const navigate = useNavigate();
+  const { idCurso } = useParams();
+
+  const handleNextClick = () => {
+    navigate(`/anadir-tema/${idCurso}/grafica`);
+  };
   return (
     <div className="add-topic-container">
       <h1>Añadir Tema</h1>
@@ -26,7 +35,7 @@ const AddTopic = () => {
           </div>
         </div>
         <div className="navigation-buttons">
-          <button type="button" className="next-button">Siguiente</button>
+          <button type="button" className="next-button" onClick={handleNextClick} >Siguiente</button>
         </div>
         <div className="dots">
             <span className="dot"></span>

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from './components/navbar';
 import Home from './components/Home/home';
 import AddTopic from './components/Topics/addtopic';
+import Grafica from './components/Grafica/grafica';
 import './App.css';
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
           <Route path="/inicio" element={<Home />} />
           <Route path="/perfil" element={<div>Perfil</div>} />
           <Route path="/añadir-tema/:cursoId" element={<AddTopic />} />
+          <Route path="/anadir-tema/:idCurso/grafica" element={<Grafica />} />
         </Routes>
       </div>
     </Router>
