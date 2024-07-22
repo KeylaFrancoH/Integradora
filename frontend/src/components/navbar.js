@@ -1,12 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { FaUser, FaHome, FaBars } from 'react-icons/fa';
 import './navbar.css';
 
 const NavBar = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
-    <div className="navbar">
-      <Link to="/perfil">Perfil</Link>
-      <Link to="/inicio">Inicio</Link>
+    <div className={`sidebar ${sidebarOpen ? 'show' : ''}`}>
+      <FaBars className="menu-toggle" onClick={toggleSidebar} />
+      <div className="menu-content">
+        <Link to="/perfil" className={location.pathname === '/perfil' ? 'active' : ''}>
+          <FaUser className="icon" /> Perfil
+        </Link>
+        <Link to="/inicio" className={location.pathname === '/inicio' ? 'active' : ''}>
+          <FaHome className="icon" /> Inicio
+        </Link>
+      </div>
     </div>
   );
 };

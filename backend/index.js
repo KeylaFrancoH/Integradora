@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Sequelize = require('sequelize');
 const config = require('./config/config.json');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +33,7 @@ const seleccionRoutes = require('./routes/seleccionroutes');
 const contenidoEjercicioRoutes = require('./routes/contenidoejercicioroutes'); 
 const variableRoutes = require('./routes/variableroutes'); 
 
-
+app.use(cors()); 
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/cursos', cursoRoutes);
 app.use('/api/contenidos', contenidoRoutes);
