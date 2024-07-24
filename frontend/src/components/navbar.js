@@ -18,7 +18,7 @@ const NavBar = () => {
         <Link to="/perfil" className={location.pathname === '/perfil' ? 'active' : ''}>
           <FaUser className="icon" /> Perfil
         </Link>
-        <Link to="/inicio" className={location.pathname === '/inicio' ? 'active' : ''}>
+        <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
           <FaHome className="icon" /> Inicio
         </Link>
       </div>

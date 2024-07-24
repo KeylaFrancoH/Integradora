@@ -37,8 +37,9 @@ const Home = () => {
     fetchCursos();
   }, []);
 
-  const handleCardClick = (cursoId) => {
-    navigate(`/añadir-tema/${cursoId}`);
+  const handleCardClick = (cursoId,cursoTitulo) => {
+    navigate(`/anadir-tema/${cursoId}`, { state: { cursoTitulo } });
+
   };
 
   return (
@@ -47,7 +48,7 @@ const Home = () => {
       <div className="cards">
         {cursos.length > 0 ? (
           cursos.map(curso => (
-            <div key={curso.idCurso} className="card" onClick={() => handleCardClick(curso.idCurso)}>
+            <div key={curso.idCurso} className="card" onClick={() => handleCardClick(curso.idCurso, curso.Titulo)}>
               <h2>{curso.Titulo}</h2> 
               <p>{curso.Descripcion}</p>
             </div>

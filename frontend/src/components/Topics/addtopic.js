@@ -1,19 +1,24 @@
 import React from 'react';
 import './addtopic.css';
-import { useNavigate, useParams } from 'react-router-dom';
-
-
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 const AddTopic = () => {
+
+ 
   const navigate = useNavigate();
   const { idCurso } = useParams();
-
+  const location = useLocation();
+  const cursoTitulo = location.state?.cursoTitulo || "Curso no especificado";
+  
+ 
   const handleNextClick = () => {
-    navigate(`/anadir-tema/${idCurso}/grafica`);
+    navigate(`/anadir-tema/${idCurso}/grafica`, { state: { cursoTitulo } });
+   
   };
+
   return (
     <div className="add-topic-container">
-      <h1>Añadir Tema</h1>
+      <h1>Añadir Tema para {cursoTitulo}</h1>
       <form>
         <div className="section">
           <h2>Teoría</h2>
@@ -35,12 +40,12 @@ const AddTopic = () => {
           </div>
         </div>
         <div className="navigation-buttons">
-          <button type="button" className="next-button" onClick={handleNextClick} >Siguiente</button>
+          <button type="button" className="next-button" onClick={handleNextClick}>Siguiente</button>
         </div>
         <div className="dots">
-            <span className="dot"></span>
-            <span className="dot active"></span>
-            <span className="dot"></span>
+          <span className="dot"></span>
+          <span className="dot active"></span>
+          <span className="dot"></span>
         </div>
       </form>
     </div>
