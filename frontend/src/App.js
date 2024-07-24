@@ -5,20 +5,39 @@ import Home from './components/Home/home';
 import AddTopic from './components/Topics/addtopic';
 import Grafica from './components/Grafica/grafica';
 import './App.css';
+import { MantineProvider } from '@mantine/core';
+import EstudianteHome from './components/Estudiante/estudiantehome';
+import Navbar2 from './components/Estudiante/navbar';
+
+const EstudianteLayout = ({ children }) => (
+  <div>
+    <Navbar2 />
+    {children}
+  </div>
+);
 
 const App = () => {
   return (
-    <Router>
-      <div className="App">
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/perfil" element={<div>Perfil</div>} />
-          <Route path="/anadir-tema/:idCurso" element={<AddTopic />} />
-          <Route path="/anadir-tema/:idCurso/grafica" element={<Grafica />} />
-        </Routes>
-      </div>
-    </Router>
+    <MantineProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<><NavBar /><Home /></>} />
+            <Route path="/perfil" element={<><NavBar /><div>Perfil</div></>} />
+            <Route path="/anadir-tema/:idCurso" element={<><NavBar /><AddTopic /></>} />
+            <Route path="/anadir-tema/:idCurso/grafica" element={<><NavBar /><Grafica /></>} />
+            <Route path="/estudiante/*" element={
+              <EstudianteLayout>
+                <Routes>
+                  <Route path="/" element={<EstudianteHome />} />
+                  {/* Agrega tus otras rutas aquí */}
+                </Routes>
+              </EstudianteLayout>
+            } />
+          </Routes>
+        </div>
+      </Router>
+    </MantineProvider>
   );
 };
 

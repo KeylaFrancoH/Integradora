@@ -1,12 +1,31 @@
 import './grafica.css';
-import React from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { Modal, Button, TextInput, NumberInput, Group } from '@mantine/core';
+import React, { useState } from 'react';
 
 const Grafica = () => {
   const { idCurso } = useParams();
   const location = useLocation();
   const cursoTitulo = location.state?.cursoTitulo || "Curso no especificado";
-  
+
+  const [variableModalOpen, setVariableModalOpen] = useState(false);
+  const [pointModalOpen, setPointModalOpen] = useState(false);
+  const [variable, setVariable] = useState('');
+  const [pointX, setPointX] = useState(0);
+  const [pointY, setPointY] = useState(0);
+
+  const handleVariableSubmit = () => {
+    // Maneja el envío de la variable
+    console.log('Variable:', variable);
+    setVariableModalOpen(false);
+  };
+
+  const handlePointSubmit = () => {
+    // Maneja el envío del punto
+    console.log('Punto:', { x: pointX, y: pointY });
+    setPointModalOpen(false);
+  };
+
   return (
     <div className="configuracion-container">
       <h1 className="titulo">Configuración de {cursoTitulo}</h1>
@@ -83,13 +102,13 @@ const Grafica = () => {
               <div className="input-conf">
                 <input type="checkbox" id="variables" />
                 <label htmlFor="variables">Variables</label>
-                <button type="button">Agregar Variable</button>
+                <button type="button" onClick={() => setVariableModalOpen(true)}>Agregar Variable</button>
               </div>
               <input type="text" placeholder="X=0" />
               <div className="input-conf">
                 <input type="checkbox" id="puntos-recta" />
                 <label htmlFor="puntos-recta">Puntos de la Recta</label>
-                <button type="button">Agregar Puntos</button>
+                <button type="button" onClick={() => setPointModalOpen(true)}>Agregar Puntos</button>
               </div>
               <div className="mensaje">No existen Puntos de la Recta</div>
             </div>
@@ -107,8 +126,54 @@ const Grafica = () => {
           </div>
         </form>
       </div>
+
+      {/* Modal para agregar variables */}
+      <Modal
+        opened={variableModalOpen}
+        onClose={() => setVariableModalOpen(false)}
+        title="Agregar Variable"
+      >
+        <TextInput
+          value={variable}
+          onChange={(event) => setVariable(event.currentTarget.value)}
+          placeholder="Nombre de la variable"
+        />
+        <Group position="right" mt="md">
+          <Button onClick={handleVariableSubmit}>Agregar</Button>
+        </Group>
+      </Modal>
+
+      {/* Modal para agregar puntos */}
+      <Modal
+        opened={pointModalOpen}
+        onClose={() => setPointModalOpen(false)}
+        title="Agregar Puntos"
+      >
+        <NumberInput
+          value={pointX}
+          onChange={(value) => setPointX(value)}
+          placeholder="X"
+          label="Coordenada X"
+        />
+        <NumberInput
+          value={pointY}
+          onChange={(value) => setPointY(value)}
+          placeholder="Y"
+          label="Coordenada Y"
+        />
+        <Group position="right" mt="md">
+          <Button onClick={handlePointSubmit}>Agregar</Button>
+        </Group>
+      </Modal>
+
+
     </div>
+
+    
+
   );
 };
+
+
 
 export default Grafica;
