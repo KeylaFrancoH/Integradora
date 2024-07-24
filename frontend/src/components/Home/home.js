@@ -44,7 +44,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1>Bienvenido Profesor@ {profesor}</h1>
+      <h1  className='titulo'>Bienvenido Profesor@ {profesor}</h1>
       <div className="cards">
         {cursos.length > 0 ? (
           cursos.map(curso => (

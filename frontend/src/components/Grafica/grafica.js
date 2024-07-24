@@ -28,7 +28,7 @@ const Grafica = () => {
 
   return (
     <div className="configuracion-container">
-      <h1 className="titulo">Configuración de {cursoTitulo}</h1>
+      <h1 className="tituloC">Configuración de {cursoTitulo}</h1>
       <div className="configuracion-content">
         <form>
           <div className="section">

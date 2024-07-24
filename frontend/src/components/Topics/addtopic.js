@@ -18,7 +18,7 @@ const AddTopic = () => {
 
   return (
     <div className="add-topic-container">
-      <h1>Añadir Tema para {cursoTitulo}</h1>
+      <h1 className="tema">Añadir Tema para {cursoTitulo}</h1>
       <form>
         <div className="section">
           <h2>Teoría</h2>
@@ -29,7 +29,7 @@ const AddTopic = () => {
         </div>
         <div className="section">
           <h2>Material</h2>
-          <textarea placeholder="Material"></textarea>
+          <textarea className="areatexto" placeholder="Material" rows="10" cols="20"></textarea>
         </div>
         <div className="section">
           <h2>Adjuntar</h2>
