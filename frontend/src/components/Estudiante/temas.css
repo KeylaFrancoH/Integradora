@@ -1,0 +1,48 @@
+.nueva-vista-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .nueva-vista-card {
+    width: 80%;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nueva-vista-header {
+    display: flex;
+    align-items: left;
+    background-color: #2a4d89;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-size: 25px;
+  }
+  
+  .nueva-vista-icon {
+    margin-right: 10px;
+  }
+  
+  .nueva-vista-body {
+    padding: 20px;
+    align-self: left;
+    font-size: 15px;
+
+
+  }
+  .temas {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    text-align: left;
+    margin-bottom: 2rem;
+    background: #1C2A49;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 1rem;
+  }
