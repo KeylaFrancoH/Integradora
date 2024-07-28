@@ -1,5 +1,7 @@
 import React from 'react';
 import { Card, Button, Text, Group, Badge } from '@mantine/core';
+import { Accordion, AccordionItem } from '@mantine/core';
+
 import './estudiantehome.css';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 

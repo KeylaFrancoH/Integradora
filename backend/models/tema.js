@@ -9,12 +9,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    idContenido: {
+    idCurso: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Contenido', // Nombre de la tabla de la clave foránea
-        key: 'idContenido'
+        model: 'Curso', 
+        key: 'idCurso'
       }
     },
     Titulo: {
@@ -29,10 +29,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    Tipo: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    }
   }, {
     sequelize,
     tableName: 'tema',

@@ -37,9 +37,9 @@ router.get('/:id', async (req, res) => {
 
 // POST para agregar un nuevo tema
 router.post('/', async (req, res) => {
-  const { idContenido, Titulo, Subtitulo, Material, Tipo } = req.body;
+  const { idCurso, Titulo, Subtitulo, Material} = req.body;
   try {
-    const newTema = await Tema.create({ idContenido, Titulo, Subtitulo, Material, Tipo });
+    const newTema = await Tema.create({ idCurso, Titulo, Subtitulo, Material });
     res.status(201).json(newTema);
   } catch (error) {
     console.error('Error al crear tema:', error);
@@ -49,9 +49,9 @@ router.post('/', async (req, res) => {
 
 // PUT para actualizar un tema por ID
 router.put('/:id', async (req, res) => {
-  const { idContenido, Titulo, Subtitulo, Material, Tipo } = req.body;
+  const { idCurso, Titulo, Subtitulo, Material} = req.body;
   try {
-    const [updated] = await Tema.update({ idContenido, Titulo, Subtitulo, Material, Tipo }, {
+    const [updated] = await Tema.update({ idCurso, Titulo, Subtitulo, Material }, {
       where: { idTema: req.params.id }
     });
     if (updated) {

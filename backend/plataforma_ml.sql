@@ -2,6 +2,7 @@
 CREATE SCHEMA IF NOT EXISTS Plataforma_ML;
 USE Plataforma_ML;
 
+
 CREATE TABLE IF NOT EXISTS Usuario (
     idUsuario INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(255) NOT NULL,
@@ -16,23 +17,14 @@ CREATE TABLE IF NOT EXISTS Curso (
     Titulo VARCHAR(255) NOT NULL,
     Descripcion TEXT
 );
- 
-CREATE TABLE IF NOT EXISTS Contenido (
-    idContenido INT AUTO_INCREMENT PRIMARY KEY,
-    idCurso INT,
-    Titulo VARCHAR(255) NOT NULL,
-    Contenido_descripcion TEXT,
-    FOREIGN KEY (idCurso) REFERENCES Curso(idCurso)
-);
- 
+
 CREATE TABLE IF NOT EXISTS Tema ( -- Tema se refiere a la creacion de subtemas dentro de curso, en el cual al ser parte del av, en realidad serian nuestros temas
     idTema INT AUTO_INCREMENT PRIMARY KEY,
-    idContenido INT,
+    idCurso INT,
     Titulo VARCHAR(255) NOT NULL,
     Subtitulo VARCHAR(255),
     Material TEXT,
-    Tipo VARCHAR(255),
-    FOREIGN KEY (idContenido) REFERENCES Contenido(idContenido)
+    FOREIGN KEY (idCurso) REFERENCES Curso(idCurso)
 );
  
  
@@ -66,7 +58,6 @@ CREATE TABLE IF NOT EXISTS Archivo (
     idArchivo INT AUTO_INCREMENT PRIMARY KEY,
     idTema INT,
     Enlace VARCHAR(255),
-    youtube VARCHAR(255),
     archivo VARCHAR(255),
     descripcion TEXT,
     idConfiguracion INT,
@@ -128,6 +119,33 @@ CREATE TABLE IF NOT EXISTS Variable (
     FOREIGN KEY (idEjercicio) REFERENCES ConfiguracionEjercicio(idEjercicio)
 );
 
-use plataforma_ml.usuario INSERT INTO usuario (Nombre, Apellido, Correo, Contrasena, idAdmin) 
-VALUES ('Juan', 'Perez', 'juan.perez@example.com', 'contrasena123', 0);
 
+INSERT INTO Curso (idCurso, Titulo, Descripcion) VALUES
+(1, 'Aprendizaje Supervisado', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'),
+(2, 'Aprendizaje No Supervisado', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
+
+INSERT INTO Formula (idFormula, nombreFormula, formula, idCurso) VALUES
+(1, 'Regresión Lineal Simple', 'y = \\beta_0 + \\beta_1 x + \\epsilon', 1),
+(2, 'Regresión Lineal Múltiple', 'y = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2 + \\cdots + \\beta_p x_p + \\epsilon', 1),
+(3, 'Función de Costo (Error Cuadrático Medio) MSE', 'J(\\beta_0, \\beta_1) = \\frac{1}{2m} \\sum_{i=1}^m \\left( y_i - (\\beta_0 + \\beta_1 x_i) \\right)^2', 1),
+(4, 'Gradiente Descendente', '\\beta_j := \\beta_j - \\alpha \\frac{\\partial J(\\beta_0, \\beta_1)}{\\partial \\beta_j}', 1),
+(5, 'Estimación de Coeficientes', '\\boldsymbol{\\beta} = (\\mathbf{X}^T \\mathbf{X})^{-1} \\mathbf{X}^T \\mathbf{y}', 1),
+(6, 'Objetivo de K-Means', 'J = \\sum_{i=1}^k \\sum_{x \\in C_i} \\| x - \\mu_i \\|^2', 2),
+(7, 'Actualización de Centros de Clústeres', '\\mu_i = \\frac{1}{|C_i|} \\sum_{x \\in C_i} x', 2),
+(8, 'Asignación de Clústeres', '\\text{Asignar } x \\text{ al clúster } i \\text{ tal que } i = \\arg \\min_j \\| x - \\mu_j \\|^2', 2),
+(9, 'Distancia de Enlace Simple', 'd(C_i, C_j) = \\min_{x \\in C_i, y \\in C_j} \\| x - y \\|', 2),
+(10, 'Distancia de Enlace Completo', 'd(C_i, C_j) = \\max_{x \\in C_i, y \\in C_j} \\| x - y \\|', 2),
+(11, 'Distancia de Enlace Medio', 'd(C_i, C_j) = \\frac{1}{|C_i| \\cdot |C_j|} \\sum_{x \\in C_i} \\sum_{y \\in C_j} \\| x - y \\|', 2);
+
+INSERT INTO Grafico (idGrafico, idCurso, Tipo_grafico, etiqueta) VALUES
+(1, 1, 'Dispersion', true),
+(2, 1, 'Dispersión con Línea de Regresión', true),
+(3, 1, 'Gráfico de Residuales', true),
+(4, 1, 'Gráfico de Ajuste vs. Realidad', true),
+(5, 2, 'Gráfico de Clústeres', true),
+(6, 2, 'Gráfico de Codo', true),
+(7, 2, 'Dendrograma', true),
+(8, 2, 'Matriz de Distancias (Heatmap)', true),
+(9, 2, 'Gráfico de Validación Cruzada ', true),
+(10, 2, 'Gráfico de Búsqueda de Cuadrícula (Grid Search) ', true),
+(11, 1, 'Gráfico de Ajuste de Línea ', true);
