@@ -1,14 +1,14 @@
 import "./grafica.css";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Modal from "react-modal";
 
 const Grafica = () => {
   const { idCurso } = useParams();
   const location = useLocation();
   const cursoTitulo = location.state?.cursoTitulo || "Curso no especificado";
-  const dataRecibida =  location.state?.data || {};
-
+  const dataRecibida = location.state?.data || {};
 
   const [variableModalOpen, setVariableModalOpen] = useState(false);
   const [pointModalOpen, setPointModalOpen] = useState(false);
@@ -30,6 +30,46 @@ const Grafica = () => {
   const [youtubeLinks, setYoutubeLinks] = useState([]);
   const [newYoutubeLink, setNewYoutubeLink] = useState("");
 
+  const [formulas, setFormulas] = useState([]);
+  const [graficos, setGraficos] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/formulas")
+      .then((response) => {
+        const filteredFormulas = response.data.filter(
+          (formula) => formula.idCurso === parseInt(idCurso)
+        );
+
+        setFormulas(filteredFormulas);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  }, [idCurso]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/graficos")
+      .then((response) => {
+        const filteredGraficos = response.data.filter(
+          (grafico) => grafico.idCurso === parseInt(idCurso)
+        );
+
+        setGraficos(filteredGraficos);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  }, [idCurso]);
+  console.log(graficos);
   const handleVariableSubmit = () => {
     if (editingVariableIndex !== null) {
       setVariables(
@@ -119,13 +159,23 @@ const Grafica = () => {
         <div className="section">
           <h2>Selección Algoritmo</h2>
           <select>
-            <option>Regresión Lineal</option>
-            {/* Otras opciones */}
+            <option value="">Selecciona una fórmula</option>
+            {formulas.map((formula) => (
+              <option key={formula.idFormula} value={formula.idFormula}>
+                {formula.nombreFormula}
+              </option>
+            ))}
           </select>
         </div>
         <div className="section">
           <h2>Intentos Múltiples</h2>
-          <input type="number" placeholder="Número de intentos" />
+          <input
+            type="number"
+            defaultValue={1}
+            placeholder="Número de intentos"
+            min={1}
+            step={1}
+          />
         </div>
       </div>
       <div className="section">
@@ -180,8 +230,12 @@ const Grafica = () => {
               <div className="input-group">
                 <h2>Gráfica</h2>
                 <select>
-                  <option>Gráfico de Líneas</option>
-                  {/* Otras opciones */}
+                  <option value="">Selecciona un gráfico</option>
+                  {graficos.map((grafico) => (
+                    <option key={grafico.idGrafico} value={grafico.idGrafico}>
+                      {grafico.Tipo_grafico}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="input-group">
@@ -363,8 +417,12 @@ const Grafica = () => {
                 <div className="input-group">
                   <h2>Gráfica</h2>
                   <select>
-                    <option>Dendograma</option>
-                    {/* Otras opciones */}
+                    <option value="">Selecciona un gráfico</option>
+                    {graficos.map((grafico) => (
+                      <option key={grafico.idGrafico} value={grafico.idGrafico}>
+                        {grafico.Tipo_grafico}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="input-group">
@@ -383,34 +441,32 @@ const Grafica = () => {
             </div>
           </div>
           <div className="section">
-          <h2>Configuración de ejercicios</h2>
-          <div className="configuration-container">
-            
-            <div className="clusters-column">
-              <div className="clusters-settings">
-                <label htmlFor="num-clusters">Número de Clusters (K)</label>
-                <div className="clusters-input-fields">
-                  <input type="number" placeholder="Mínimo" />
-                  <input type="number" placeholder="Máximo" />
-                  <input type="number" placeholder="Valor Exacto" />
+            <h2>Configuración de ejercicios</h2>
+            <div className="configuration-container">
+              <div className="clusters-column">
+                <div className="clusters-settings">
+                  <label htmlFor="num-clusters">Número de Clusters (K)</label>
+                  <div className="clusters-input-fields">
+                    <input type="number" placeholder="Mínimo" />
+                    <input type="number" placeholder="Máximo" />
+                    <input type="number" placeholder="Valor Exacto" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="iterations-column">
+                <div className="iterations-settings">
+                  <label htmlFor="num-iteraciones">
+                    Número Máximo de Iteraciones
+                  </label>
+                  <div className="iterations-input-fields">
+                    <input type="number" placeholder="Mínimo" />
+                    <input type="number" placeholder="Máximo" />
+                    <input type="number" placeholder="Valor Exacto" />
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="iterations-column">
-              <div className="iterations-settings">
-                <label htmlFor="num-iteraciones">
-                  Número Máximo de Iteraciones
-                </label>
-                <div className="iterations-input-fields">
-                  <input type="number" placeholder="Mínimo" />
-                  <input type="number" placeholder="Máximo" />
-                  <input type="number" placeholder="Valor Exacto" />
-                </div>
-              </div>
-            </div>
-          </div>
-
           </div>
           <div className="section attachment-sections">
             <div className="attachment-section">
