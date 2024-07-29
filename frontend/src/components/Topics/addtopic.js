@@ -3,7 +3,7 @@ import "./addtopic.css";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Modal from "react-modal";
 
-Modal.setAppElement("#root"); // Configura el elemento raíz para accesibilidad
+Modal.setAppElement("#root"); 
 
 const AddTopic = () => {
   const navigate = useNavigate();
@@ -17,10 +17,10 @@ const AddTopic = () => {
   const [fileDescription, setFileDescription] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [newYoutubeLink, setNewYoutubeLink] = useState("");
-  const [titulo, setTitulo] = useState(""); 
-  const [subtitulo, setSubtitulo] = useState(""); 
-  const [material, setMaterial] = useState(""); 
-  const [errorMessage, setErrorMessage] = useState(""); 
+  const [titulo, setTitulo] = useState("");
+  const [subtitulo, setSubtitulo] = useState("");
+  const [material, setMaterial] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleNextClick = () => {
     if (titulo.trim() === "") {
@@ -28,8 +28,22 @@ const AddTopic = () => {
       console.log("Error:", "El título es obligatorio.");
       return;
     }
-    setErrorMessage(""); 
-    navigate(`/anadir-tema/${idCurso}/grafica`, { state: { cursoTitulo } });
+    setErrorMessage("");
+
+  
+    const data = {
+      idCurso,
+      titulo,
+      subtitulo,
+      material,
+      youtubeLinks,
+      uploadedFiles: uploadedFiles.map(({ file, description }) => ({
+        name: file.name,
+        description,
+      })),
+    };
+
+    navigate(`/anadir-tema/${idCurso}/grafica`, { state: { cursoTitulo, data } });
   };
 
   const handleOpenModal = () => setModalIsOpen(true);
@@ -88,25 +102,24 @@ const AddTopic = () => {
         <div className="section">
           <h2>Teoría</h2>
           <div className="titulos">
-          <div className="input-group-2">
-            <input
-              type="text"
-              placeholder="Título *"
-              value={titulo}
-              onChange={(e) => {
-                setTitulo(e.target.value);
-                setErrorMessage(""); 
-              }}
-            />
-           
-            <input
-              type="text"
-              placeholder="Subtítulo"
-              value={subtitulo}
-              onChange={(e) => setSubtitulo(e.target.value)}
-            />
-          </div>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
+            <div className="input-group-2">
+              <input
+                type="text"
+                placeholder="Título *"
+                value={titulo}
+                onChange={(e) => {
+                  setTitulo(e.target.value);
+                  setErrorMessage("");
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Subtítulo"
+                value={subtitulo}
+                onChange={(e) => setSubtitulo(e.target.value)}
+              />
+            </div>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
           </div>
         </div>
         <div className="section">
@@ -186,7 +199,6 @@ const AddTopic = () => {
             type="button"
             className="next-button"
             onClick={handleNextClick}
-            
           >
             Siguiente
           </button>

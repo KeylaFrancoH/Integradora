@@ -7,6 +7,8 @@ const Grafica = () => {
   const { idCurso } = useParams();
   const location = useLocation();
   const cursoTitulo = location.state?.cursoTitulo || "Curso no especificado";
+  const dataRecibida =  location.state?.data || {};
+
 
   const [variableModalOpen, setVariableModalOpen] = useState(false);
   const [pointModalOpen, setPointModalOpen] = useState(false);
