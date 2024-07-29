@@ -3,6 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Sequelize = require('sequelize');
 const config = require('./config/config.json');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 
 const app = express();
@@ -12,6 +15,27 @@ const PORT = process.env.PORT || 3000;
 const sequelize = new Sequelize(config.integradora.database, config.integradora.username, config.integradora.password, {
   host: config.integradora.host,
   dialect: 'mysql'
+});
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(__dirname, '../Archivos');
+
+    if (!fs.existsSync(uploadPath)){
+        fs.mkdirSync(uploadPath);
+    }
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Ruta para subir archivos
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  res.json({ message: 'Archivo subido correctamente' });
 });
 
 // Middleware

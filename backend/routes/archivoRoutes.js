@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 
 // POST para agregar un nuevo archivo
 router.post('/', async (req, res) => {
-  const { idTema, Enlace, youtube, archivo, descripcion, idConfiguracion } = req.body;
+  const { idTema, Enlace, archivo, descripcion, idConfiguracion } = req.body;
   try {
     const newArchivo = await Archivo.create({ idTema, Enlace, youtube, archivo, descripcion, idConfiguracion });
     res.status(201).json(newArchivo);

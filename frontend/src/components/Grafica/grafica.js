@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import MathJax from 'react-mathjax';
 import axios from "axios";
 import Modal from "react-modal";
+import MathEditor from './MathEditor';
 
 const Grafica = () => {
   const { idCurso } = useParams();
@@ -40,6 +41,7 @@ const Grafica = () => {
   const [error, setError] = useState(null);
 
  
+  
   useEffect(() => {
     axios.get('http://localhost:3000/api/formulas')
       .then(response => {
@@ -79,7 +81,6 @@ const Grafica = () => {
         setLoading(false);
       });
   }, [idCurso]);
-  console.log(graficos);
   const handleVariableSubmit = () => {
     if (editingVariableIndex !== null) {
       setVariables(
@@ -154,6 +155,33 @@ const Grafica = () => {
     const updatedFormula = event.target.value.replace(/\\\\/g, '\\');
     setSelectedFormula(updatedFormula);
   };
+
+  const handleSave = async () => {
+    try {
+      console.log('Datos a guardar:', {
+        idCurso,
+        titulo: dataRecibida.titulo,
+        subtitulo: dataRecibida.subtitulo,
+        material: dataRecibida.material,
+      });
+  
+      // Enviar datos de `data` a /api/temas
+      const temaResponse = await axios.post('http://localhost:3000/api/temas', {
+        idCurso,
+        Titulo: dataRecibida.titulo,
+        Subtitulo: dataRecibida.subtitulo,
+        Material: dataRecibida.material,
+      });
+     
+     
+      alert('Datos guardados correctamente');
+    } catch (error) {
+      console.error('Error al guardar los datos:', error);
+      alert('Hubo un error al guardar los datos.');
+    }
+  };
+  
+  // POR AHORA SOLO GUARDA TEMA, FALTA GUARDAR EJERCICIOS, FALTA GUARDAT TODO, SE NECESITA HACER QUE SE GUARDEN ARCHIVOS
   const renderCommonFields = () => (
     <>
       <div className="section-select">
@@ -392,9 +420,9 @@ const Grafica = () => {
           </div>
 
           <div className="navigation-buttons">
-            <button type="button" className="save-button">
-              Guardar
-            </button>
+          <button type="button" className="save-button" onClick={handleSave}>
+        Guardar
+      </button>
           </div>
         </form>
       );
@@ -532,10 +560,10 @@ const Grafica = () => {
             </div>
           </div>
 
-          <div className="navigation-buttons">
-            <button type="button" className="save-button">
-              Guardar
-            </button>
+          <div className="navigation-buttons" >
+          <button type="button" className="save-button" onClick={handleSave}>
+        Guardar
+      </button>
           </div>
         </form>
       );

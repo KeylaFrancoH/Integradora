@@ -13,15 +13,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Tema', // Nombre de la tabla de la clave foránea
+        model: 'Tema', 
         key: 'idTema'
       }
     },
     Enlace: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    youtube: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -37,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Configuracion', // Nombre de la tabla de la clave foránea
+        model: 'Configuracion', 
         key: 'idConfiguracion'
       }
     }
