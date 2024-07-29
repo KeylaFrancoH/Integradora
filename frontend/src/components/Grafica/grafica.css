@@ -498,6 +498,13 @@ label {
   font-size: 16px;
 }
 
+.formula-display {
+  margin-top: 10px;
+  font-size: 16px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
 @media (max-width: 768px) {
   .section-select {
     flex-direction: column;

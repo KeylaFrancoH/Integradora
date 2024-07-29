@@ -1,6 +1,7 @@
 import "./grafica.css";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import MathJax from 'react-mathjax';
 import axios from "axios";
 import Modal from "react-modal";
 
@@ -31,27 +32,36 @@ const Grafica = () => {
   const [newYoutubeLink, setNewYoutubeLink] = useState("");
 
   const [formulas, setFormulas] = useState([]);
+  const [formula, setFormula] = useState('');
+  const [selectedFormula, setSelectedFormula] = useState('');
   const [graficos, setGraficos] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+ 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/formulas")
-      .then((response) => {
+    axios.get('http://localhost:3000/api/formulas')
+      .then(response => {
         const filteredFormulas = response.data.filter(
           (formula) => formula.idCurso === parseInt(idCurso)
         );
-
+        if (filteredFormulas.length > 0) {
+          setFormula(filteredFormulas[0].formula);
+        }
         setFormulas(filteredFormulas);
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(error => {
         setError(error.message);
         setLoading(false);
       });
   }, [idCurso]);
+
+  const handleChange = (event) => {
+    const updatedFormula = event.target.value.replace(/\\\\/g, '\\');
+    setFormula(updatedFormula);
+  };
 
   useEffect(() => {
     axios
@@ -133,16 +143,17 @@ const Grafica = () => {
     }
   };
 
-  const handleRemoveYoutubeLink = (index) => {
-    setYoutubeLinks(youtubeLinks.filter((_, i) => i !== index));
+  const handleSelectChange = (event) => {
+    const formulaId = event.target.value;
+    const formula = formulas.find(f => f.idFormula === parseInt(formulaId));
+    if (formula) {
+      setSelectedFormula(formula.formula);
+    }
   };
-
-  const handleEditYoutubeLink = (index, newLink) => {
-    const updatedLinks = [...youtubeLinks];
-    updatedLinks[index] = newLink;
-    setYoutubeLinks(updatedLinks);
+  const handleInputChange = (event) => {
+    const updatedFormula = event.target.value.replace(/\\\\/g, '\\');
+    setSelectedFormula(updatedFormula);
   };
-
   const renderCommonFields = () => (
     <>
       <div className="section-select">
@@ -158,14 +169,14 @@ const Grafica = () => {
       <div className="section-select">
         <div className="section">
           <h2>Selección Algoritmo</h2>
-          <select>
-            <option value="">Selecciona una fórmula</option>
-            {formulas.map((formula) => (
-              <option key={formula.idFormula} value={formula.idFormula}>
-                {formula.nombreFormula}
-              </option>
-            ))}
-          </select>
+          <select id="formula-select" onChange={handleSelectChange} value={formulas.find(f => f.formula === selectedFormula)?.idFormula || ''}>
+        <option value="">Selecciona una fórmula</option>
+        {formulas.map(formula => (
+          <option key={formula.idFormula} value={formula.idFormula}>
+            {formula.nombreFormula}
+          </option>
+        ))}
+      </select>
         </div>
         <div className="section">
           <h2>Intentos Múltiples</h2>
@@ -199,7 +210,19 @@ const Grafica = () => {
                     <label className="param" htmlFor="formula">
                       Fórmula
                     </label>
-                    <input type="text" id="formula" placeholder="Y = mx + b" />
+                    <input
+        type="text"
+        id="formula"
+        value={selectedFormula}
+        onChange={handleInputChange}
+        placeholder="Y = mx + b"
+      />
+      <div className="formula-display">
+        <MathJax.Provider>
+          <MathJax.Node formula={`\\(${selectedFormula}\\)`} />
+        </MathJax.Provider>
+      </div>
+                    
                   </div>
                   <div className="input-group">
                     <label className="param" htmlFor="regularizacion">
