@@ -23,8 +23,8 @@ const EstudianteHome = () => {
       </div>
       <div className="cards" onClick={handleNextClick}>
             <div  className="card">
-              <h2>curso.Titulo</h2> 
-              <p>curso.Descripcion</p>
+              <div className='tituloscard'>curso.Titulo</div> 
+              <p className='descripcioncard'>curso.Descripcion</p>
             </div>
       </div>
     </div>

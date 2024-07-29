@@ -1,9 +1,9 @@
 .clases {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #2c3e50;
   text-align: left;
-  margin-bottom: 2rem;
+  margin-bottom: 0.3rem;
   background: #1C2A49;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -18,7 +18,7 @@
   padding: 2rem;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
-  width: 100%;
+  width: 90%;
   max-width: 500px;
   height: 250px;
   position: relative;
@@ -33,14 +33,18 @@
   text-align: left; /* Centra el h1 en el contenedor */
   margin: 0;
   padding: 0;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 
-
-
 .underline {
-  width: 100%; /* Hace que la línea abarque todo el ancho del contenedor */
-  height: 2px; /* Altura de la línea */
+  width: 80%; /* Hace que la línea abarque todo el ancho del contenedor */
+  height: 1px; /* Altura de la línea */
   background-color: #000; /* Color de la línea */
-  margin-top: 10px; /* Espacio entre el h1 y la línea */
+}
+
+.tituloscard {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
 }

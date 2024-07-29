@@ -9,6 +9,8 @@ import { MantineProvider } from '@mantine/core';
 import EstudianteHome from './components/Estudiante/estudiantehome';
 import Navbar2 from './components/Estudiante/navbar';
 import Tema from './components/Estudiante/temas';
+import Contenido from './components/Estudiante/contenido';
+
 const EstudianteLayout = ({ children }) => (
   <div>
     <Navbar2 />
@@ -31,6 +33,7 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<EstudianteHome />} />
                   <Route path="/temas" element={<Tema/>} />
+                  <Route path="/contenido" element={<Contenido/>} />
                 </Routes>
               </EstudianteLayout>
             } />
