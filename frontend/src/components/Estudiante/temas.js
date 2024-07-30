@@ -9,21 +9,28 @@ const AccordionItem = ({ title, content }) => {
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
+  const navigate = useNavigate();
+ 
+  const handleNextClick = () => {
+    navigate(`/estudiante/contenido`);
+   
+  };
 
   return (
     <div className="accordion-item">
       <div className="accordion-header" onClick={toggleAccordion}>
         <div className="nueva-vista-header">
           <FaChalkboardTeacher className="nueva-vista-icon" />
-          <span>{title}</span>
+          <span >{title}</span>
         </div>
         
         <div className={`accordion-icon ${isOpen ? 'open' : ''}`}>
           {isOpen ? '-' : '+'}
         </div>
       </div>
-      <div className={`accordion-content ${isOpen ? 'open' : ''}`}>
+      <div  className={`accordion-content ${isOpen ? 'open' : ''}`}>
         {content}
+        <button onClick={handleNextClick}> Provisional siguiente </button>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './contenido.css'; // Importa el archivo de estilos
+import { FaBook, FaPencilAlt, FaVideo, FaPuzzlePiece, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 // Componente para mostrar contenido en cada paso dentro de una tarjeta
 const StepCard = ({ title, content }) => (
@@ -25,6 +26,14 @@ const Contenido = () => {
     {
       title: "Paso 3",
       content: "Contenido variado del Paso 3. Aquí puedes mostrar formularios, tablas, o cualquier otra cosa."
+    },
+    {
+      title: "Paso 4",
+      content: "Contenido variado del Paso 4. Este espacio puede ser utilizado para cualquier contenido adicional."
+    },
+    {
+      title: "Paso 5",
+      content: "Contenido variado del Paso 5. El paso final puede incluir un resumen o conclusiones."
     }
   ];
 
@@ -42,18 +51,33 @@ const Contenido = () => {
 
   return (
     <div className="sequence-navigator">
+      <div className="navigation-buttons">
+        <button onClick={goToPreviousStep} className="arrow-button">
+          <FaArrowLeft />
+        </button>
+        <button onClick={() => setCurrentStep(1)} className={currentStep === 1 ? 'active' : ''}>
+          <FaBook />
+        </button>
+        <button onClick={() => setCurrentStep(2)} className={currentStep === 2 ? 'active' : ''}>
+          <FaPencilAlt />
+        </button>
+        <button onClick={() => setCurrentStep(3)} className={currentStep === 3 ? 'active' : ''}>
+          <FaVideo />
+        </button>
+        <button onClick={() => setCurrentStep(4)} className={currentStep === 4 ? 'active' : ''}>
+          <FaPuzzlePiece />
+        </button>
+        <button onClick={() => setCurrentStep(5)} className={currentStep === 5 ? 'active' : ''}>
+          <FaPuzzlePiece />
+        </button>
+        <button onClick={goToNextStep} className="arrow-button">
+          <FaArrowRight />
+        </button>
+      </div>
       <StepCard
         title={stepContents[currentStep - 1].title}
         content={stepContents[currentStep - 1].content}
       />
-      <div className="navigation-buttons">
-        <button onClick={goToPreviousStep} disabled={currentStep === 1}>
-          Anterior
-        </button>
-        <button onClick={goToNextStep} disabled={currentStep === stepContents.length}>
-          Siguiente
-        </button>
-      </div>
       <p>Paso Actual: {currentStep}</p>
     </div>
   );

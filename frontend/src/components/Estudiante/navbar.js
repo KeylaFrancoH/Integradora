@@ -7,15 +7,14 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleNextClick = () => {
-    navigate(`/estudiante`);
+    navigate(`/estudiante/temas`);
    
   };
   return (
     <header className="navbar">
       <img src={logo} alt="ESPOL Logooo" className="logo" />
       <nav className="nav">
-        <a href="#inicio" onClick={handleNextClick}>Inicio</a>
-        <a href="#temas">Temas</a>
+        <a href="" onClick={handleNextClick}>Inicio</a>
         <a href="#perfil">Perfil</a>
         <button className="logout">Cerrar Sesión</button>
       </nav>
