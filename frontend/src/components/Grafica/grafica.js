@@ -419,7 +419,7 @@ const Grafica = () => {
             </div>
           </div>
 
-          <div className="navigation-buttons">
+          <div className="input-conf">
           <button type="button" className="save-button" onClick={handleSave}>
         Guardar
       </button>
@@ -560,7 +560,7 @@ const Grafica = () => {
             </div>
           </div>
 
-          <div className="navigation-buttons" >
+          <div className="input-confz" >
           <button type="button" className="save-button" onClick={handleSave}>
         Guardar
       </button>

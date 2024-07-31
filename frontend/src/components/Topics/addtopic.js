@@ -3,7 +3,7 @@ import "./addtopic.css";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Modal from "react-modal";
 
-Modal.setAppElement("#root"); 
+Modal.setAppElement("#root");
 
 const AddTopic = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const AddTopic = () => {
   const [material, setMaterial] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleNextClick = () => {
+  const handleNextClick = async () => {
     if (titulo.trim() === "") {
       setErrorMessage("El título es obligatorio.");
       console.log("Error:", "El título es obligatorio.");
@@ -30,7 +30,7 @@ const AddTopic = () => {
     }
     setErrorMessage("");
 
-  
+    // Preparar datos para el servidor
     const data = {
       idCurso,
       titulo,
@@ -43,6 +43,34 @@ const AddTopic = () => {
       })),
     };
 
+    console.log("Datos a enviar:", uploadedFiles);
+    // Subir archivos al servidor si hay archivos seleccionados en uploadedFiles
+    if (uploadedFiles.length > 0) {
+      try {
+        const formData = new FormData();
+        formData.append('tema', titulo); // Usar 'titulo' como tema
+        uploadedFiles.forEach(({ file }) => {
+          formData.append('file', file);
+        });
+
+        const response = await fetch('http://localhost:3000/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al subir archivos');
+        }
+
+        console.log('Archivos subidos exitosamente');
+      } catch (error) {
+        console.error(error);
+        setErrorMessage('Hubo un problema al subir los archivos.');
+        return;
+      }
+    }
+
+    // Navegar a la siguiente página
     navigate(`/anadir-tema/${idCurso}/grafica`, { state: { cursoTitulo, data } });
   };
 
@@ -194,7 +222,7 @@ const AddTopic = () => {
             </ul>
           </div>
         </div>
-        <div className="navigation-buttons">
+        <div className="input-conf">
           <button
             type="button"
             className="next-button"
