@@ -1,46 +1,37 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .nueva-vista-container {
   display: flex;
   flex-direction: column;
+  align-items: center; /* Asegura que el contenido esté centrado horizontalmente */
   padding: 20px;
-  margin-left: 15%;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
-.nueva-vista-card {
-  width: 80%;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  margin: 10px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.header-container {
+  width: 80vw; /* Ajusta el ancho al mismo que los botones de navegación */
+  text-align: left; /* Alinea el texto a la izquierda */
+  margin-bottom: 20px;
 }
 
-.nueva-vista-header {
-  display: flex;
-  align-items: left;
-  background-color: #2a4d89;
-  color: white;
-  padding: 10px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  font-size: 15px;
+.clases {
+  margin-left: 0; /* Ajusta el margen izquierdo si es necesario */
 }
 
-.nueva-vista-icon {
-  margin-right: 10px;
+.underline {
+  height: 2px;
+  background-color: #000; /* Color de la línea subrayada */
+  margin-top: 5px; /* Espacio entre el h1 y la línea */
+  width: 100%; /* Asegura que la línea ocupe todo el ancho del contenedor */
 }
 
-.nueva-vista-body {
-  padding: 20px;
-  align-self: left;
-  font-size: 15px;
-}
-
-.temase {
-  text-align: justify;
-}
-
-/* Estilos para el acordeón */
 .accordion {
-  width: 80%;
+  width: 80vw; /* Igual al ancho del contenedor del título */
   margin: 20px 0;
 }
 
@@ -85,4 +76,27 @@
 
 .accordion-icon.open {
   transform: rotate(45deg);
+}
+
+.nueva-vista-icon {
+  margin-right: 10px;
+}
+
+.tema-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.tema-title {
+  flex: 1;
+}
+
+.tema-divider {
+  width: 100%;
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
 }

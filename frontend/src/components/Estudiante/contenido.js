@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './contenido.css'; // Importa el archivo de estilos
 import { FaBook, FaPencilAlt, FaVideo, FaPuzzlePiece, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
 
 // Componente para mostrar contenido en cada paso dentro de una tarjeta
 const StepCard = ({ title, content }) => (
@@ -12,6 +13,8 @@ const StepCard = ({ title, content }) => (
 
 // Componente del Navegador de Secuencia
 const Contenido = () => {
+  const location = useLocation();
+  const { idTema } = location.state;
   const [currentStep, setCurrentStep] = useState(1);
 
   const stepContents = [
@@ -50,7 +53,12 @@ const Contenido = () => {
   };
 
   return (
+    
     <div className="sequence-navigator">
+      <div className="header-container">
+        <h1 className="clases">Linea de Ruta {idTema}</h1>
+        <div className="underline"></div>
+      </div>
       <div className="navigation-buttons">
         <button onClick={goToPreviousStep} className="arrow-button">
           <FaArrowLeft />
@@ -78,7 +86,16 @@ const Contenido = () => {
         title={stepContents[currentStep - 1].title}
         content={stepContents[currentStep - 1].content}
       />
-      <p>Paso Actual: {currentStep}</p>
+      <p></p>
+     {/* Nueva sección para Archivos */}
+     <div className="header-container">
+     <div className="overline"></div>
+     <h2 className="clases">Archivos</h2>
+        <div className="archivo-content">
+          <button className="download-button">Descargar</button>
+          <span className="archivo-description">Descripción del archivo</span>
+        </div>
+      </div>
     </div>
   );
 };
