@@ -38,29 +38,32 @@ router.get('/:id', async (req, res) => {
 
 // POST para agregar un nuevo archivo
 router.post('/', async (req, res) => {
-  const { idTema, Enlace, archivo, descripcion, idConfiguracion } = req.body;
+  const { idTema, archivo, descripcion } = req.body;
+
   try {
-    const newArchivo = await Archivo.create({ idTema, Enlace, youtube, archivo, descripcion, idConfiguracion });
+
+    const newArchivo = await Archivo.create({ idTema, archivo, descripcion });
     res.status(201).json(newArchivo);
   } catch (error) {
-    console.error('Error al crear archivo:', error);
+    console.error('Error al crear archivo:', error.message);
     res.status(500).json({ error: 'Error al crear archivo' });
   }
 });
 
+
+
+
+
 // PUT para actualizar un archivo existente
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { idTema, Enlace, youtube, archivo, descripcion, idConfiguracion } = req.body;
+  const { idTema, archivo, descripcion } = req.body;
   try {
     const archivoToUpdate = await Archivo.findByPk(id);
     if (archivoToUpdate) {
       archivoToUpdate.idTema = idTema;
-      archivoToUpdate.Enlace = Enlace;
-      archivoToUpdate.youtube = youtube;
       archivoToUpdate.archivo = archivo;
       archivoToUpdate.descripcion = descripcion;
-      archivoToUpdate.idConfiguracion = idConfiguracion;
       await archivoToUpdate.save();
       res.status(200).json(archivoToUpdate);
     } else {

@@ -2,8 +2,8 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = function(sequelize, DataTypes) {
-  const Archivo = sequelize.define('Archivo', {
-    idArchivo: {
+  const Enlace = sequelize.define('Enlaces', {
+    idEnlace: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -17,28 +17,24 @@ module.exports = function(sequelize, DataTypes) {
         key: 'idTema'
       }
     },
-    archivo: {
+    Enlace: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    descripcion: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    }
-    
+   
   }, {
     sequelize,
-    tableName: 'archivo',
+    tableName: 'enlaces',
     timestamps: false,
     indexes: [
       {
         name: 'PRIMARY',
         unique: true,
         using: 'BTREE',
-        fields: [{ name: 'idArchivo' }]
+        fields: [{ name: 'idEnlace' }]
       }
     ]
   });
 
-  return Archivo;
+  return Enlace;
 };

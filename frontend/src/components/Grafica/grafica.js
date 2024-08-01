@@ -41,7 +41,7 @@ const Grafica = () => {
   const [error, setError] = useState(null);
 
  
-  
+  const currentUrl = window.location.href;
   useEffect(() => {
     axios.get('http://localhost:3000/api/formulas')
       .then(response => {
@@ -157,14 +157,7 @@ const Grafica = () => {
   };
 
   const handleSave = async () => {
-    try {
-      console.log('Datos a guardar:', {
-        idCurso,
-        titulo: dataRecibida.titulo,
-        subtitulo: dataRecibida.subtitulo,
-        material: dataRecibida.material,
-      });
-  
+    try {  
       // Enviar datos de `data` a /api/temas
       const temaResponse = await axios.post('http://localhost:3000/api/temas', {
         idCurso,
@@ -172,7 +165,40 @@ const Grafica = () => {
         Subtitulo: dataRecibida.subtitulo,
         Material: dataRecibida.material,
       });
-     
+
+     // Guardar archivos subidos
+
+     for (const archivo of dataRecibida.uploadedFiles) {
+ 
+       await axios.post('http://localhost:3000/api/archivos', {
+        idTema: temaResponse.data.idTema,
+        archivo: 'http://localhost:3000/Archivos/' + archivo.name,
+        descripcion: archivo.description || "",
+       });
+     }
+
+     dataRecibida.youtubeLinks.forEach((enlace, index) => {
+      console.log(`Elemento ${index}:`, enlace);
+      console.log('Data enviada:', {
+        idTema: temaResponse.data.idTema,
+        Enlace: enlace
+      });
+      
+    });
+     if (Array.isArray(dataRecibida.youtubeLinks)) {
+      for (const enlace of dataRecibida.youtubeLinks) {
+        if (enlace) {
+          console.log('Enlace:', enlace);
+          await axios.post('http://localhost:3000/api/enlaces', {
+            idTema: temaResponse.data.idTema,
+            Enlace: enlace
+          });
+        }
+      }
+    }
+    
+ 
+  
      
       alert('Datos guardados correctamente');
     } catch (error) {

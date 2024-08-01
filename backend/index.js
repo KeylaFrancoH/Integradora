@@ -54,6 +54,7 @@ const parametroRoutes = require('./routes/parametroroutes');
 const seleccionRoutes = require('./routes/seleccionroutes'); 
 const contenidoEjercicioRoutes = require('./routes/contenidoejercicioroutes'); 
 const variableRoutes = require('./routes/variableroutes'); 
+const enlaceRoutes = require('./routes/enlaceRoutes');
 
 app.use(cors()); 
 app.use(fileUpload())
@@ -64,6 +65,7 @@ app.use('/api/temas', temaRoutes);
 app.use('/api/configuraciones', configuracionRoutes); 
 app.use('/api/configuracionejercicios', configuracionEjercicioRoutes);
 app.use('/api/archivos', archivoRoutes);
+app.use('/api/enlaces', enlaceRoutes);
 app.use('/api/formulas', formulaRoutes);
 app.use('/api/graficos', graficoRoutes);
 app.use('/api/instrucciones', instruccionRoutes); 
@@ -71,6 +73,8 @@ app.use('/api/parametros', parametroRoutes);
 app.use('/api/selecciones', seleccionRoutes); 
 app.use('/api/contenidoejercicios', contenidoEjercicioRoutes); 
 app.use('/api/variables', variableRoutes); 
+
+app.use('/Archivos', express.static(path.join(__dirname, 'Archivos')));
 
 app.post('/upload', (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {

@@ -57,14 +57,21 @@ CREATE TABLE IF NOT EXISTS Grafico (
 CREATE TABLE IF NOT EXISTS Archivo (
     idArchivo INT AUTO_INCREMENT PRIMARY KEY,
     idTema INT,
-    Enlace VARCHAR(255),
     archivo VARCHAR(255),
     descripcion TEXT,
-    idConfiguracion INT,
-    FOREIGN KEY (idTema) REFERENCES Tema(idTema),
-    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
+   -- idConfiguracion INT,
+    FOREIGN KEY (idTema) REFERENCES Tema(idTema)
+    -- FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
 );
- 
+
+ CREATE TABLE IF NOT EXISTS Enlaces (
+    idEnlace INT AUTO_INCREMENT PRIMARY KEY,
+    idTema INT,
+    Enlace VARCHAR(255),
+    FOREIGN KEY (idTema) REFERENCES Tema(idTema)
+);
+
+
 CREATE TABLE IF NOT EXISTS Instruccion (
     idInstrucciones INT AUTO_INCREMENT PRIMARY KEY,
     idConfiguracion INT,
@@ -149,3 +156,11 @@ INSERT INTO Grafico (idGrafico, idCurso, Tipo_grafico, etiqueta) VALUES
 (9, 2, 'Gráfico de Validación Cruzada ', true),
 (10, 2, 'Gráfico de Búsqueda de Cuadrícula (Grid Search) ', true),
 (11, 1, 'Gráfico de Ajuste de Línea ', true);
+
+select * from enlaces
+
+
+
+
+
+
