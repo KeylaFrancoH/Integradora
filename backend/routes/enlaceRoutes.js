@@ -7,12 +7,12 @@ const sequelize = new Sequelize(config.integradora.database, config.integradora.
   host: config.integradora.host,
   dialect: 'mysql'
 });
-const Enlace = require('../models/enlaces')(sequelize, Sequelize);
+const Link = require('../models/enlaces')(sequelize);
 
 // GET todos los enlaces
 router.get('/', async (req, res) => {
   try {
-    const enlaces = await Enlace.findAll();
+    const enlaces = await Link.findAll();
     res.status(200).json(enlaces);
   } catch (error) {
     console.error('Error al obtener enlaces:', error);
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const enlaces = await Enlace.findByPk(id);
+    const enlaces = await Link.findByPk(id);
     if (enlaces) {
       res.status(200).json(enlaces);
     } else {
@@ -38,44 +38,39 @@ router.get('/:id', async (req, res) => {
 
 // POST para agregar un nuevo Enlace
 router.post('/', async (req, res) => {
-    const { idTema, enlace } = req.body;
-  
-    try {
-      const newEnlace = await Enlace.create({ idTema, enlace });
-      res.status(201).json(newEnlace);
-    } catch (error) {
-      console.error('Error al crear enlace:', error.message);
-      res.status(500).json({ error: 'Error al crear enlace' });
-    }
-  });
+  const { idTema, Enlace } = req.body;
 
-
-// PUT para actualizar un Enlace existente
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const { idTema, enlaces } = req.body;
   try {
-    const enlaceToUpdate = await Enlace.findByPk(id);
-    if (enlaceToUpdate) {
-        enlaceToUpdate.idTema = idTema;
-        enlaceToUpdate.Enlace = enlaces;
-      
-      await enlaceToUpdate.save();
-      res.status(200).json(enlaceToUpdate);
-    } else {
-      res.status(404).json({ error: 'Enlace no encontrado' });
-    }
+    const newEnlace = await Link.create({ idTema: idTema, Enlace: Enlace });
+    res.status(201).json(newEnlace);
   } catch (error) {
-    console.error('Error al actualizar enlace:', error);
-    res.status(500).json({ error: 'Error al actualizar enlace' });
+    console.error('Error al crear enlace:', error.message);
+    res.status(500).json({ error: 'Error al crear enlace' });
   }
 });
+
+
+
+  router.post('/', async (req, res) => {
+    const { idTema, Enlace } = req.body;
+  
+    try {
+  
+      const newArchivo = await Enlace.create({ idTema, Enlace });
+      res.status(201).json(newArchivo);
+    } catch (error) {
+      console.error('Error al crear archivo:', error.message);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  
 
 // DELETE para eliminar un Enlace por ID
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const enlaceToDelete = await Enlace.findByPk(id);
+    const enlaceToDelete = await Link.findByPk(id);
     if (enlaceToDelete) {
       await enlaceToDelete.destroy();
       res.status(200).json({ message: 'Enlace eliminado correctamente' });

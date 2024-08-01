@@ -185,17 +185,20 @@ const Grafica = () => {
       });
       
     });
-     if (Array.isArray(dataRecibida.youtubeLinks)) {
-      for (const enlace of dataRecibida.youtubeLinks) {
-        if (enlace) {
-          console.log('Enlace:', enlace);
-          await axios.post('http://localhost:3000/api/enlaces', {
-            idTema: temaResponse.data.idTema,
-            Enlace: enlace
-          });
-        }
-      }
+
+    
+    for (const enlace of dataRecibida.youtubeLinks) {
+      console.log('Enlace:', enlace);
+      await axios.post('http://localhost:3000/api/enlaces', {
+        idTema: temaResponse.data.idTema,
+        Enlace: enlace  
+      });
+      
+     
     }
+
+    
+    
     
  
   

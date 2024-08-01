@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS Archivo (
  CREATE TABLE IF NOT EXISTS Enlaces (
     idEnlace INT AUTO_INCREMENT PRIMARY KEY,
     idTema INT,
-    Enlace VARCHAR(255),
+    Enlace TEXT,
     FOREIGN KEY (idTema) REFERENCES Tema(idTema)
 );
 
@@ -157,9 +157,10 @@ INSERT INTO Grafico (idGrafico, idCurso, Tipo_grafico, etiqueta) VALUES
 (10, 2, 'Gráfico de Búsqueda de Cuadrícula (Grid Search) ', true),
 (11, 1, 'Gráfico de Ajuste de Línea ', true);
 
-select * from enlaces
+select * from enlaces;
 
 
+select * from archivo;
 
 
 

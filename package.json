@@ -15,5 +15,24 @@
     "react-mathquill": "^1.0.3",
     "react-modal": "^3.16.1",
     "sequelize": "^6.37.3"
-  }
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "plugins": [
+    "react"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ]
 }

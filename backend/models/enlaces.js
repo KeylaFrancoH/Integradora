@@ -1,7 +1,7 @@
-// models/archivo.js
+// models/enlace.js
 const { DataTypes } = require('sequelize');
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function(sequelize) {
   const Enlace = sequelize.define('Enlaces', {
     idEnlace: {
       autoIncrement: true,
@@ -13,27 +13,18 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Tema', 
+        model: 'Tema',
         key: 'idTema'
       }
     },
-    Enlace: {
-      type: DataTypes.STRING(255),
+    Enlace: { 
+      type: DataTypes.TEXT,
       allowNull: true
     },
-   
   }, {
     sequelize,
-    tableName: 'enlaces',
+    tableName: 'Enlaces',
     timestamps: false,
-    indexes: [
-      {
-        name: 'PRIMARY',
-        unique: true,
-        using: 'BTREE',
-        fields: [{ name: 'idEnlace' }]
-      }
-    ]
   });
 
   return Enlace;
