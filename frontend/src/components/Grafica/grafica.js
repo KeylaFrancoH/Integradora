@@ -623,28 +623,38 @@ const Grafica = () => {
         </div>
       </Modal>
       <Modal
-        isOpen={pointModalOpen}
-        onRequestClose={() => setPointModalOpen(false)}
-        contentLabel="Agregar Punto"
-      >
-        <h2>Agregar Punto</h2>
-        <input
-          type="number"
-          value={pointX}
-          onChange={(e) => setPointX(Number(e.target.value))}
-          placeholder="X"
-        />
-        <input
-          type="number"
-          value={pointY}
-          onChange={(e) => setPointY(Number(e.target.value))}
-          placeholder="Y"
-        />
-        <div className="botones-modal">
-          <button onClick={handlePointSubmit}>Agregar</button>
-          <button onClick={() => setPointModalOpen(false)}>Cancelar</button>
-        </div>
-      </Modal>
+  isOpen={pointModalOpen}
+  onRequestClose={() => setPointModalOpen(false)}
+  contentLabel="Agregar Punto"
+>
+  <h2>Agregar Punto</h2>
+  <div className="input-row">
+    <label>
+      X:
+      <input
+        type="number"
+        value={pointX}
+        onChange={(e) => setPointX(Number(e.target.value))}
+        placeholder="X"
+      />
+    </label>
+    <label>
+      Y:
+      <input
+        type="number"
+        value={pointY}
+        onChange={(e) => setPointY(Number(e.target.value))}
+        placeholder="Y"
+      />
+    </label>
+  </div>
+  <div className="botones-modal">
+    <button onClick={handlePointSubmit}>Agregar</button>
+    <button onClick={() => setPointModalOpen(false)}>Cancelar</button>
+  </div>
+</Modal>
+
+
       <Modal
         isOpen={fileModalOpen}
         onRequestClose={() => setFileModalOpen(false)}
