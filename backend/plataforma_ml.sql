@@ -87,6 +87,47 @@ CREATE TABLE IF NOT EXISTS Configuracion (
     FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
 );
 
+CREATE TABLE IF NOT EXISTS Variable (
+    idVariable INT AUTO_INCREMENT PRIMARY KEY,
+    idConfiguracion INT,
+    
+    variable varchar(255),
+   
+    
+    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
+);
+
+CREATE TABLE IF NOT EXISTS Puntos (
+    idPuntos INT AUTO_INCREMENT PRIMARY KEY,
+    idConfiguracion INT,
+    
+    punto_X DOUBLE,
+    punto_Y DOUBLE, 
+    
+    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
+);
+
+
+ CREATE TABLE IF NOT EXISTS ContenidoEjercicios (
+    idContenidoEjercicios INT AUTO_INCREMENT PRIMARY KEY,
+    idConfiguracion INT,
+    
+    k_min int,
+    k_max int,
+    k_exacto int,
+    
+    iteracion_min int, 
+    iteracion_max int,
+    iteracion_exacto int,
+    
+    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
+);
+
+
+
+
+
+
 INSERT INTO Curso (idCurso, Titulo, Descripcion) VALUES
 (1, 'Aprendizaje Supervisado', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'),
 (2, 'Aprendizaje No Supervisado', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
