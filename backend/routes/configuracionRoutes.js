@@ -37,9 +37,9 @@ router.get('/:id', async (req, res) => {
 
 // POST para agregar una nueva configuración
 router.post('/', async (req, res) => {
-  const { idTema, Parametros, Titulo, Enumerado, intentos } = req.body;
+  const { idTema, Titulo, Enunciado, idFormula, idGrafico, habilitado, intentos, instrucciones } = req.body;
   try {
-    const newConfiguracion = await Configuracion.create({ idTema, Parametros, Titulo, Enumerado, intentos });
+    const newConfiguracion = await Configuracion.create({ idTema, Titulo, Enunciado, idFormula, idGrafico, habilitado, intentos, instrucciones });
     res.status(201).json(newConfiguracion);
   } catch (error) {
     console.error('Error al crear configuración:', error);
@@ -49,9 +49,9 @@ router.post('/', async (req, res) => {
 
 // PUT para actualizar una configuración por ID
 router.put('/:id', async (req, res) => {
-  const { idTema, Parametros, Titulo, Enumerado, intentos } = req.body;
+  const { idTema, Titulo, Enunciado, idFormula, idGrafico, habilitado, intentos, instrucciones } = req.body;
   try {
-    const [updated] = await Configuracion.update({ idTema, Parametros, Titulo, Enumerado, intentos }, {
+    const [updated] = await Configuracion.update({ idTema, Titulo, Enunciado, idFormula, idGrafico, habilitado, intentos, instrucciones }, {
       where: { idConfiguracion: req.params.id }
     });
     if (updated) {

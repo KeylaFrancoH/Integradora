@@ -11,9 +11,9 @@ const Parametro = require('../models/parametro')(sequelize, Sequelize);
 
 // POST para agregar un nuevo parámetro
 router.post('/', async (req, res) => {
-  const { idConfiguracion, parametro, valor_parametro, valores_maximo, tipo_seleccion } = req.body;
+  const { idConfiguracion, formula, parametro_regularización, intercepto, metodo_inicialización, numero_clusters, numero_iteraciones } = req.body;
   try {
-    const newParametro = await Parametro.create({ idConfiguracion, parametro, valor_parametro, valores_maximo, tipo_seleccion });
+    const newParametro = await Parametro.create({ idConfiguracion, formula, parametro_regularización, intercepto, metodo_inicialización, numero_clusters, numero_iteraciones });
     res.status(201).json(newParametro);
   } catch (error) {
     console.error('Error al crear parámetro:', error);
@@ -49,9 +49,9 @@ router.get('/:id', async (req, res) => {
 
 // PUT para actualizar un parámetro por ID
 router.put('/:id', async (req, res) => {
-  const { idConfiguracion, parametro, valor_parametro, valores_maximo, tipo_seleccion } = req.body;
+  const { idConfiguracion, formula, parametro_regularización, intercepto, metodo_inicialización, numero_clusters, numero_iteraciones } = req.body;
   try {
-    const [updated] = await Parametro.update({ idConfiguracion, parametro, valor_parametro, valores_maximo, tipo_seleccion }, {
+    const [updated] = await Parametro.update({ idConfiguracion, formula, parametro_regularización, intercepto, metodo_inicialización, numero_clusters, numero_iteraciones }, {
       where: { idParametro: req.params.id }
     });
     if (updated) {

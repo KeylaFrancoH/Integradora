@@ -1,7 +1,7 @@
 // routes/configuracionejercicioroutes.js
 const express = require('express');
 const router = express.Router();
-const Sequelize = require('sequelize');
+const { Sequelize } = require('sequelize');
 const config = require('../config/config.json');
 const sequelize = new Sequelize(config.integradora.database, config.integradora.username, config.integradora.password, {
   host: config.integradora.host,
@@ -38,9 +38,9 @@ router.get('/:id', async (req, res) => {
 
 // POST para agregar una nueva configuración de ejercicio
 router.post('/', async (req, res) => {
-  const { idConfiguracion, habilitado, variables_ejercicio, campo_ejercicios } = req.body;
+  const { idConfiguracion, grafica, habilitado } = req.body;
   try {
-    const newConfiguracion = await ConfiguracionEjercicio.create({ idConfiguracion, habilitado, variables_ejercicio, campo_ejercicios });
+    const newConfiguracion = await ConfiguracionEjercicio.create({ idConfiguracion, grafica, habilitado });
     res.status(201).json(newConfiguracion);
   } catch (error) {
     console.error('Error al crear configuración de ejercicio:', error);
@@ -51,14 +51,13 @@ router.post('/', async (req, res) => {
 // PUT para actualizar una configuración de ejercicio existente
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { idConfiguracion, habilitado, variables_ejercicio, campo_ejercicios } = req.body;
+  const { idConfiguracion, grafica, habilitado } = req.body;
   try {
     const configuracionToUpdate = await ConfiguracionEjercicio.findByPk(id);
     if (configuracionToUpdate) {
       configuracionToUpdate.idConfiguracion = idConfiguracion;
+      configuracionToUpdate.grafica = grafica;
       configuracionToUpdate.habilitado = habilitado;
-      configuracionToUpdate.variables_ejercicio = variables_ejercicio;
-      configuracionToUpdate.campo_ejercicios = campo_ejercicios;
       await configuracionToUpdate.save();
       res.status(200).json(configuracionToUpdate);
     } else {

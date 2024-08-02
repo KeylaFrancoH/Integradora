@@ -27,18 +27,7 @@ CREATE TABLE IF NOT EXISTS Tema ( -- Tema se refiere a la creacion de subtemas d
     FOREIGN KEY (idCurso) REFERENCES Curso(idCurso)
 );
  
- 
-CREATE TABLE IF NOT EXISTS Configuracion (
-    idConfiguracion INT AUTO_INCREMENT PRIMARY KEY,
-    idTema INT,
-    Parametros VARCHAR(255),
-    Titulo VARCHAR(255),
-    Enumerado TEXT,
-    intentos INT, 
-    FOREIGN KEY (idTema) REFERENCES Tema(idTema)
-);
- 
-CREATE TABLE IF NOT EXISTS Formula (
+ CREATE TABLE IF NOT EXISTS Formula (
     idFormula INT AUTO_INCREMENT PRIMARY KEY,
     nombreFormula VARCHAR(255),
     formula  VARCHAR(255),
@@ -71,61 +60,32 @@ CREATE TABLE IF NOT EXISTS Archivo (
     FOREIGN KEY (idTema) REFERENCES Tema(idTema)
 );
 
-
-CREATE TABLE IF NOT EXISTS Instruccion (
-    idInstrucciones INT AUTO_INCREMENT PRIMARY KEY,
-    idConfiguracion INT,
-    Instrucciones TEXT,
-    idCurso INT,
-    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion),
-    FOREIGN KEY (idCurso) REFERENCES Curso(idCurso)
+CREATE TABLE IF NOT EXISTS Configuracion (
+    idConfiguracion INT AUTO_INCREMENT PRIMARY KEY,
+    idTema INT,
+    Titulo VARCHAR(255),
+    Enunciado TEXT,
+    idFormula INT,
+    idGrafico INT, 
+    habilitado BOOLEAN,
+    intentos INT, 
+    instrucciones TEXT,
+    FOREIGN KEY (idTema) REFERENCES Tema(idTema),
+    FOREIGN KEY (idFormula) REFERENCES Formula(idFormula),
+    FOREIGN KEY (idGrafico) REFERENCES Grafico(idGrafico)
 );
  
-CREATE TABLE IF NOT EXISTS Parametro (
+ CREATE TABLE IF NOT EXISTS Parametro (
     idParametro INT AUTO_INCREMENT PRIMARY KEY,
     idConfiguracion INT,
-    parametro VARCHAR(255),
-    valor_parametro VARCHAR(255),
-    valores_maximo VARCHAR(255),
-    tipo_seleccion VARCHAR(255),
+    formula TEXT,
+    parametro_regularización VARCHAR(255),
+    intercepto boolean, 
+    metodo_inicialización varchar(255),
+    numero_clusters int,
+    numero_iteraciones int,
     FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
 );
- 
-CREATE TABLE IF NOT EXISTS ConfiguracionEjercicio (
-    idEjercicio INT AUTO_INCREMENT PRIMARY KEY,
-    idConfiguracion INT,
-    habilitado BOOLEAN,
-    variables_ejercicio VARCHAR(255),
-    campo_ejercicios VARCHAR(255),
-    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
-);
- 
-CREATE TABLE IF NOT EXISTS Seleccion (
-    idSeleccion INT AUTO_INCREMENT PRIMARY KEY,
-    idParametro INT,
-    nombre_metodo VARCHAR(255),
-    FOREIGN KEY (idParametro) REFERENCES Parametro(idParametro)
-);
-CREATE TABLE IF NOT EXISTS ContenidoEjercicio (
-    idContenido INT AUTO_INCREMENT PRIMARY KEY,
-    idConfiguracion INT,
-    idEjercicio INT,
-    nombre_variable VARCHAR(255),
-    nuevo_valor VARCHAR(255),
-    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion),
-    FOREIGN KEY (idEjercicio) REFERENCES ConfiguracionEjercicio(idEjercicio)
-);
- 
-CREATE TABLE IF NOT EXISTS Variable (
-    idVariable INT AUTO_INCREMENT PRIMARY KEY,
-    idConfiguracion INT,
-    idEjercicio INT,
-    nombre_variable VARCHAR(255),
-    valor_variable VARCHAR(255),
-    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion),
-    FOREIGN KEY (idEjercicio) REFERENCES ConfiguracionEjercicio(idEjercicio)
-);
-
 
 INSERT INTO Curso (idCurso, Titulo, Descripcion) VALUES
 (1, 'Aprendizaje Supervisado', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'),
@@ -156,12 +116,3 @@ INSERT INTO Grafico (idGrafico, idCurso, Tipo_grafico, etiqueta) VALUES
 (9, 2, 'Gráfico de Validación Cruzada ', true),
 (10, 2, 'Gráfico de Búsqueda de Cuadrícula (Grid Search) ', true),
 (11, 1, 'Gráfico de Ajuste de Línea ', true);
-
-select * from enlaces;
-
-
-select * from archivo;
-
-
-
-

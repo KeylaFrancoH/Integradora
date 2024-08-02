@@ -1,10 +1,10 @@
 import "./grafica.css";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import MathJax from 'react-mathjax';
+import MathJax from "react-mathjax";
 import axios from "axios";
 import Modal from "react-modal";
-import MathEditor from './MathEditor';
+import MathEditor from "./MathEditor";
 
 const Grafica = () => {
   const { idCurso } = useParams();
@@ -23,6 +23,9 @@ const Grafica = () => {
   const [pointX, setPointX] = useState(0);
   const [pointY, setPointY] = useState(0);
   const [points, setPoints] = useState([]);
+
+  const [pointsX, setX] = useState([]);
+  const [pointsY, setY] = useState([]);
   const [editingPointIndex, setEditingPointIndex] = useState(null);
 
   const [file, setFile] = useState(null);
@@ -33,18 +36,35 @@ const Grafica = () => {
   const [newYoutubeLink, setNewYoutubeLink] = useState("");
 
   const [formulas, setFormulas] = useState([]);
-  const [formula, setFormula] = useState('');
-  const [selectedFormula, setSelectedFormula] = useState('');
+  const [formula, setFormula] = useState("");
+  const [selectedFormula, setSelectedFormula] = useState("");
   const [graficos, setGraficos] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
- 
+  const [titulo, setTitulo] = useState("");
+  const [enunciado, setEnunciado] = useState("");
+  const [instrucciones, setInstrucciones] = useState("");
+  const [numeroIntentos, setNumeroIntentos] = useState(1);
+
+  const [parametro, setParametro] = useState("");
+  const [numeroClusters, setNumeroClusters] = useState("");
+  const [numeroIteraciones, setNumeroIteraciones] = useState("");
+
+  const [k_min, setKmin] = useState(0);
+  const [k_max, setKmax] = useState(0);
+  const [k_exacto, setKexacto] = useState(0);
+  const [iter_min, setIterMin] = useState(0);
+  const [iter_max, setIterMax] = useState(0);
+  const [iter_exacto, setIterexacto] = useState(0);
+
+
   const currentUrl = window.location.href;
   useEffect(() => {
-    axios.get('http://localhost:3000/api/formulas')
-      .then(response => {
+    axios
+      .get("http://localhost:3000/api/formulas")
+      .then((response) => {
         const filteredFormulas = response.data.filter(
           (formula) => formula.idCurso === parseInt(idCurso)
         );
@@ -54,14 +74,14 @@ const Grafica = () => {
         setFormulas(filteredFormulas);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         setError(error.message);
         setLoading(false);
       });
   }, [idCurso]);
 
   const handleChange = (event) => {
-    const updatedFormula = event.target.value.replace(/\\\\/g, '\\');
+    const updatedFormula = event.target.value.replace(/\\\\/g, "\\");
     setFormula(updatedFormula);
   };
 
@@ -81,6 +101,7 @@ const Grafica = () => {
         setLoading(false);
       });
   }, [idCurso]);
+
   const handleVariableSubmit = () => {
     if (editingVariableIndex !== null) {
       setVariables(
@@ -93,6 +114,7 @@ const Grafica = () => {
     setVariable("");
     setVariableModalOpen(false);
   };
+  
   const handleEditVariable = (index) => {
     setVariable(variables[index]);
     setEditingVariableIndex(index);
@@ -117,6 +139,8 @@ const Grafica = () => {
 
   const handlePointSubmit = () => {
     const newPoint = { x: pointX, y: pointY };
+    setX([...pointsX, pointX]);
+    setY([...pointsY, pointY]);
     if (editingPointIndex !== null) {
       setPoints(points.map((p, i) => (i === editingPointIndex ? newPoint : p)));
       setEditingPointIndex(null);
@@ -146,109 +170,183 @@ const Grafica = () => {
 
   const handleSelectChange = (event) => {
     const formulaId = event.target.value;
-    const formula = formulas.find(f => f.idFormula === parseInt(formulaId));
+    const formula = formulas.find((f) => f.idFormula === parseInt(formulaId));
     if (formula) {
       setSelectedFormula(formula.formula);
     }
   };
   const handleInputChange = (event) => {
-    const updatedFormula = event.target.value.replace(/\\\\/g, '\\');
+    const updatedFormula = event.target.value.replace(/\\\\/g, "\\");
     setSelectedFormula(updatedFormula);
   };
 
   const handleSave = async () => {
-    try {  
+    try {
       // Enviar datos de `data` a /api/temas
-      const temaResponse = await axios.post('http://localhost:3000/api/temas', {
+      const temaResponse = await axios.post("http://localhost:3000/api/temas", {
         idCurso,
         Titulo: dataRecibida.titulo,
         Subtitulo: dataRecibida.subtitulo,
         Material: dataRecibida.material,
       });
 
-     // Guardar archivos subidos
+      // Guardar archivos subidos
 
-     for (const archivo of dataRecibida.uploadedFiles) {
- 
-       await axios.post('http://localhost:3000/api/archivos', {
-        idTema: temaResponse.data.idTema,
-        archivo: 'http://localhost:3000/Archivos/' + archivo.name,
-        descripcion: archivo.description || "",
-       });
-     }
+      for (const archivo of dataRecibida.uploadedFiles) {
+        await axios.post("http://localhost:3000/api/archivos", {
+          idTema: temaResponse.data.idTema,
+          archivo: "http://localhost:3000/Archivos/" + archivo.name,
+          descripcion: archivo.description || "",
+        });
+      }
 
-     dataRecibida.youtubeLinks.forEach((enlace, index) => {
-      console.log(`Elemento ${index}:`, enlace);
-      console.log('Data enviada:', {
-        idTema: temaResponse.data.idTema,
-        Enlace: enlace
+      dataRecibida.youtubeLinks.forEach((enlace, index) => {
+        console.log(`Elemento ${index}:`, enlace);
+        console.log("Data enviada:", {
+          idTema: temaResponse.data.idTema,
+          Enlace: enlace,
+        });
       });
-      
-    });
 
-    
-    for (const enlace of dataRecibida.youtubeLinks) {
-      console.log('Enlace:', enlace);
-      await axios.post('http://localhost:3000/api/enlaces', {
-        idTema: temaResponse.data.idTema,
-        Enlace: enlace  
-      });
-      
-     
-    }
+      for (const enlace of dataRecibida.youtubeLinks) {
+        console.log("Enlace:", enlace);
+        await axios.post("http://localhost:3000/api/enlaces", {
+          idTema: temaResponse.data.idTema,
+          Enlace: enlace,
+        });
+      }
 
+      const configuracionResponse = await axios.post(
+        "http://localhost:3000/api/configuraciones",
+        {
+          idTema: temaResponse.data.idTema,
+          Titulo: titulo,
+          Enunciado: enunciado,
+          idFormula: formulas.find((f) => f.formula === selectedFormula)
+            ?.idFormula,
+          idGrafico: graficos[0].idGrafico,
+          habilitado: true,
+          intentos: numeroIntentos,
+          instrucciones: instrucciones,
+        }
+      );
+
+      console.log(configuracionResponse.data.idConfiguracion);
+      const parametroResponse = await axios.post(
+        "http://localhost:3000/api/parametros",
+        {
+          idConfiguracion: configuracionResponse.data.idConfiguracion,
+          formula: selectedFormula || null,
+          parametro_regularización: parametro || null,
+          intercepto: true,
+
+          metodo_inicialización: "aleatorio",
+
+          numero_clusters: numeroClusters || null,
+          numero_iteraciones: numeroIteraciones || null,
+        }
+      );
+
+      if (idCurso === "1") {
+        for (const x of variables) {
+          await axios.post("http://localhost:3000/api/variables", {
+            idConfiguracion: configuracionResponse.data.idConfiguracion,
+            variable: x || null,
+          });
+        }
+
+        for (let i = 0; i < pointsX.length; i++) {
+          const valX = pointsX[i];
+          const valY = pointsY[i];
     
+          await axios.post("http://localhost:3000/api/puntos", {
+            idConfiguracion: configuracionResponse.data.idConfiguracion,
+            punto_x: valX,
+            punto_y: valY,
+          });
+        }
+
+        //ARREGLAR PUNTOS NO ESTOY PUDIENDO GUARDAR, Y DE AHÍ YA ESTARIAN TODOS LOS DATOS GUARDADOS
     
-    
- 
-  
-     
-      alert('Datos guardados correctamente');
+      }
+
+      alert("Datos guardados correctamente");
     } catch (error) {
-      console.error('Error al guardar los datos:', error);
-      alert('Hubo un error al guardar los datos.');
+      console.error("Error al guardar los datos:", error);
+      alert("Hubo un error al guardar los datos.");
     }
   };
-  
+
   // POR AHORA SOLO GUARDA TEMA, FALTA GUARDAR EJERCICIOS, FALTA GUARDAT TODO, SE NECESITA HACER QUE SE GUARDEN ARCHIVOS
   const renderCommonFields = () => (
     <>
       <div className="section-select">
         <div className="section">
           <h2>Título</h2>
-          <input type="text" placeholder="Título del ejercicio" />
+          <input
+            type="text"
+            placeholder="Título del ejercicio"
+            value={titulo}
+            onChange={(e) => {
+              setTitulo(e.target.value);
+            }}
+          />
         </div>
         <div className="section">
           <h2>Enunciado</h2>
-          <input type="text" placeholder="Enunciado del ejercicio" />
+          <input
+            type="text"
+            placeholder="Enunciado del ejercicio"
+            value={enunciado}
+            onChange={(e) => {
+              setEnunciado(e.target.value);
+            }}
+          />
         </div>
       </div>
       <div className="section-select">
         <div className="section">
           <h2>Selección Algoritmo</h2>
-          <select id="formula-select" onChange={handleSelectChange} value={formulas.find(f => f.formula === selectedFormula)?.idFormula || ''}>
-        <option value="">Selecciona una fórmula</option>
-        {formulas.map(formula => (
-          <option key={formula.idFormula} value={formula.idFormula}>
-            {formula.nombreFormula}
-          </option>
-        ))}
-      </select>
+          <select
+            id="formula-select"
+            onChange={handleSelectChange}
+            value={
+              formulas.find((f) => f.formula === selectedFormula)?.idFormula ||
+              ""
+            }
+          >
+            <option value="">Selecciona una fórmula</option>
+            {formulas.map((formula) => (
+              <option key={formula.idFormula} value={formula.idFormula}>
+                {formula.nombreFormula}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="section">
           <h2>Intentos Múltiples</h2>
           <input
             type="number"
-            defaultValue={1}
+            value={numeroIntentos}
             placeholder="Número de intentos"
             min={1}
             step={1}
+            onChange={(e) => {
+              setNumeroIntentos(e.target.value);
+            }}
           />
         </div>
       </div>
       <div className="section">
         <h2>Instrucciones</h2>
-        <textarea placeholder="Instrucciones"></textarea>
+        <textarea
+          type="text"
+          placeholder="Instrucciones"
+          value={instrucciones}
+          onChange={(e) => {
+            setInstrucciones(e.target.value);
+          }}
+        />
       </div>
     </>
   );
@@ -268,24 +366,31 @@ const Grafica = () => {
                       Fórmula
                     </label>
                     <input
-        type="text"
-        id="formula"
-        value={selectedFormula}
-        onChange={handleInputChange}
-        placeholder="Y = mx + b"
-      />
-      <div className="formula-display">
-        <MathJax.Provider>
-          <MathJax.Node formula={`\\(${selectedFormula}\\)`} />
-        </MathJax.Provider>
-      </div>
-                    
+                      type="text"
+                      id="formula"
+                      value={selectedFormula}
+                      onChange={handleInputChange}
+                      placeholder="Y = mx + b"
+                    />
+                    <div className="formula-display">
+                      <MathJax.Provider>
+                        <MathJax.Node formula={`\\(${selectedFormula}\\)`} />
+                      </MathJax.Provider>
+                    </div>
                   </div>
                   <div className="input-group">
                     <label className="param" htmlFor="regularizacion">
                       Parámetro de Regularización alpha
                     </label>
-                    <input type="text" id="regularizacion" placeholder="α" />
+                    <input
+                      type="text"
+                      id="regularizacion"
+                      placeholder="α"
+                      value={parametro}
+                      onChange={(e) => {
+                        setParametro(e.target.value);
+                      }}
+                    />
                   </div>
                   <div className="input-group">
                     <label className="param" htmlFor="ajuste">
@@ -333,6 +438,67 @@ const Grafica = () => {
             </div>
           </div>
 
+          <div className="section">
+            <h2>Configuración de ejercicios</h2>
+            <div className="input-group flex-container">
+              <div className="input-conf">
+                <label htmlFor="variables">Variables</label>
+                <button
+                  type="button"
+                  onClick={() => setVariableModalOpen(true)}
+                >
+                  Agregar Variable
+                </button>
+              </div>
+              <ul className="variables-list">
+                {variables.map((variable, index) => (
+                  <li key={index}>
+                    <span>{variable}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleEditVariable(index)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveVariable(index)}
+                    >
+                      Eliminar
+                    </button>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="input-conf">
+                <label htmlFor="puntos-recta">Puntos de la Recta</label>
+                <button type="button" onClick={() => setPointModalOpen(true)}>
+                  Agregar Puntos
+                </button>
+              </div>
+              <ul className="variables-list">
+                {points.map((point, index) => (
+                  <li key={index}>
+                    <span>
+                      X: {point.x}, Y: {point.y}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleEditPoint(index)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePoint(index)}
+                    >
+                      Eliminar
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
           <div className="section attachment-sections">
             <div className="attachment-section">
               <h2>Archivos Subidos</h2>
@@ -374,84 +540,10 @@ const Grafica = () => {
             </div>
           </div>
 
-          <div className="section">
-            <h2>Configuración de ejercicios</h2>
-            <div className="input-group flex-container">
-              <div className="input-conf">
-                <input
-                  type="radio"
-                  id="variables"
-                  name="variables"
-                  value="habilitado"
-                />
-                <label htmlFor="variables">Variables</label>
-                <button
-                  type="button"
-                  onClick={() => setVariableModalOpen(true)}
-                >
-                  Agregar Variable
-                </button>
-              </div>
-              <ul className="variables-list">
-                {variables.map((variable, index) => (
-                  <li key={index}>
-                    <span>{variable}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleEditVariable(index)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveVariable(index)}
-                    >
-                      Eliminar
-                    </button>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="input-conf">
-                <input
-                  type="radio"
-                  id="puntos-recta"
-                  name="puntos-recta"
-                  value="habilitado"
-                />
-                <label htmlFor="puntos-recta">Puntos de la Recta</label>
-                <button type="button" onClick={() => setPointModalOpen(true)}>
-                  Agregar Puntos
-                </button>
-              </div>
-              <ul className="variables-list">
-                {points.map((point, index) => (
-                  <li key={index}>
-                    <span>
-                      X: {point.x}, Y: {point.y}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleEditPoint(index)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePoint(index)}
-                    >
-                      Eliminar
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
           <div className="input-conf">
-          <button type="button" className="save-button" onClick={handleSave}>
-        Guardar
-      </button>
+            <button type="button" className="save-button" onClick={handleSave}>
+              Guardar
+            </button>
           </div>
         </form>
       );
@@ -476,16 +568,32 @@ const Grafica = () => {
                   <label className="param" htmlFor="clusters">
                     Número de Clusters (K)
                   </label>
-                  <input type="text" id="clusters" placeholder="Placeholder" />
+                  <input
+                    type="number"
+                    value={numeroClusters}
+                    id="clusters"
+                    placeholder="Número de clústers"
+                    min={0}
+                    step={1}
+                    onChange={(e) => {
+                      setNumeroClusters(e.target.value);
+                    }}
+                  />
                 </div>
                 <div className="input-conf">
                   <label className="param" htmlFor="iteraciones">
                     Número Máximo de Iteraciones
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    value={numeroIteraciones}
                     id="iteraciones"
-                    placeholder="Placeholder"
+                    placeholder="Número de iteraciones"
+                    min={0}
+                    step={1}
+                    onChange={(e) => {
+                      setNumeroIteraciones(e.target.value);
+                    }}
                   />
                 </div>
               </div>
@@ -527,9 +635,42 @@ const Grafica = () => {
                 <div className="clusters-settings">
                   <label htmlFor="num-clusters">Número de Clusters (K)</label>
                   <div className="clusters-input-fields">
-                    <input type="number" placeholder="Mínimo" />
-                    <input type="number" placeholder="Máximo" />
-                    <input type="number" placeholder="Valor Exacto" />
+                    Mínimo
+                    <input
+                      type="number"
+                      value={k_min}
+                      id="clusters"
+                      placeholder="Mínimo"
+                      min={0}
+                      step={1}
+                      onChange={(e) => {
+                        setKmin(e.target.value);
+                      }}
+                    />
+                    Máximo
+                    <input
+                      type="number"
+                      value={k_max}
+                      id="clusters"
+                      placeholder="Máximo"
+                      min={0}
+                      step={1}
+                      onChange={(e) => {
+                        setKmax(e.target.value);
+                      }}
+                    />
+                    Valor Exacto
+                    <input
+                      type="number"
+                      value={k_exacto}
+                      id="clusters"
+                      placeholder="Valor Exacto"
+                      min={0}
+                      step={1}
+                      onChange={(e) => {
+                        setKexacto(e.target.value);
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -540,9 +681,42 @@ const Grafica = () => {
                     Número Máximo de Iteraciones
                   </label>
                   <div className="iterations-input-fields">
-                    <input type="number" placeholder="Mínimo" />
-                    <input type="number" placeholder="Máximo" />
-                    <input type="number" placeholder="Valor Exacto" />
+                    Mínimo
+                    <input
+                      type="number"
+                      value={iter_min}
+                      id="clusters"
+                      placeholder="Mínimo"
+                      min={0}
+                      step={1}
+                      onChange={(e) => {
+                        setIterMin(e.target.value);
+                      }}
+                    />
+                    Máximo
+                    <input
+                      type="number"
+                      value={iter_max}
+                      id="clusters"
+                      placeholder="Máximo"
+                      min={0}
+                      step={1}
+                      onChange={(e) => {
+                        setIterMax(e.target.value);
+                      }}
+                    />
+                    Valor Exacto
+                    <input
+                      type="number"
+                      value={iter_exacto}
+                      id="clusters"
+                      placeholder="Valor Exacto"
+                      min={0}
+                      step={1}
+                      onChange={(e) => {
+                        setIterexacto(e.target.value);
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -589,10 +763,10 @@ const Grafica = () => {
             </div>
           </div>
 
-          <div className="input-confz" >
-          <button type="button" className="save-button" onClick={handleSave}>
-        Guardar
-      </button>
+          <div className="input-confz">
+            <button type="button" className="save-button" onClick={handleSave}>
+              Guardar
+            </button>
           </div>
         </form>
       );
@@ -623,37 +797,36 @@ const Grafica = () => {
         </div>
       </Modal>
       <Modal
-  isOpen={pointModalOpen}
-  onRequestClose={() => setPointModalOpen(false)}
-  contentLabel="Agregar Punto"
->
-  <h2>Agregar Punto</h2>
-  <div className="input-row">
-    <label>
-      X:
-      <input
-        type="number"
-        value={pointX}
-        onChange={(e) => setPointX(Number(e.target.value))}
-        placeholder="X"
-      />
-    </label>
-    <label>
-      Y:
-      <input
-        type="number"
-        value={pointY}
-        onChange={(e) => setPointY(Number(e.target.value))}
-        placeholder="Y"
-      />
-    </label>
-  </div>
-  <div className="botones-modal">
-    <button onClick={handlePointSubmit}>Agregar</button>
-    <button onClick={() => setPointModalOpen(false)}>Cancelar</button>
-  </div>
-</Modal>
-
+        isOpen={pointModalOpen}
+        onRequestClose={() => setPointModalOpen(false)}
+        contentLabel="Agregar Punto"
+      >
+        <h2>Agregar Punto</h2>
+        <div className="input-row">
+          <label>
+            X:
+            <input
+              type="number"
+              value={pointX}
+              onChange={(e) => setPointX(Number(e.target.value))}
+              placeholder="X"
+            />
+          </label>
+          <label>
+            Y:
+            <input
+              type="number"
+              value={pointY}
+              onChange={(e) => setPointY(Number(e.target.value))}
+              placeholder="Y"
+            />
+          </label>
+        </div>
+        <div className="botones-modal">
+          <button onClick={handlePointSubmit}>Agregar</button>
+          <button onClick={() => setPointModalOpen(false)}>Cancelar</button>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={fileModalOpen}

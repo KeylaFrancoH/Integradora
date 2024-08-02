@@ -11,9 +11,9 @@ const Variable = require('../models/variable')(sequelize, Sequelize);
 
 // POST para agregar una nueva variable
 router.post('/', async (req, res) => {
-  const { idConfiguracion, idEjercicio, nombre_variable, valor_variable } = req.body;
+  const { idConfiguracion, variable } = req.body;
   try {
-    const newVariable = await Variable.create({ idConfiguracion, idEjercicio, nombre_variable, valor_variable });
+    const newVariable = await Variable.create({ idConfiguracion, variable });
     res.status(201).json(newVariable);
   } catch (error) {
     console.error('Error al crear variable:', error);
@@ -49,9 +49,9 @@ router.get('/:id', async (req, res) => {
 
 // PUT para actualizar una variable por ID
 router.put('/:id', async (req, res) => {
-  const { idConfiguracion, idEjercicio, nombre_variable, valor_variable } = req.body;
+  const { idConfiguracion, variable } = req.body;
   try {
-    const [updated] = await Variable.update({ idConfiguracion, idEjercicio, nombre_variable, valor_variable }, {
+    const [updated] = await Variable.update({ idConfiguracion, variable }, {
       where: { idVariable: req.params.id }
     });
     if (updated) {

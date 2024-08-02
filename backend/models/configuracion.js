@@ -13,24 +13,45 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Tema', // Nombre de la tabla de la clave foránea
+        model: 'Tema', // Referencia a la tabla Tema
         key: 'idTema'
       }
-    },
-    Parametros: {
-      type: DataTypes.STRING(255),
-      allowNull: true
     },
     Titulo: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    Enumerado: {
+    Enunciado: {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    idFormula: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Formula', // Referencia a la tabla Formula
+        key: 'idFormula'
+      }
+    },
+    idGrafico: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Grafico', // Referencia a la tabla Grafico
+        key: 'idGrafico'
+      }
+    },
+    habilitado: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: true
+    },
     intentos: {
       type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    instrucciones: {
+      type: DataTypes.TEXT,
       allowNull: true
     }
   }, {

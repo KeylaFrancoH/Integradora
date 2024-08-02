@@ -1,8 +1,7 @@
 // models/variable.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/config.json'); // Ajusta la ruta según tu estructura de archivos
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function(sequelize) {
   return sequelize.define('Variable', {
     idVariable: {
       autoIncrement: true,
@@ -14,29 +13,17 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'configuracion',
+        model: 'Configuracion',
         key: 'idConfiguracion'
       }
     },
-    idEjercicio: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'configuracionejercicio',
-        key: 'idEjercicio'
-      }
-    },
-    nombre_variable: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    valor_variable: {
+    variable: {
       type: DataTypes.STRING(255),
       allowNull: false
     }
   }, {
     sequelize,
-    tableName: 'variable',
+    tableName: 'Variable',
     timestamps: false,
     indexes: [
       {

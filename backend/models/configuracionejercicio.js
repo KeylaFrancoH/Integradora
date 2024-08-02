@@ -17,18 +17,14 @@ module.exports = function(sequelize, DataTypes) {
         key: 'idConfiguracion'
       }
     },
+    grafica: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     habilitado: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
       defaultValue: true
-    },
-    variables_ejercicio: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    campo_ejercicios: {
-      type: DataTypes.STRING(255),
-      allowNull: true
     }
   }, {
     sequelize,

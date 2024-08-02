@@ -1,4 +1,3 @@
-// routes/seleccionroutes.js
 const express = require('express');
 const router = express.Router();
 const { Sequelize } = require('sequelize');
@@ -7,13 +6,13 @@ const sequelize = new Sequelize(config.integradora.database, config.integradora.
   host: config.integradora.host,
   dialect: 'mysql'
 });
-const Seleccion = require('../models/seleccion')(sequelize, Sequelize);
+const Seleccion = require('../models/puntos')(sequelize, Sequelize);
 
 // POST para agregar un nuevo método de selección
 router.post('/', async (req, res) => {
-  const { idParametro, nombre_metodo } = req.body;
+  const {idConfiguracion, idParametro, nombre_metodo } = req.body;
   try {
-    const newSeleccion = await Seleccion.create({ idParametro, nombre_metodo });
+    const newSeleccion = await Seleccion.create({idConfiguracion, idParametro, nombre_metodo });
     res.status(201).json(newSeleccion);
   } catch (error) {
     console.error('Error al crear método de selección:', error);

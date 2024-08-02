@@ -1,6 +1,6 @@
 // models/parametro.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/config.json'); // Ajusta la ruta según tu estructura de archivos
+const sequelize = require('../config/config'); 
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('Parametro', {
@@ -14,29 +14,37 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'configuracion',
+        model: 'Configuracion', 
         key: 'idConfiguracion'
       }
     },
-    parametro: {
-      type: DataTypes.STRING(255),
-      allowNull: false
+    formula: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
-    valor_parametro: {
+    parametro_regularización: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    valores_maximo: {
+    intercepto: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
+    },
+    metodo_inicialización: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    tipo_seleccion: {
-      type: DataTypes.STRING(255),
+    numero_clusters: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    numero_iteraciones: {
+      type: DataTypes.INTEGER,
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'parametro',
+    tableName: 'Parametro',
     timestamps: false,
     indexes: [
       {
