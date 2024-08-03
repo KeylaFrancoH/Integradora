@@ -32,8 +32,8 @@ html, body, #root {
   margin-bottom: 20px; /* Espacio entre la línea y los demás elementos */
   width: 100%; /* Asegura que la línea ocupe todo el ancho del contenedor */
 }
-.overline{
 
+.overline {
   height: 4px;
   background-color: #000; /* Color de la línea subrayada */
   margin-top: 5px; /* Espacio entre el h1 y la línea */

@@ -4,11 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import { FaChalkboardTeacher } from 'react-icons/fa';
 import axios from 'axios';
 
-const AccordionItem = ({ title, content }) => {
+const AccordionItem = ({ courseTitle, temas }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleTemaClick = (temaId, temaTitle) => {
+    navigate(`/estudiante/contenido`, { state: { courseTitle, temaId, temaTitle } });
   };
 
   return (
@@ -16,14 +21,24 @@ const AccordionItem = ({ title, content }) => {
       <div className="accordion-header" onClick={toggleAccordion}>
         <div className="nueva-vista-header">
           <FaChalkboardTeacher className="nueva-vista-icon" />
-          <span>{title}</span>
+          <span>{courseTitle}</span>
         </div>
         <div className={`accordion-icon ${isOpen ? 'open' : ''}`}>
           {isOpen ? '-' : '+'}
         </div>
       </div>
       <div className={`accordion-content ${isOpen ? 'open' : ''}`}>
-        {content}
+        {temas.map((tema, index) => (
+          <React.Fragment key={index}>
+            <div
+              className="tema-item"
+              onClick={() => handleTemaClick(tema.idTema, tema.Titulo)}
+            >
+              <div className="tema-title">{tema.Titulo}</div>
+            </div>
+            {index < temas.length - 1 && <hr className="tema-divider" />}
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );
@@ -35,8 +50,8 @@ const Accordion = ({ data }) => {
       {data.map((item, index) => (
         <AccordionItem
           key={index}
-          title={item.title}
-          content={item.content}
+          courseTitle={item.courseTitle}
+          temas={item.temas}
         />
       ))}
     </div>
@@ -45,38 +60,22 @@ const Accordion = ({ data }) => {
 
 const Temas = () => {
   const [accordionData, setAccordionData] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCursosYTemas = async () => {
       try {
-        // Obtener los cursos
         const cursosResponse = await axios.get('http://localhost:3000/api/cursos');
         const cursos = cursosResponse.data;
 
-        // Obtener los temas
         const temasResponse = await axios.get('http://localhost:3000/api/temas');
         const temas = temasResponse.data;
 
-        // Integrar los datos
         const data = cursos.map(curso => {
-          const cursoTemas = temas
-            .filter(tema => tema.idCurso === curso.idCurso)
-            .map((tema, index) => (
-              <React.Fragment key={index}>
-                <div
-                  className="tema-item"
-                  onClick={() => navigate(`/estudiante/contenido`, { state: { idTema: tema.idTema } })}
-                >
-                  <div className="tema-title">{tema.Titulo}</div>
-                </div>
-                {index < temas.filter(tema => tema.idCurso === curso.idCurso).length - 1 && <hr className="tema-divider" />}
-              </React.Fragment>
-            ));
+          const cursoTemas = temas.filter(tema => tema.idCurso === curso.idCurso);
 
           return {
-            title: curso.Titulo,
-            content: <div>{cursoTemas}</div>
+            courseTitle: curso.Titulo,
+            temas: cursoTemas
           };
         });
 
@@ -87,7 +86,7 @@ const Temas = () => {
     };
 
     fetchCursosYTemas();
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="nueva-vista-container">
