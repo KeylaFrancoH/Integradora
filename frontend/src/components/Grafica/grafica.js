@@ -1,5 +1,5 @@
 import "./grafica.css";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Navigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import MathJax from "react-mathjax";
 import axios from "axios";
@@ -15,6 +15,8 @@ const Grafica = () => {
   const [variableModalOpen, setVariableModalOpen] = useState(false);
   const [pointModalOpen, setPointModalOpen] = useState(false);
   const [fileModalOpen, setFileModalOpen] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [variable, setVariable] = useState("");
   const [variables, setVariables] = useState([]);
@@ -179,7 +181,9 @@ const Grafica = () => {
     const updatedFormula = event.target.value.replace(/\\\\/g, "\\");
     setSelectedFormula(updatedFormula);
   };
+  
 
+  
   const handleSave = async () => {
     try {
       // Enviar datos de `data` a /api/temas
@@ -255,29 +259,97 @@ const Grafica = () => {
           });
         }
 
-        for (let i = 0; i < pointsX.length; i++) {
-          const valX = pointsX[i];
-          const valY = pointsY[i];
-    
-          await axios.post("http://localhost:3000/api/puntos", {
-            idConfiguracion: configuracionResponse.data.idConfiguracion,
-            punto_x: valX,
-            punto_y: valY,
-          });
-        }
+        enviarPuntos(configuracionResponse);
 
-        //ARREGLAR PUNTOS NO ESTOY PUDIENDO GUARDAR, Y DE AHÍ YA ESTARIAN TODOS LOS DATOS GUARDADOS
+        
     
       }
+      if (idCurso === "2") {
+      
+          const parametroResponse = await axios.post(
+            "http://localhost:3000/api/contenidoEjercicios",
+            {
+              idConfiguracion: configuracionResponse.data.idConfiguracion,// Use nullish coalescing for optional values
+              k_min: k_min ?? null,
+              k_max: k_max ?? null,
+              k_exacto: k_exacto ?? null,
+              iteracion_min: iter_min ?? null,
+              iteracion_max: iter_max ?? null,
+              iteracion_exacto: iter_exacto ?? null
+            }
+          );
+        
+      }
+
+      if (files.length > 0) {
+        try {
+          const formData = new FormData();
+
+          files.forEach(({ file }) => {
+            formData.append('file', file);
+          });
+  
+          const response = await fetch('http://localhost:3000/uploadEjercicios', {
+            method: 'POST',
+            body: formData,
+          });
+  
+          if (!response.ok) {
+            throw new Error('Error al subir archivos');
+          }
+  
+          console.log('Archivos subidos exitosamente');
+        } catch (error) {
+          console.error(error);
+          setErrorMessage('Hubo un problema al subir los archivos.');
+          return;
+        }
+      }
+
+      for (const archivo of files) {
+        console.log("Archivo:", archivo);
+        await axios.post("http://localhost:3000/api/archivoejercicios", {
+          idConfiguracion: configuracionResponse.data.idConfiguracion,
+          idTema: temaResponse.data.idTema,
+          rutaArchivo: "http://localhost:3000/ArchivosEjercicios/" + archivo.file.name,
+          descripcion: null,
+        });
+      }
+      
 
       alert("Datos guardados correctamente");
     } catch (error) {
       console.error("Error al guardar los datos:", error);
       alert("Hubo un error al guardar los datos.");
+ 
     }
   };
 
-  // POR AHORA SOLO GUARDA TEMA, FALTA GUARDAR EJERCICIOS, FALTA GUARDAT TODO, SE NECESITA HACER QUE SE GUARDEN ARCHIVOS
+  async function enviarPuntos(dataE) {
+    try {
+      for (let i = 0; i < pointsX.length; i++) {
+        const valX = pointsX[i];
+        const valY = pointsY[i];
+  
+        console.log("Punto:", valX, valY); 
+  
+        if (valX !== null && valX !== undefined && valY !== null && valY !== undefined) {
+          await axios.post("http://localhost:3000/api/puntos", {
+            idConfiguracion: dataE.data.idConfiguracion,
+            puntos_x: valX,
+            puntos_y: valY  
+          });
+        } else {
+          console.error('Valores nulos o indefinidos para los puntos:', valX, valY);
+        }
+      }
+  
+      console.log('Todos los puntos se enviaron correctamente.');
+    } catch (error) {
+      console.error('Error al enviar los puntos:', error);
+    }
+  }
+
   const renderCommonFields = () => (
     <>
       <div className="section-select">
@@ -838,7 +910,7 @@ const Grafica = () => {
         <input
           type="text"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value === '' ? null : e.target.value)}
           placeholder="Descripción"
         />
         <div className="botones-modal">

@@ -1,4 +1,3 @@
-// routes/contenidoejercicioroutes.js
 const express = require('express');
 const router = express.Router();
 const { Sequelize } = require('sequelize');
@@ -9,11 +8,21 @@ const sequelize = new Sequelize(config.integradora.database, config.integradora.
 });
 const ContenidoEjercicio = require('../models/contenidoejercicio')(sequelize, Sequelize);
 
+
 // POST para agregar un nuevo contenido de ejercicio
 router.post('/', async (req, res) => {
-  const { idConfiguracion, idEjercicio, nombre_variable, nuevo_valor } = req.body;
+  const { idConfiguracion, k_min, k_max, k_exacto, iteracion_min, iteracion_max, iteracion_exacto } = req.body;
+  
   try {
-    const newContenidoEjercicio = await ContenidoEjercicio.create({ idConfiguracion, idEjercicio, nombre_variable, nuevo_valor });
+    const newContenidoEjercicio = await ContenidoEjercicio.create({
+      idConfiguracion,
+      k_min,
+      k_max,
+      k_exacto,
+      iteracion_min,
+      iteracion_max,
+      iteracion_exacto
+    });
     res.status(201).json(newContenidoEjercicio);
   } catch (error) {
     console.error('Error al crear contenido de ejercicio:', error);
@@ -32,7 +41,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET para obtener un contenido de ejercicio por ID de contenido
+// GET para obtener un contenido de ejercicio por ID
 router.get('/:id', async (req, res) => {
   try {
     const contenidoEjercicio = await ContenidoEjercicio.findByPk(req.params.id);
@@ -47,12 +56,20 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// PUT para actualizar un contenido de ejercicio por ID de contenido
+// PUT para actualizar un contenido de ejercicio por ID
 router.put('/:id', async (req, res) => {
-  const { idConfiguracion, idEjercicio, nombre_variable, nuevo_valor } = req.body;
+  const { idConfiguracion, k_min, k_max, k_exacto, iteracion_min, iteracion_max, iteracion_exacto } = req.body;
   try {
-    const [updated] = await ContenidoEjercicio.update({ idConfiguracion, idEjercicio, nombre_variable, nuevo_valor }, {
-      where: { idContenido: req.params.id }
+    const [updated] = await ContenidoEjercicio.update({
+      idConfiguracion,
+      k_min,
+      k_max,
+      k_exacto,
+      iteracion_min,
+      iteracion_max,
+      iteracion_exacto
+    }, {
+      where: { idContenidoEjercicios: req.params.id }
     });
     if (updated) {
       const updatedContenidoEjercicio = await ContenidoEjercicio.findByPk(req.params.id);
@@ -66,11 +83,11 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE para eliminar un contenido de ejercicio por ID de contenido
+// DELETE para eliminar un contenido de ejercicio por ID
 router.delete('/:id', async (req, res) => {
   try {
     const deleted = await ContenidoEjercicio.destroy({
-      where: { idContenido: req.params.id }
+      where: { idContenidoEjercicios: req.params.id }
     });
     if (deleted) {
       res.status(204).json({ message: 'Contenido de ejercicio eliminado' });

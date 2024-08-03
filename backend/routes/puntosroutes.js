@@ -2,23 +2,35 @@ const express = require('express');
 const router = express.Router();
 const { Sequelize } = require('sequelize');
 const config = require('../config/config.json');
+const puntos = require('../models/puntos');
 const sequelize = new Sequelize(config.integradora.database, config.integradora.username, config.integradora.password, {
   host: config.integradora.host,
   dialect: 'mysql'
 });
 const Seleccion = require('../models/puntos')(sequelize, Sequelize);
 
-// POST para agregar un nuevo método de selección
+
 router.post('/', async (req, res) => {
-  const {idConfiguracion, idParametro, nombre_metodo } = req.body;
+  const { idConfiguracion, puntos_x, puntos_y } = req.body;
+
+  if (idConfiguracion === undefined || puntos_x === undefined || puntos_y === undefined) {
+    return res.status(400).json({ error: 'Datos incompletos: idConfiguracion, puntos_x, y puntos_y son requeridos' });
+  }
+
   try {
-    const newSeleccion = await Seleccion.create({idConfiguracion, idParametro, nombre_metodo });
-    res.status(201).json(newSeleccion);
+    const newPunto = await Seleccion.create({
+      idConfiguracion,
+      punto_X: puntos_x, 
+      punto_Y: puntos_y  
+    });
+
+    res.status(201).json(newPunto);
   } catch (error) {
-    console.error('Error al crear método de selección:', error);
-    res.status(500).json({ error: 'Error al crear método de selección' });
+    console.error('Error al crear punto:', req.body, error);
+    res.status(500).json({ error: req.body, error: 'Error al crear punto' });
   }
 });
+
 
 // GET para obtener todos los métodos de selección
 router.get('/', async (req, res) => {

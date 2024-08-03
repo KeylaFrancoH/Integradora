@@ -123,7 +123,15 @@ CREATE TABLE IF NOT EXISTS Puntos (
     FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion)
 );
 
-
+CREATE TABLE IF NOT EXISTS ArchivoEjercicios (
+    idArchivoEjercicio INT AUTO_INCREMENT PRIMARY KEY,
+    idConfiguracion INT,
+    idTema INT,
+    rutaArchivo VARCHAR(255),
+    descripcion TEXT,  
+    FOREIGN KEY (idConfiguracion) REFERENCES Configuracion(idConfiguracion),
+    FOREIGN KEY (idTema) REFERENCES Tema(idTema)
+);
 
 
 

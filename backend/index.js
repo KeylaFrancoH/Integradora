@@ -54,6 +54,7 @@ const seleccionRoutes = require('./routes/puntosroutes');
 const contenidoEjercicioRoutes = require('./routes/contenidoejercicioroutes'); 
 const variableRoutes = require('./routes/variableroutes'); 
 const enlaceRoutes = require('./routes/enlaceRoutes');
+const archivoEjercicio = require('./routes/archivoEjerciciosRoutes');
 
 app.use(cors()); 
 app.use(fileUpload())
@@ -71,9 +72,12 @@ app.use('/api/parametros', parametroRoutes);
 app.use('/api/puntos', seleccionRoutes); 
 app.use('/api/contenidoejercicios', contenidoEjercicioRoutes); 
 app.use('/api/variables', variableRoutes); 
+app.use('/api/archivoejercicios', archivoEjercicio);
 
 app.use('/Archivos', express.static(path.join(__dirname, 'Archivos')));
+app.use('/ArchivosEjercicios', express.static(path.join(__dirname, 'ArchivosEjercicios')));
 
+// Subida de archivos generales
 app.post('/upload', (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send({ message: 'No files were uploaded.' });
@@ -85,14 +89,13 @@ app.post('/upload', (req, res) => {
 
   const fileArray = Array.isArray(files) ? files : [files];
   const folderPath = path.join(__dirname, 'Archivos');
-  console.log('folderPath:', folderPath); 
 
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath, { recursive: true });
   }
   fileArray.forEach((file) => {
     const filePath = path.join(folderPath, file.name);
-    console.log('filePath:', filePath); 
+    console.log('filePath:', filePath);
 
     file.mv(filePath, (err) => {
       if (err) {
@@ -103,6 +106,37 @@ app.post('/upload', (req, res) => {
   });
 
   return res.status(200).send({ message: 'Files uploaded successfully' });
+});
+
+// Subida de archivos de ejercicios
+app.post('/uploadEjercicios', (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send({ message: 'No files were uploaded.' });
+  }
+  const files = req.files.file;
+  if (!files) {
+    return res.status(400).send({ message: 'Archivo de ejercicios no subido correctamente.' });
+  }
+
+  const fileArray = Array.isArray(files) ? files : [files];
+  const folderPath = path.join(__dirname, 'ArchivosEjercicios');
+
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath, { recursive: true });
+  }
+  fileArray.forEach((file) => {
+    const filePath = path.join(folderPath, file.name);
+    console.log('filePath:', filePath);
+
+    file.mv(filePath, (err) => {
+      if (err) {
+        console.error('Error al mover el archivo de ejercicios:', err);
+        return res.status(500).send({ message: 'Error al subir uno de los archivos de ejercicios.' });
+      }
+    });
+  });
+
+  return res.status(200).send({ message: 'Archivos de ejercicios subidos exitosamente' });
 });
 
 

@@ -19,7 +19,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Configuracion', // Asegúrate de que el modelo Configuracion esté definido
+        model: 'Configuracion', 
         key: 'idConfiguracion'
       }
     },

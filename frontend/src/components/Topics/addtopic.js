@@ -43,7 +43,6 @@ const AddTopic = () => {
       })),
     };
 
-    console.log("Datos a enviar:", uploadedFiles);
     // Subir archivos al servidor si hay archivos seleccionados en uploadedFiles
     if (uploadedFiles.length > 0) {
       try {
