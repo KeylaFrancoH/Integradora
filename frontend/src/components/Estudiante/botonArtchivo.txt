@@ -1,0 +1,9 @@
+{/* Nueva sección para Archivos */}
+      <div className="header-container">
+        <div className="overline"></div>
+        <h2 className="clases">Archivos</h2>
+        <div className="archivo-content">
+          <button className="download-button">Descargar</button>
+          <span className="archivo-description">Descripción del archivo</span>
+        </div>
+      </div>
