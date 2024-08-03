@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-
+import InteractiveChart from "./graficaInteractiva"; // Asegúrate de la ruta correcta
 // Componente para mostrar contenido en cada paso dentro de una tarjeta
 const StepCard = ({ title, content }) => (
   <div className="step-card">
@@ -293,8 +293,7 @@ const Contenido = () => {
     },
     {
       title: "Paso 5",
-      content:
-        "Contenido variado del Paso 5. El paso final puede incluir un resumen o conclusiones.",
+      content: <InteractiveChart initialPoints={puntos} />,
     },
   ];
 
