@@ -43,7 +43,7 @@ app.use(bodyParser.json());
 const usuarioRoutes = require('./routes/usuarioroutes');
 const cursoRoutes = require('./routes/cursoroutes');
 const contenidoRoutes = require('./routes/contenidoroutes');
-const temaRoutes = require('./routes/temaroutes');
+const temaRoutes = require('./routes/temaRoutes');
 const configuracionRoutes = require('./routes/configuracionRoutes'); 
 const configuracionEjercicioRoutes = require('./routes/configuracionejercicioroutes');
 const archivoRoutes = require('./routes/archivoRoutes');
@@ -55,9 +55,13 @@ const contenidoEjercicioRoutes = require('./routes/contenidoejercicioroutes');
 const variableRoutes = require('./routes/variableroutes'); 
 const enlaceRoutes = require('./routes/enlaceRoutes');
 const archivoEjercicio = require('./routes/archivoEjerciciosRoutes');
+const temaDetailsRoutes = require('./routes/temaDetailsRoutes');
 
 app.use(cors()); 
 app.use(fileUpload())
+
+app.use('/api/temaDetalles', temaDetailsRoutes);
+
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/cursos', cursoRoutes);
 app.use('/api/contenidos', contenidoRoutes);

@@ -12,39 +12,83 @@ const StepCard = ({ title, content }) => (
   </div>
 );
 
+// Componente para mostrar puntos
+const PointsList = ({ points }) => {
+  const pointsElements = [];
+
+  if (points.length > 0) {
+    
+      const idPuntos = points[0];
+      const punto_X = points[2];
+      const punto_Y = points[3];
+
+      pointsElements.push(
+        <div key={idPuntos} className="point-item">
+          <p><strong>Ubicación X:</strong> {punto_X}</p>
+          <p><strong>Ubicación Y:</strong> {punto_Y}</p>
+        </div>
+      );
+    
+  }
+
+  return (
+    <div className="points-container">
+      <h3>Puntos:</h3>
+      {pointsElements.length > 0 ? pointsElements : <p>No hay puntos disponibles.</p>}
+    </div>
+  );
+};
+
+
 // Componente del Navegador de Secuencia
 const Contenido = () => {
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
   const { courseTitle, temaId, temaTitle } = location.state;
   const [material, setMaterial] = useState('');
-  const [enlaces, setEnlaces] = useState([]); // Inicializar como un arreglo vacío
+  const [enlaces, setEnlaces] = useState([]);
+  const [archivos, setArchivos] = useState([]);
+  const [configuraciones, setConfiguraciones] = useState([]);
+  const [puntos, setPuntos] = useState([]); // Inicializar como array vacío
+  const [idConfiguracion, setIdConfiguracion] = useState(null);
 
   useEffect(() => {
-    const fetchTemaMaterial = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/temas/${temaId}`);
-        const tema = response.data;
-        setMaterial(tema.Material);
+        // Obtener material del tema
+        const temaResponse = await axios.get(`http://localhost:3000/api/temas/${temaId}`);
+        setMaterial(temaResponse.data.Material);
+        
+        // Obtener enlaces
+        const enlacesResponse = await axios.get(`http://localhost:3000/api/enlaces/${temaId}`);
+        setEnlaces(Array.isArray(enlacesResponse.data) ? enlacesResponse.data : []);
+
+        // Obtener archivos
+        const archivosResponse = await axios.get(`http://localhost:3000/api/archivos?temaId=${temaId}`);
+        setArchivos(Array.isArray(archivosResponse.data) ? archivosResponse.data : []);
+
+        // Obtener configuraciones y establecer idConfiguracion
+        const configuracionesResponse = await axios.get(`http://localhost:3000/api/configuraciones?temaId=${temaId}`);
+        const configuracionesData = Array.isArray(configuracionesResponse.data) ? configuracionesResponse.data : [];
+        setConfiguraciones(configuracionesData);
+        if (configuracionesData.length > 0) {
+          const configId = configuracionesData[0].idConfiguracion;
+          setIdConfiguracion(configId);
+
+          // Obtener puntos usando idConfiguracion
+          const puntosResponse = await axios.get(`http://localhost:3000/api/puntos/${configId}`);
+          const puntosData = puntosResponse.data ;
+          console.log(puntosData);
+          setPuntos(Object.values(puntosData)); 
+        }
       } catch (error) {
-        console.error('Error al obtener el material del tema:', error);
+        console.error('Error al obtener datos:', error);
       }
     };
 
-    const fetchEnlaces = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3000/api/enlaces/${temaId}`);
-        const enlacesData = response.data;
-        setEnlaces(Array.isArray(enlacesData) ? enlacesData : []); // Asegurarse de que enlacesData sea un arreglo
-      } catch (error) {
-        console.error('Error al obtener los enlaces del tema:', error);
-      }
-    };
-
-    fetchTemaMaterial();
-    fetchEnlaces();
+    fetchData();
   }, [temaId]);
-
+console.log(puntos)
   const stepContents = [
     {
       title: "Paso 1",
@@ -74,7 +118,42 @@ const Contenido = () => {
     },
     {
       title: "Paso 4",
-      content: "Contenido variado del Paso 4. Este espacio puede ser utilizado para cualquier contenido adicional."
+      content: (
+        <>
+          <div className="archivos-container">
+            <h3>Archivos:</h3>
+            {archivos.length > 0 ? (
+              archivos.map((archivo) => (
+                <div key={archivo.idArchivo} className="archivo-item">
+                  <a href={archivo.archivo} download>
+                    {archivo.archivo}
+                  </a>
+                  <p>{archivo.descripcion}</p>
+                </div>
+              ))
+            ) : (
+              <p>No hay archivos disponibles.</p>
+            )}
+          </div>
+          <div className="configuraciones-container">
+            <h3>Configuraciones:</h3>
+            {configuraciones.length > 0 ? (
+              configuraciones.map((configuracion) => (
+                <div key={configuracion.idConfiguracion} className="configuracion-item">
+                  <h4>{configuracion.Titulo}</h4>
+                  <p>{configuracion.Enunciado}</p>
+                  <p>Habilitado: {configuracion.habilitado ? 'Sí' : 'No'}</p>
+                  <p>{configuracion.instrucciones}</p>
+                  <p>{configuracion.intentos}</p>
+                </div>
+              ))
+            ) : (
+              <p>No hay configuraciones disponibles.</p>
+            )}
+          </div>
+          <PointsList points={puntos} /> {/* Mostrar puntos */}
+        </>
+      )
     },
     {
       title: "Paso 5",
@@ -133,15 +212,6 @@ const Contenido = () => {
         content={stepContents[currentStep - 1].content}
       />
       <p></p>
-      {/* Nueva sección para Archivos */}
-      <div className="header-container">
-        <div className="overline"></div>
-        <h2 className="clases">Archivos</h2>
-        <div className="archivo-content">
-          <button className="download-button">Descargar</button>
-          <span className="archivo-description">Descripción del archivo</span>
-        </div>
-      </div>
     </div>
   );
 };
