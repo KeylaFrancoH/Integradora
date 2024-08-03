@@ -20,19 +20,20 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET un enlace por ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const enlaces = await Link.findByPk(id);
-    if (enlaces) {
+    const enlaces = await Link.findAll({
+      where: { idTema: id } // Suponiendo que 'idTema' es la columna en la tabla 'Link'
+    });
+    if (enlaces.length > 0) {
       res.status(200).json(enlaces);
     } else {
-      res.status(404).json({ error: 'Enlace no encontrado' });
+      res.status(404).json({ error: 'No se encontraron enlaces para este tema' });
     }
   } catch (error) {
-    console.error('Error al obtener enlace por ID:', error);
-    res.status(500).json({ error: 'Error al obtener enlaces por ID' });
+    console.error('Error al obtener enlaces por ID del tema:', error);
+    res.status(500).json({ error: 'Error al obtener enlaces por ID del tema' });
   }
 });
 

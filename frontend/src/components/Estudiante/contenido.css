@@ -55,6 +55,10 @@ html, body, #root {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.enlace-item {
+  margin-bottom: 15px; /* Espacio entre cada enlace */
+}
+
 .navigation-buttons {
   display: flex;
   justify-content: center;
@@ -83,6 +87,10 @@ html, body, #root {
   color: white;
 }
 
+.navigation-buttons button.hidden {
+  display: none; /* Oculta el botón si tiene la clase 'hidden' */
+}
+
 .arrow-button {
   max-width: 50px; /* Ancho máximo para los botones de flecha */
   padding: 10px;
@@ -92,5 +100,29 @@ html, body, #root {
 }
 
 .arrow-button:hover {
+  background-color: #004080; /* Un poco más claro al pasar el mouse */
+}
+
+.archivo-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.download-button {
+  background-color: #00274C;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
   background-color: #004080;
+}
+
+.archivo-description {
+  margin-left: 10px;
+  font-size: 16px;
 }

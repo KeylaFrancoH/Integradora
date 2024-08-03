@@ -18,7 +18,7 @@ const Contenido = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const { courseTitle, temaId, temaTitle } = location.state;
   const [material, setMaterial] = useState('');
-  const [enlace, setEnlace] = useState('');
+  const [enlaces, setEnlaces] = useState([]); // Inicializar como un arreglo vacío
 
   useEffect(() => {
     const fetchTemaMaterial = async () => {
@@ -31,18 +31,18 @@ const Contenido = () => {
       }
     };
 
-    const fetchEnlace = async () => {
+    const fetchEnlaces = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/enlaces/${temaId}`);
-        const enlaceData = response.data;
-        setEnlace(enlaceData.Enlace);
+        const enlacesData = response.data;
+        setEnlaces(Array.isArray(enlacesData) ? enlacesData : []); // Asegurarse de que enlacesData sea un arreglo
       } catch (error) {
-        console.error('Error al obtener el enlace del tema:', error);
+        console.error('Error al obtener los enlaces del tema:', error);
       }
     };
 
     fetchTemaMaterial();
-    fetchEnlace();
+    fetchEnlaces();
   }, [temaId]);
 
   const stepContents = [
@@ -53,27 +53,19 @@ const Contenido = () => {
     {
       title: "Paso 2",
       content: (
-        <div>
-          {enlace ? (
-            enlace.includes('youtube.com') ? (
-              <iframe
-                width="560"
-                height="315"
-                src={`https://www.youtube.com/embed/${enlace.split('v=')[1]}`}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                title="Video de YouTube"
-              ></iframe>
-            ) : (
-              <a href={enlace} target="_blank" rel="noopener noreferrer">
-                Ver contenido
-              </a>
-            )
+        <ul>
+          {enlaces.length > 0 ? (
+            enlaces.map((enlace, index) => (
+              <li key={index}>
+                <a href={enlace.Enlace} target="_blank" rel="noopener noreferrer">
+                  {enlace.Enlace}
+                </a>
+              </li>
+            ))
           ) : (
-            "Cargando enlace..."
+            <li>No hay enlaces disponibles.</li>
           )}
-        </div>
+        </ul>
       )
     },
     {
@@ -102,6 +94,8 @@ const Contenido = () => {
     }
   };
 
+  const showSection2Button = enlaces.length > 0;
+
   return (
     <div className="sequence-navigator">
       <div className="header-container">
@@ -115,7 +109,10 @@ const Contenido = () => {
         <button onClick={() => setCurrentStep(1)} className={currentStep === 1 ? 'active' : ''}>
           <FaBook />
         </button>
-        <button onClick={() => setCurrentStep(2)} className={currentStep === 2 ? 'active' : ''}>
+        <button 
+          onClick={() => setCurrentStep(2)} 
+          className={`step-button ${currentStep === 2 ? 'active' : ''} ${!showSection2Button ? 'hidden' : ''}`}
+        >
           <FaPencilAlt />
         </button>
         <button onClick={() => setCurrentStep(3)} className={currentStep === 3 ? 'active' : ''}>
