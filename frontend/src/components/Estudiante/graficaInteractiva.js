@@ -7,68 +7,173 @@ import {
   LinearScale,
   PointElement,
   Title,
+  Tooltip,
+  Legend
 } from "chart.js";
+import graficaInteractiva from "./graficaInteractiva";
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
 
 const InteractiveChart = ({ initialPoints }) => {
-  // Asegurarse de que initialPoints es un array
-  const [points, setPoints] = useState(
-    Array.isArray(initialPoints) ? initialPoints : []
-  );
-  console.log(initialPoints);
+  const [data, setData] = useState(Array.isArray(initialPoints) ? initialPoints : []);
+
   useEffect(() => {
-    // Actualizar los puntos iniciales cuando cambien
-    setPoints(Array.isArray(initialPoints) ? initialPoints : []);
+    setData(Array.isArray(initialPoints) ? initialPoints : []);
+    calculateAndDrawRegression(initialPoints);
   }, [initialPoints]);
 
-  // Solo mantener los últimos dos puntos
-  const recentPoints = points.slice(-2);
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+  const [mse, setMSE] = useState(0);
+  const [variance, setVariance] = useState(0);
+  const [regressionSteps, setRegressionSteps] = useState([]);
 
-  const data = {
-    labels: recentPoints.map((point) => point.punto_X),
+  const handleDataChange = (index, key, value) => {
+    const updatedData = [...data];
+    updatedData[index][key] = Number(value);
+    setData(updatedData);
+    calculateAndDrawRegression(updatedData);
+  };
+
+  const addData = () => {
+    setData([...data, { "Word count": 0, "# Shares": 0 }]);
+  };
+
+  const removeData = (index) => {
+    const updatedData = [...data];
+    updatedData.splice(index, 1);
+    setData(updatedData);
+    calculateAndDrawRegression(updatedData);
+  };
+
+  const calculateAndDrawRegression = (data) => {
+    if (data.length === 0) {
+      return;
+    }
+
+    const wordCount = data.map(item => item["Word count"]);
+    const shares = data.map(item => item["# Shares"]);
+
+    const { slope, intercept, mse, variance, steps } = linearRegression(wordCount, shares);
+
+    setA(slope);
+    setB(intercept);
+    setMSE(mse);
+    setVariance(variance);
+    setRegressionSteps(steps);
+  };
+
+  const linearRegression = (x, y) => {
+    const n = x.length;
+    const xMean = x.reduce((a, b) => a + b) / n;
+    const yMean = y.reduce((a, b) => a + b) / n;
+
+    const ssXX = x.map(xi => (xi - xMean) ** 2).reduce((a, b) => a + b);
+    const ssXY = x.map((xi, i) => (xi - xMean) * (y[i] - yMean)).reduce((a, b) => a + b);
+
+    const slope = ssXY / ssXX;
+    const intercept = yMean - slope * xMean;
+
+    const yPred = x.map(xi => slope * xi + intercept);
+    const mse = y.map((yi, i) => (yi - yPred[i]) ** 2).reduce((a, b) => a + b) / n;
+    const variance = 1 - mse / y.map(yi => (yi - yMean) ** 2).reduce((a, b) => a + b) / n;
+
+    const steps = [];
+    for (let i = 0; i < n; i++) {
+      const step = `Paso ${i + 1}: (${x[i]}, ${y[i]}) => y = ${slope.toFixed(2)} * ${x[i]} + ${intercept.toFixed(2)} = ${yPred[i].toFixed(2)}`;
+      steps.push(step);
+    }
+
+    return { slope, intercept, mse, variance, steps };
+  };
+
+  const chartData = {
+    labels: data.map(d => d["Word count"]),
     datasets: [
       {
-        label: "Puntos",
-        data: recentPoints.map((point) => point.punto_Y),
+        label: "Datos",
+        data: data.map(d => d["# Shares"]),
+        backgroundColor: "blue",
+        borderColor: "blue",
+        borderWidth: 1,
         fill: false,
-        borderColor: "#00274C",
-        tension: 0.1,
         pointRadius: 5,
       },
-    ],
+      {
+        label: "Regresión Lineal",
+        data: data.map(d => a * d["Word count"] + b),
+        borderColor: "red",
+        borderWidth: 2,
+        fill: false,
+        pointRadius: 0,
+      }
+    ]
   };
 
-  const handleAddPoint = () => {
-    const newPoint = {
-      idPuntos: points.length + 1,
-      punto_X: Math.random() * 100,
-      punto_Y: Math.random() * 100,
-    };
-    setPoints((prevPoints) => [...prevPoints, newPoint]);
+  const options = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Word count"
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: "# Shares"
+        }
+      }
+    }
   };
 
-  const handleRemovePoint = (id) => {
-    setPoints((prevPoints) =>
-      prevPoints.filter((point) => point.idPuntos !== id)
-    );
-  };
+  useEffect(() => {
+    calculateAndDrawRegression(data);
+  }, [data]);
 
   return (
     <div>
-      <Line data={data} />
-      <button onClick={handleAddPoint}>Agregar Punto</button>
+      <h1>Regresión Lineal Interactiva</h1>
       <div>
-        {recentPoints.map((point) => (
-          <div key={point.idPuntos}>
-            <span>
-              X: {point.punto_X.toFixed(2)}, Y: {point.punto_Y.toFixed(2)}
-            </span>
-            <button onClick={() => handleRemovePoint(point.idPuntos)}>
-              Eliminar
-            </button>
+        <h2>Datos (Editables):</h2>
+        {data.map((item, index) => (
+          <div key={index}>
+            <label>
+              Word count:
+              <input
+                type="number"
+                value={item["Word count"]}
+                onChange={(e) => handleDataChange(index, "Word count", e.target.value)}
+              />
+            </label>
+            <label>
+              # Shares:
+              <input
+                type="number"
+                value={item["# Shares"]}
+                onChange={(e) => handleDataChange(index, "# Shares", e.target.value)}
+              />
+            </label>
+            <button onClick={() => removeData(index)}>Eliminar</button>
           </div>
         ))}
+        <button onClick={addData}>Agregar Fila</button>
+      </div>
+      <div>
+        <Line data={chartData} options={options} />
+      </div>
+      <div>
+        <p>Pendiente (a): {a.toFixed(2)}</p>
+        <p>Intercepto (b): {b.toFixed(2)}</p>
+        <p>Error Cuadrado Medio: {mse.toFixed(2)}</p>
+        <p>Puntaje de Varianza: {variance.toFixed(2)}</p>
+        <h2>Proceso de Regresión Lineal:</h2>
+        <ol>
+          {regressionSteps.map((step, index) => (
+            <li key={index}>{step}</li>
+          ))}
+        </ol>
       </div>
     </div>
   );

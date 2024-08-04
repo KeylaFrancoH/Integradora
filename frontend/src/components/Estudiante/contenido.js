@@ -146,8 +146,8 @@ const Contenido = () => {
   const [enlacesCompletos, setEnlacesCompletos] = useState([]);
   const [archivos, setArchivos] = useState([]);
   const [configuraciones, setConfiguraciones] = useState([]);
-  const [puntos, setPuntos] = useState([]); // Inicializar como array vacío
-  const [parametros, setParametros] = useState([]); // Inicializar como array vacío
+  const [puntos, setPuntos] = useState([]); 
+  const [parametros, setParametros] = useState([]); 
   const [idConfiguracion, setIdConfiguracion] = useState(null);
   const [contenidoEjercicio, setContenidoEjercicio] = useState([]);
 

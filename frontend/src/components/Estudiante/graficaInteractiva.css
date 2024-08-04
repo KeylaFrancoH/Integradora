@@ -1,0 +1,83 @@
+/* Estilos generales */
+.chart-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 20px;
+  }
+  
+  /* Estilo para la sección de la gráfica */
+  .chart-section {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .chart {
+    max-width: 700px; /* Ajusta el tamaño máximo de la gráfica */
+    width: 100%;
+    height: 500px; /* Ajusta la altura de la gráfica */
+  }
+  
+  /* Estilo para la sección de datos y resultados */
+  .data-section {
+    flex: 1;
+  }
+  
+  .data-section h2 {
+    margin-bottom: 10px;
+  }
+  
+  .data-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .data-item label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .data-item input {
+    width: 80px;
+    margin-right: 10px;
+  }
+  
+  .data-item button {
+    margin-left: 10px;
+    padding: 5px 10px;
+  }
+  
+  .add-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .add-button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Estilo para la sección de resultados */
+  .results-section p {
+    margin: 5px 0;
+    font-size: 1.1em;
+  }
+  
+  .results-section h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .results-section ol {
+    padding-left: 20px;
+  }
+  
+  .results-section ol li {
+    margin-bottom: 5px;
+  }
+  
