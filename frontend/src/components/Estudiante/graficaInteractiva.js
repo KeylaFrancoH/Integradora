@@ -8,19 +8,37 @@ import {
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from "chart.js";
 import graficaInteractiva from "./graficaInteractiva";
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
+ChartJS.register(
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const InteractiveChart = ({ initialPoints }) => {
-  const [data, setData] = useState(Array.isArray(initialPoints) ? initialPoints : []);
-
+  const [data, setData] = useState(
+    Array.isArray(initialPoints) ? initialPoints : []
+  );
   useEffect(() => {
     setData(Array.isArray(initialPoints) ? initialPoints : []);
     calculateAndDrawRegression(initialPoints);
+    console.log(data);
   }, [initialPoints]);
+
+  const xPoints = [];
+  const yPoints = [];
+
+  for (const i in data) {
+    xPoints.push(data[i].punto_X);
+    yPoints.push(data[i].punto_Y);
+  }
 
   const [a, setA] = useState(0);
   const [b, setB] = useState(0);
@@ -51,10 +69,13 @@ const InteractiveChart = ({ initialPoints }) => {
       return;
     }
 
-    const wordCount = data.map(item => item["Word count"]);
-    const shares = data.map(item => item["# Shares"]);
+    const wordCount = data.map((item) => item["Word count"]);
+    const shares = data.map((item) => item["# Shares"]);
 
-    const { slope, intercept, mse, variance, steps } = linearRegression(wordCount, shares);
+    const { slope, intercept, mse, variance, steps } = linearRegression(
+      wordCount,
+      shares
+    );
 
     setA(slope);
     setB(intercept);
@@ -68,19 +89,25 @@ const InteractiveChart = ({ initialPoints }) => {
     const xMean = x.reduce((a, b) => a + b) / n;
     const yMean = y.reduce((a, b) => a + b) / n;
 
-    const ssXX = x.map(xi => (xi - xMean) ** 2).reduce((a, b) => a + b);
-    const ssXY = x.map((xi, i) => (xi - xMean) * (y[i] - yMean)).reduce((a, b) => a + b);
+    const ssXX = x.map((xi) => (xi - xMean) ** 2).reduce((a, b) => a + b);
+    const ssXY = x
+      .map((xi, i) => (xi - xMean) * (y[i] - yMean))
+      .reduce((a, b) => a + b);
 
     const slope = ssXY / ssXX;
     const intercept = yMean - slope * xMean;
 
-    const yPred = x.map(xi => slope * xi + intercept);
-    const mse = y.map((yi, i) => (yi - yPred[i]) ** 2).reduce((a, b) => a + b) / n;
-    const variance = 1 - mse / y.map(yi => (yi - yMean) ** 2).reduce((a, b) => a + b) / n;
+    const yPred = x.map((xi) => slope * xi + intercept);
+    const mse =
+      y.map((yi, i) => (yi - yPred[i]) ** 2).reduce((a, b) => a + b) / n;
+    const variance =
+      1 - mse / y.map((yi) => (yi - yMean) ** 2).reduce((a, b) => a + b) / n;
 
     const steps = [];
     for (let i = 0; i < n; i++) {
-      const step = `Paso ${i + 1}: (${x[i]}, ${y[i]}) => y = ${slope.toFixed(2)} * ${x[i]} + ${intercept.toFixed(2)} = ${yPred[i].toFixed(2)}`;
+      const step = `Paso ${i + 1}: (${x[i]}, ${y[i]}) => y = ${slope.toFixed(
+        2
+      )} * ${x[i]} + ${intercept.toFixed(2)} = ${yPred[i].toFixed(2)}`;
       steps.push(step);
     }
 
@@ -88,11 +115,11 @@ const InteractiveChart = ({ initialPoints }) => {
   };
 
   const chartData = {
-    labels: data.map(d => d["Word count"]),
+    labels: xPoints,
     datasets: [
       {
         label: "Datos",
-        data: data.map(d => d["# Shares"]),
+        data: yPoints,
         backgroundColor: "blue",
         borderColor: "blue",
         borderWidth: 1,
@@ -101,13 +128,13 @@ const InteractiveChart = ({ initialPoints }) => {
       },
       {
         label: "Regresión Lineal",
-        data: data.map(d => a * d["Word count"] + b),
+        data: xPoints.map((x) => a * x + b),
         borderColor: "red",
         borderWidth: 2,
         fill: false,
         pointRadius: 0,
-      }
-    ]
+      },
+    ],
   };
 
   const options = {
@@ -116,16 +143,16 @@ const InteractiveChart = ({ initialPoints }) => {
       x: {
         title: {
           display: true,
-          text: "Word count"
-        }
+          text: "X",
+        },
       },
       y: {
         title: {
           display: true,
-          text: "# Shares"
-        }
-      }
-    }
+          text: "Y",
+        },
+      },
+    },
   };
 
   useEffect(() => {
@@ -144,7 +171,9 @@ const InteractiveChart = ({ initialPoints }) => {
               <input
                 type="number"
                 value={item["Word count"]}
-                onChange={(e) => handleDataChange(index, "Word count", e.target.value)}
+                onChange={(e) =>
+                  handleDataChange(index, "Word count", e.target.value)
+                }
               />
             </label>
             <label>
@@ -152,7 +181,9 @@ const InteractiveChart = ({ initialPoints }) => {
               <input
                 type="number"
                 value={item["# Shares"]}
-                onChange={(e) => handleDataChange(index, "# Shares", e.target.value)}
+                onChange={(e) =>
+                  handleDataChange(index, "# Shares", e.target.value)
+                }
               />
             </label>
             <button onClick={() => removeData(index)}>Eliminar</button>
