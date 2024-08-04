@@ -313,8 +313,8 @@ const Contenido = () => {
       ),
     },
     {
-      title: "Paso 5",
-      content: <InteractiveChart initialPoints={puntos} />,
+      title: "",
+      content: idCurso === 1 ? <InteractiveChart initialPoints={puntos} /> : null,
     },
   ];
 
