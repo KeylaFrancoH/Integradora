@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import './temas.css';
-import { useNavigate } from 'react-router-dom';
-import { FaChalkboardTeacher } from 'react-icons/fa';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import "./temas.css";
+import { useNavigate } from "react-router-dom";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import axios from "axios";
 
-const AccordionItem = ({ courseTitle, temas }) => {
+const AccordionItem = ({ courseTitle, idCurso, temas }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -13,7 +13,9 @@ const AccordionItem = ({ courseTitle, temas }) => {
   };
 
   const handleTemaClick = (temaId, temaTitle) => {
-    navigate(`/estudiante/contenido`, { state: { courseTitle, temaId, temaTitle } });
+    navigate(`/estudiante/contenido`, {
+      state: { courseTitle, idCurso, temaId, temaTitle },
+    });
   };
 
   return (
@@ -23,11 +25,11 @@ const AccordionItem = ({ courseTitle, temas }) => {
           <FaChalkboardTeacher className="nueva-vista-icon" />
           <span>{courseTitle}</span>
         </div>
-        <div className={`accordion-icon ${isOpen ? 'open' : ''}`}>
-          {isOpen ? '-' : '+'}
+        <div className={`accordion-icon ${isOpen ? "open" : ""}`}>
+          {isOpen ? "-" : "+"}
         </div>
       </div>
-      <div className={`accordion-content ${isOpen ? 'open' : ''}`}>
+      <div className={`accordion-content ${isOpen ? "open" : ""}`}>
         {temas.map((tema, index) => (
           <React.Fragment key={index}>
             <div
@@ -51,6 +53,7 @@ const Accordion = ({ data }) => {
         <AccordionItem
           key={index}
           courseTitle={item.courseTitle}
+          idCurso={item.idCurso}
           temas={item.temas}
         />
       ))}
@@ -64,24 +67,31 @@ const Temas = () => {
   useEffect(() => {
     const fetchCursosYTemas = async () => {
       try {
-        const cursosResponse = await axios.get('http://localhost:3000/api/cursos');
+        const cursosResponse = await axios.get(
+          "http://localhost:3000/api/cursos"
+        );
         const cursos = cursosResponse.data;
 
-        const temasResponse = await axios.get('http://localhost:3000/api/temas');
+        const temasResponse = await axios.get(
+          "http://localhost:3000/api/temas"
+        );
         const temas = temasResponse.data;
 
-        const data = cursos.map(curso => {
-          const cursoTemas = temas.filter(tema => tema.idCurso === curso.idCurso);
+        const data = cursos.map((curso) => {
+          const cursoTemas = temas.filter(
+            (tema) => tema.idCurso === curso.idCurso
+          );
 
           return {
             courseTitle: curso.Titulo,
-            temas: cursoTemas
+            idCurso: curso.idCurso,
+            temas: cursoTemas,
           };
         });
 
         setAccordionData(data);
       } catch (error) {
-        console.error('Error al obtener los datos:', error);
+        console.error("Error al obtener los datos:", error);
       }
     };
 

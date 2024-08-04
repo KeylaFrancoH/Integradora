@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import InteractiveChart from "./graficaInteractiva"; 
+import InteractiveChart from "./graficaInteractiva";
 const StepCard = ({ title, content }) => (
   <div className="step-card">
     <h2>{title}</h2>
@@ -139,9 +139,10 @@ const ContenidoEjerciciosList = ({ ejercicios }) => (
 const Contenido = () => {
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
-  const { courseTitle, temaId, temaTitle } = location.state;
+  const { courseTitle, temaId, temaTitle, idCurso } = location.state;
   const [material, setMaterial] = useState("");
   const [enlaces, setEnlaces] = useState([]);
+  const [enlacesCompletos, setEnlacesCompletos] = useState([]);
   const [archivos, setArchivos] = useState([]);
   const [configuraciones, setConfiguraciones] = useState([]);
   const [puntos, setPuntos] = useState([]); // Inicializar como array vacío
@@ -154,19 +155,36 @@ const Contenido = () => {
       try {
         // Obtener material del tema
         const temaResponse = await axios.get(
-          `http://localhost:3000/api/temas/${temaId}`
+          `http://localhost:3000/api/temas/${idCurso}/${temaId}`
         );
         setMaterial(temaResponse.data.Material);
 
-        // Obtener enlaces
-        const enlacesResponse = await axios.get(
-          `http://localhost:3000/api/enlaces/${temaId}`
-        );
-        setEnlaces(
-          Array.isArray(enlacesResponse.data) ? enlacesResponse.data : []
+        // Obtener enlaces completos
+        const enlaceCompletoResponse = await axios.get(
+          `http://localhost:3000/api/enlaces`
         );
 
-        console.log(temaResponse.data.idTema);
+        // Asegurarse de que los datos son un array
+        const enlacesArray = Array.isArray(enlaceCompletoResponse.data)
+          ? enlaceCompletoResponse.data
+          : [];
+
+        // Extraer solo los idTema
+        const idTemasArray = enlacesArray.map((enlace) => enlace.idTema);
+
+        setEnlacesCompletos(idTemasArray);
+        const idTemasArrayList = Array.from(idTemasArray);
+        console.log(idTemasArrayList);
+
+        if (idTemasArrayList.includes(temaId)) {
+          const enlacesResponse = await axios.get(
+            `http://localhost:3000/api/enlaces/${temaId}`
+          );
+
+          setEnlaces(
+            Array.isArray(enlacesResponse.data) ? enlacesResponse.data : []
+          );
+        }
 
         // Obtener archivos
         const archivosResponse = await axios.get(
@@ -313,7 +331,7 @@ const Contenido = () => {
   return (
     <div className="sequence-navigator">
       <div className="header-container">
-        <h1 className="clases">{`${courseTitle} > ${temaTitle}`}</h1>
+        <h1 className="clases">{`${courseTitle} > ${temaTitle} > ${idCurso} `}</h1>
         <div className="underline"></div>
       </div>
       <div className="navigation-buttons">
