@@ -20,6 +20,7 @@ const StepCard = ({ title, content }) => (
 
 // Componente para mostrar puntos
 const PointsList = ({ points }) => {
+  console.log("POINTSSSS", points);
   const pointsElements = [];
 
   if (points.length > 0) {
@@ -205,23 +206,26 @@ const Contenido = () => {
         if (configuracionesData.length > 0) {
           const configId = configuracionesData[0].idConfiguracion;
           setIdConfiguracion(configId);
+          if (idCurso == 1) {
+            // Obtener puntos usando idConfiguracion
+            const puntosResponse = await axios.get(
+              `http://localhost:3000/api/puntos/configuracion/${temaId}`
+            );
 
-          // Obtener puntos usando idConfiguracion
-          const puntosResponse = await axios.get(
-            `http://localhost:3000/api/puntos/${configId}`
-          );
-          setPuntos(puntosResponse.data);
+            setPuntos(puntosResponse.data);
+          }
 
           // Obtener parámetros usando idConfiguracion
           const parametrosResponse = await axios.get(
             `http://localhost:3000/api/parametros?idConfiguracion=${configId}`
           );
           setParametros(parametrosResponse.data);
-
-          const contenidoEjercicioResponse = await axios.get(
-            `http://localhost:3000/api/contenidoEjercicios?idConfiguracion=2`
-          );
-          setContenidoEjercicio(contenidoEjercicioResponse.data);
+          if (idCurso == 2) {
+            const contenidoEjercicioResponse = await axios.get(
+              `http://localhost:3000/api/contenidoEjercicios?idConfiguracion=2`
+            );
+            setContenidoEjercicio(contenidoEjercicioResponse.data);
+          }
         }
       } catch (error) {
         console.error("Error al obtener datos:", error);
