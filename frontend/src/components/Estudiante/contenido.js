@@ -10,8 +10,7 @@ import {
 } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import InteractiveChart from "./graficaInteractiva"; // Asegúrate de la ruta correcta
-// Componente para mostrar contenido en cada paso dentro de una tarjeta
+import InteractiveChart from "./graficaInteractiva"; 
 const StepCard = ({ title, content }) => (
   <div className="step-card">
     <h2>{title}</h2>

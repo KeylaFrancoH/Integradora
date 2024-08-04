@@ -86,7 +86,12 @@ button:hover {
 .save-button {
   background-color: #007bff;
 }
-
+.error-message {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+  padding-bottom: 10px;
+}
 .save-button:hover {
   background-color: #0056b3;
 }
@@ -301,7 +306,7 @@ label {
 
 .ReactModal__Content {
   max-width: 600px;
-  height: 300px;
+  height: 250px;
   margin: auto;
   padding: 20px;
   background: #fff;
@@ -314,6 +319,7 @@ label {
   font-size: 24px;
   margin-bottom: 15px;
   color: #333;
+  text-align: center;
 }
 
 .ReactModal__Content input[type="text"],
@@ -507,7 +513,6 @@ label {
 .ReactModal__Content {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .input-row {
@@ -528,7 +533,7 @@ label {
   margin-left: 10px;
 }
 
-.botones-modal {
+.botones-modal  {
   margin-top: 20px;
 }
 
@@ -536,7 +541,11 @@ label {
   margin-left: 10px;
   margin-bottom: 0; 
 }
-
+.button-modal{
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
 @media (max-width: 768px) {
   .section-select {
     flex-direction: column;

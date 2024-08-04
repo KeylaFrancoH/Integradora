@@ -1,5 +1,10 @@
 import "./grafica.css";
-import { useNavigate, useParams, useLocation, Navigate } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import MathJax from "react-mathjax";
 import axios from "axios";
@@ -61,7 +66,6 @@ const Grafica = () => {
   const [iter_max, setIterMax] = useState(0);
   const [iter_exacto, setIterexacto] = useState(0);
 
-
   const currentUrl = window.location.href;
   useEffect(() => {
     axios
@@ -116,7 +120,7 @@ const Grafica = () => {
     setVariable("");
     setVariableModalOpen(false);
   };
-  
+
   const handleEditVariable = (index) => {
     setVariable(variables[index]);
     setEditingVariableIndex(index);
@@ -154,8 +158,22 @@ const Grafica = () => {
     setPointModalOpen(false);
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+      if (fileExtension === "csv" || fileExtension === "txt") {
+        setFile(file);
+        setErrorMessage("");
+      } else {
+        setErrorMessage("Solo se permiten archivos CSV o TXT.");
+        setFile(null);
+      }
+    }
+  };
+
   const handleFileSubmit = () => {
-    if (file && description) {
+    if (file) {
       setFiles([...files, { file, description }]);
       setFile(null);
       setDescription("");
@@ -181,9 +199,7 @@ const Grafica = () => {
     const updatedFormula = event.target.value.replace(/\\\\/g, "\\");
     setSelectedFormula(updatedFormula);
   };
-  
 
-  
   const handleSave = async () => {
     try {
       // Enviar datos de `data` a /api/temas
@@ -235,7 +251,6 @@ const Grafica = () => {
         }
       );
 
-      console.log(configuracionResponse.data.idConfiguracion);
       const parametroResponse = await axios.post(
         "http://localhost:3000/api/parametros",
         {
@@ -260,25 +275,20 @@ const Grafica = () => {
         }
 
         enviarPuntos(configuracionResponse);
-
-        
-    
       }
       if (idCurso === "2") {
-      
-          const parametroResponse = await axios.post(
-            "http://localhost:3000/api/contenidoEjercicios",
-            {
-              idConfiguracion: configuracionResponse.data.idConfiguracion,// Use nullish coalescing for optional values
-              k_min: k_min ?? null,
-              k_max: k_max ?? null,
-              k_exacto: k_exacto ?? null,
-              iteracion_min: iter_min ?? null,
-              iteracion_max: iter_max ?? null,
-              iteracion_exacto: iter_exacto ?? null
-            }
-          );
-        
+        const parametroResponse = await axios.post(
+          "http://localhost:3000/api/contenidoEjercicios",
+          {
+            idConfiguracion: configuracionResponse.data.idConfiguracion,
+            k_min: k_min ?? null,
+            k_max: k_max ?? null,
+            k_exacto: k_exacto ?? null,
+            iteracion_min: iter_min ?? null,
+            iteracion_max: iter_max ?? null,
+            iteracion_exacto: iter_exacto ?? null,
+          }
+        );
       }
 
       if (files.length > 0) {
@@ -286,22 +296,23 @@ const Grafica = () => {
           const formData = new FormData();
 
           files.forEach(({ file }) => {
-            formData.append('file', file);
+            formData.append("file", file);
           });
-  
-          const response = await fetch('http://localhost:3000/uploadEjercicios', {
-            method: 'POST',
-            body: formData,
-          });
-  
+
+          const response = await fetch(
+            "http://localhost:3000/uploadEjercicios",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
           if (!response.ok) {
-            throw new Error('Error al subir archivos');
+            throw new Error("Error al subir archivos");
           }
-  
-          console.log('Archivos subidos exitosamente');
         } catch (error) {
           console.error(error);
-          setErrorMessage('Hubo un problema al subir los archivos.');
+          setErrorMessage("Hubo un problema al subir los archivos.");
           return;
         }
       }
@@ -311,17 +322,17 @@ const Grafica = () => {
         await axios.post("http://localhost:3000/api/archivoejercicios", {
           idConfiguracion: configuracionResponse.data.idConfiguracion,
           idTema: temaResponse.data.idTema,
-          rutaArchivo: "http://localhost:3000/ArchivosEjercicios/" + archivo.file.name,
+          rutaArchivo:
+            "http://localhost:3000/ArchivosEjercicios/" + archivo.file.name,
           descripcion: null,
         });
       }
-      
 
       alert("Datos guardados correctamente");
+      window.location.href = "/";
     } catch (error) {
       console.error("Error al guardar los datos:", error);
       alert("Hubo un error al guardar los datos.");
- 
     }
   };
 
@@ -330,23 +341,32 @@ const Grafica = () => {
       for (let i = 0; i < pointsX.length; i++) {
         const valX = pointsX[i];
         const valY = pointsY[i];
-  
-        console.log("Punto:", valX, valY); 
-  
-        if (valX !== null && valX !== undefined && valY !== null && valY !== undefined) {
+
+        console.log("Punto:", valX, valY);
+
+        if (
+          valX !== null &&
+          valX !== undefined &&
+          valY !== null &&
+          valY !== undefined
+        ) {
           await axios.post("http://localhost:3000/api/puntos", {
             idConfiguracion: dataE.data.idConfiguracion,
             puntos_x: valX,
-            puntos_y: valY  
+            puntos_y: valY,
           });
         } else {
-          console.error('Valores nulos o indefinidos para los puntos:', valX, valY);
+          console.error(
+            "Valores nulos o indefinidos para los puntos:",
+            valX,
+            valY
+          );
         }
       }
-  
-      console.log('Todos los puntos se enviaron correctamente.');
+
+      console.log("Todos los puntos se enviaron correctamente.");
     } catch (error) {
-      console.error('Error al enviar los puntos:', error);
+      console.error("Error al enviar los puntos:", error);
     }
   }
 
@@ -571,45 +591,44 @@ const Grafica = () => {
               </ul>
             </div>
           </div>
-          <div className="section attachment-sections">
-            <div className="attachment-section">
-              <h2>Archivos Subidos</h2>
-              <button
-                type="button"
-                className="subir-button"
-                onClick={() => setFileModalOpen(true)}
-              >
-                Subir
-              </button>
-              <ul className="uploaded-files">
-                {files.map((fileObj, index) => (
-                  <li key={index}>
-                    <span>{fileObj.file.name}</span>
-                    <input
-                      type="text"
-                      value={fileObj.description}
-                      onChange={(e) =>
-                        setFiles(
-                          files.map((f, i) =>
-                            i === index
-                              ? { ...f, description: e.target.value }
-                              : f
-                          )
+          <div className="attachment-section">
+            <h2>Archivos Subidos</h2>
+            <button
+              type="button"
+              className="subir-button"
+              onClick={() => setFileModalOpen(true)}
+            >
+              Subir
+            </button>
+            <ul className="uploaded-files">
+              {files.map((fileObj, index) => (
+                <li key={index}>
+                  <span>{fileObj.file.name}</span>
+                  <input
+                    type="text"
+                    value={fileObj.description || ""}
+                    accept=".csv, .txt"
+                    onChange={(e) =>
+                      setFiles(
+                        files.map((f, i) =>
+                          i === index
+                            ? { ...f, description: e.target.value }
+                            : f
                         )
-                      }
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFiles(files.filter((_, i) => i !== index))
-                      }
-                    >
-                      Eliminar
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      )
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFiles(files.filter((_, i) => i !== index))
+                    }
+                  >
+                    Eliminar
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="input-conf">
@@ -811,12 +830,11 @@ const Grafica = () => {
                     <input
                       type="text"
                       value={fileObj.description}
+                      accept=".csv, .txt"
                       onChange={(e) =>
                         setFiles(
                           files.map((f, i) =>
-                            i === index
-                              ? { ...f, description: e.target.value }
-                              : f
+                            i === index ? { ...f, description: "" } : f
                           )
                         )
                       }
@@ -903,19 +921,19 @@ const Grafica = () => {
       <Modal
         isOpen={fileModalOpen}
         onRequestClose={() => setFileModalOpen(false)}
-        contentLabel="Subir Archivo"
       >
-        <h2>Subir Archivo</h2>
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+        <h2>Agregar Archivo</h2>
+        <input type="file" onChange={handleFileChange} />
         <input
           type="text"
+          placeholder="Descripción (opcional)"
           value={description}
-          onChange={(e) => setDescription(e.target.value === '' ? null : e.target.value)}
-          placeholder="Descripción"
+          onChange={(e) => setDescription(e.target.value)}
         />
-        <div className="botones-modal">
-          <button onClick={handleFileSubmit}>Subir</button>
-          <button onClick={() => setFileModalOpen(false)}>Cancelar</button>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        <div className="button-modal">
+          <button onClick={handleFileSubmit}>Agregar</button>
+          <button onClick={() => setFileModalOpen(false)}>Cerrar</button>
         </div>
       </Modal>
     </div>

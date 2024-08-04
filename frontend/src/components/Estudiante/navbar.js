@@ -7,7 +7,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleNextClick = () => {
-    navigate(`/estudiante/temas`);
+    navigate(`/estudiante`);
    
   };
   return (
