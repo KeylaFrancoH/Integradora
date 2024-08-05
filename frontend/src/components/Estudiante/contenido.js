@@ -150,6 +150,8 @@ const Contenido = () => {
   const [parametros, setParametros] = useState([]); 
   const [idConfiguracion, setIdConfiguracion] = useState(null);
   const [contenidoEjercicio, setContenidoEjercicio] = useState([]);
+  const [instrucciones, setInstrucciones] = useState("");
+  const [formula, setFormula] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -203,6 +205,8 @@ const Contenido = () => {
           ? configuracionesResponse.data
           : [];
         setConfiguraciones(configuracionesData);
+        setInstrucciones(configuracionesData[0].instrucciones);
+        
         if (configuracionesData.length > 0) {
           const configId = configuracionesData[0].idConfiguracion;
           setIdConfiguracion(configId);
@@ -220,6 +224,7 @@ const Contenido = () => {
             `http://localhost:3000/api/parametros?idConfiguracion=${configId}`
           );
           setParametros(parametrosResponse.data);
+          setFormula(parametrosResponse.data[0].formula);
           if (idCurso == 2) {
             const contenidoEjercicioResponse = await axios.get(
               `http://localhost:3000/api/contenidoEjercicios?idConfiguracion=2`
@@ -306,15 +311,15 @@ const Contenido = () => {
               <p>No hay configuraciones disponibles.</p>
             )}
           </div>
-          <PointsList points={puntos} /> {/* Mostrar puntos */}
-          <ParametrosList parametros={parametros} /> {/* Mostrar parámetros */}
+          <PointsList points={puntos} /> 
+          <ParametrosList parametros={parametros} /> 
           <ContenidoEjerciciosList ejercicios={contenidoEjercicio} />
         </>
       ),
     },
     {
       title: "",
-      content: idCurso === 1 ? <InteractiveChart initialPoints={puntos} /> : null,
+      content: idCurso === 1 ? <InteractiveChart initialPoints={puntos}  instrucciones={instrucciones} formula={formula}/> : null,
     },
   ];
 

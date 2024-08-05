@@ -9,7 +9,6 @@ html, body, #root {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   width: 100vw;
   padding: 20px;
   box-sizing: border-box;
@@ -59,11 +58,17 @@ html, body, #root {
   margin-bottom: 15px; /* Espacio entre cada enlace */
 }
 
+.configuraciones-container{
+  flex: 1;
+  overflow: auto;
+}
+
 .navigation-buttons {
   display: flex;
   justify-content: center;
   width: 80vw; /* Igual al ancho de la tarjeta */
   margin-bottom: 20px;
+  z-index: 1; /* Asegura que los botones estén sobre la tarjeta */
 }
 
 .navigation-buttons button {
