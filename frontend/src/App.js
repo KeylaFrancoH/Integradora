@@ -6,10 +6,10 @@ import AddTopic from './components/Topics/addtopic';
 import Grafica from './components/Grafica/grafica';
 import './App.css';
 import { MantineProvider } from '@mantine/core';
-import EstudianteHome from './components/Estudiante/estudiantehome';
+import EstudianteHome from './components/Estudiante/Home/estudiantehome';
 import Navbar2 from './components/Estudiante/navbar';
-import Tema from './components/Estudiante/temas';
-import Contenido from './components/Estudiante/contenido';
+import Tema from './components/Estudiante/Temas/temas';
+import Contenido from './components/Estudiante/Contenido/contenido';
 
 const EstudianteLayout = ({ children }) => (
   <div>

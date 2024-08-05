@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import InteractiveChart from "./graficaInteractiva";
+import InteractiveChart from "../graficaInteractiva/graficaInteractiva";
 const StepCard = ({ title, content }) => (
   <div className="step-card">
     <h2>{title}</h2>
