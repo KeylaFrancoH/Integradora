@@ -147,12 +147,13 @@ const Contenido = () => {
   const [enlacesCompletos, setEnlacesCompletos] = useState([]);
   const [archivos, setArchivos] = useState([]);
   const [configuraciones, setConfiguraciones] = useState([]);
-  const [puntos, setPuntos] = useState([]); 
-  const [parametros, setParametros] = useState([]); 
+  const [puntos, setPuntos] = useState([]);
+  const [parametros, setParametros] = useState([]);
   const [idConfiguracion, setIdConfiguracion] = useState(null);
   const [contenidoEjercicio, setContenidoEjercicio] = useState([]);
   const [instrucciones, setInstrucciones] = useState("");
   const [formula, setFormula] = useState("");
+  const [enlacesVideos, setEnlacesVideos] = useState([]); // Definir estado para enlaces de video
 
   useEffect(() => {
     const fetchData = async () => {
@@ -176,19 +177,26 @@ const Contenido = () => {
         // Extraer solo los idTema
         const idTemasArray = enlacesArray.map((enlace) => enlace.idTema);
 
-        setEnlacesCompletos(idTemasArray);
-        const idTemasArrayList = Array.from(idTemasArray);
-        console.log(idTemasArrayList);
+        const enlacesResponse = await axios.get(
+          `http://localhost:3000/api/enlaces/${temaId}`
+        );
 
-        if (idTemasArrayList.includes(temaId)) {
-          const enlacesResponse = await axios.get(
-            `http://localhost:3000/api/enlaces/${temaId}`
-          );
+        const enlacesData = Array.isArray(enlacesResponse.data)
+          ? enlacesResponse.data
+          : [];
 
-          setEnlaces(
-            Array.isArray(enlacesResponse.data) ? enlacesResponse.data : []
-          );
-        }
+        // Separar enlaces de video y otros enlaces
+        const enlacesVideos = enlacesData.filter((enlace) =>
+          enlace.Enlace.includes("youtube.com")
+        );
+        const enlacesNormales = enlacesData.filter(
+          (enlace) => !enlace.Enlace.includes("youtube.com")
+        );
+
+        setEnlaces(enlacesNormales);
+
+        // Setear enlaces de video para mostrarlos en la sección 3
+        setEnlacesVideos(enlacesVideos);
 
         // Obtener archivos
         const archivosResponse = await axios.get(
@@ -207,7 +215,7 @@ const Contenido = () => {
           : [];
         setConfiguraciones(configuracionesData);
         setInstrucciones(configuracionesData[0].instrucciones);
-        
+
         if (configuracionesData.length > 0) {
           const configId = configuracionesData[0].idConfiguracion;
           setIdConfiguracion(configId);
@@ -271,8 +279,27 @@ const Contenido = () => {
     },
     {
       title: "Paso 3",
-      content:
-        "Contenido variado del Paso 3. Aquí puedes mostrar formularios, tablas, o cualquier otra cosa.",
+      content: (
+        <div>
+          {enlacesVideos.length > 0 ? (
+            enlacesVideos.map((enlace, index) => (
+              <div key={index} className="video-container">
+                <iframe
+                  width="560"
+                  height="315"
+                  src={enlace.Enlace.replace("watch?v=", "embed/")}
+                  title={`Video ${index + 1}`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            ))
+          ) : (
+            <p>No hay enlaces de video disponibles.</p>
+          )}
+        </div>
+      ),
     },
     {
       title: "Paso 4",
@@ -312,15 +339,24 @@ const Contenido = () => {
               <p>No hay configuraciones disponibles.</p>
             )}
           </div>
-          <PointsList points={puntos} /> 
-          <ParametrosList parametros={parametros} /> 
+          <PointsList points={puntos} />
+          <ParametrosList parametros={parametros} />
           <ContenidoEjerciciosList ejercicios={contenidoEjercicio} />
         </>
       ),
     },
     {
       title: "",
-      content: idCurso === 1 ? <InteractiveChart initialPoints={puntos}  instrucciones={instrucciones} formula={formula}/> : <ElbowPlot />,
+      content:
+        idCurso === 1 ? (
+          <InteractiveChart
+            initialPoints={puntos}
+            instrucciones={instrucciones}
+            formula={formula}
+          />
+        ) : (
+          <ElbowPlot />
+        ),
     },
   ];
 
@@ -337,7 +373,7 @@ const Contenido = () => {
   };
 
   const showSection2Button = enlaces.length > 0;
-
+  const showSection3Button = enlacesVideos.length > 0;
   return (
     <div className="sequence-navigator">
       <div className="header-container">
@@ -364,7 +400,9 @@ const Contenido = () => {
         </button>
         <button
           onClick={() => setCurrentStep(3)}
-          className={currentStep === 3 ? "active" : ""}
+          className={`step-button ${currentStep === 3 ? "active" : ""} ${
+            !showSection3Button ? "hidden" : ""
+          }`}
         >
           <FaVideo />
         </button>
