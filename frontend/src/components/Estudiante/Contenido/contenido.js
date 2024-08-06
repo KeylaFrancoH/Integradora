@@ -11,6 +11,7 @@ import {
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import InteractiveChart from "../graficaInteractiva/graficaInteractiva";
+import ElbowPlot from "../graficaCodo/codo";
 const StepCard = ({ title, content }) => (
   <div className="step-card">
     <h2>{title}</h2>
@@ -319,7 +320,7 @@ const Contenido = () => {
     },
     {
       title: "",
-      content: idCurso === 1 ? <InteractiveChart initialPoints={puntos}  instrucciones={instrucciones} formula={formula}/> : null,
+      content: idCurso === 1 ? <InteractiveChart initialPoints={puntos}  instrucciones={instrucciones} formula={formula}/> : <ElbowPlot />,
     },
   ];
 
