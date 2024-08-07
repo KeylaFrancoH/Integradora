@@ -139,10 +139,20 @@ html, body, #root {
   align-items: center;
   overflow-y: auto;
 }
-.video-container{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow-y: auto;
+.video-container {
+  text-align: center;
+  align-content: center;
+  overflow-y: auto; /* Permite el scroll vertical */
+  height: 60vh; /* Ajusta la altura automáticamente */
+}
+
+.video-container iframe {
+  width: 90%; 
+  height: 70vh;/* Ajusta la altura automáticamente */
+  margin-bottom: 30px; /* Espacio entre videos */
+}
+
+
+.enlace{
+  font-size: 25px;
 }

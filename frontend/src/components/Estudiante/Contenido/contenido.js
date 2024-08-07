@@ -257,13 +257,14 @@ const Contenido = () => {
       content: "Teoría relacionada al tema",
     },
     {
-      title: "Paso 2",
+      title: <div className="vista1titulo">Enlaces de Consulta</div>,
       content: (
         <ul>
           {enlaces.length > 0 ? (
             enlaces.map((enlace, index) => (
               <li key={index}>
                 <a
+                  className="enlace"
                   href={enlace.Enlace}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -281,16 +282,15 @@ const Contenido = () => {
     {
       title: <div className="vista1titulo">Videos</div>,
       content: (
-        <div>
+        <div className="video-container">
           {enlacesVideos.length > 0 ? (
             enlacesVideos.map((enlace, index) => (
-              <div key={index} className="video-container">
+              <div key={index} className="video-wrapper">
                 <iframe
-                  width="1600"
-                  height="750"
+                  width="900"
+                  height="900" // Ajusta la altura según sea necesario
                   src={enlace.Enlace.replace("watch?v=", "embed/")}
                   title={`Video ${index + 1}`}
-                  frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>
@@ -399,7 +399,7 @@ const Contenido = () => {
   return (
     <div className="sequence-navigator">
       <div className="header-container">
-        <h1 className="clases">{`${courseTitle} > ${temaTitle} > ${idCurso} `}</h1>
+        <h1 className="clases">{`${courseTitle} > ${temaTitle} `}</h1>
         <div className="underline"></div>
       </div>
       <div className="navigation-buttons">
