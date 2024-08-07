@@ -154,6 +154,7 @@ const Contenido = () => {
   const [instrucciones, setInstrucciones] = useState("");
   const [formula, setFormula] = useState("");
   const [enlacesVideos, setEnlacesVideos] = useState([]); // Definir estado para enlaces de video
+  const [contenido, setContenido] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -184,6 +185,7 @@ const Contenido = () => {
         const enlacesData = Array.isArray(enlacesResponse.data)
           ? enlacesResponse.data
           : [];
+        //Extraer Contenido
 
         // Separar enlaces de video y otros enlaces
         const enlacesVideos = enlacesData.filter((enlace) =>
@@ -251,9 +253,8 @@ const Contenido = () => {
 
   const stepContents = [
     {
-      title: "Paso 1",
-      content:
-        "Contenido variado del Paso 1. Puedes incluir imágenes, texto, o cualquier otro componente.",
+      title: <div className="vista1titulo">{temaTitle}</div>,
+      content: "Teoría relacionada al tema",
     },
     {
       title: "Paso 2",
@@ -278,15 +279,15 @@ const Contenido = () => {
       ),
     },
     {
-      title: "Paso 3",
+      title: <div className="vista1titulo">Videos</div>,
       content: (
         <div>
           {enlacesVideos.length > 0 ? (
             enlacesVideos.map((enlace, index) => (
               <div key={index} className="video-container">
                 <iframe
-                  width="560"
-                  height="315"
+                  width="1600"
+                  height="750"
                   src={enlace.Enlace.replace("watch?v=", "embed/")}
                   title={`Video ${index + 1}`}
                   frameBorder="0"
@@ -360,20 +361,41 @@ const Contenido = () => {
     },
   ];
 
-  const goToNextStep = () => {
-    if (currentStep < stepContents.length) {
-      setCurrentStep(currentStep + 1);
+  const goToPreviousStep = () => {
+    let newStep = currentStep - 1;
+    // Encuentra el paso anterior que esté habilitado
+    while (
+      newStep > 0 &&
+      ((newStep === 2 && !showSection2Button) ||
+        (newStep === 3 && !showSection3Button) ||
+        (newStep === 4 && !showSection4Button))
+    ) {
+      newStep--;
+    }
+    if (newStep > 0) {
+      setCurrentStep(newStep);
     }
   };
 
-  const goToPreviousStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+  const goToNextStep = () => {
+    let newStep = currentStep + 1;
+    // Encuentra el siguiente paso que esté habilitado
+    while (
+      newStep <= 5 &&
+      ((newStep === 2 && !showSection2Button) ||
+        (newStep === 3 && !showSection3Button) ||
+        (newStep === 4 && !showSection4Button))
+    ) {
+      newStep++;
+    }
+    if (newStep <= 5) {
+      setCurrentStep(newStep);
     }
   };
 
   const showSection2Button = enlaces.length > 0;
   const showSection3Button = enlacesVideos.length > 0;
+  const showSection4Button = 0;
   return (
     <div className="sequence-navigator">
       <div className="header-container">
@@ -408,7 +430,10 @@ const Contenido = () => {
         </button>
         <button
           onClick={() => setCurrentStep(4)}
-          className={currentStep === 4 ? "active" : ""}
+          //className={currentStep === 4 ? "active" : ""}
+          className={`step-button ${currentStep === 4 ? "active" : ""} ${
+            !showSection4Button ? "hidden" : ""
+          }`}
         >
           <FaPuzzlePiece />
         </button>

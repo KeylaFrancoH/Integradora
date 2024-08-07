@@ -155,7 +155,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula }) => {
   };
 
   return (
-    <div  className="scroll-container">
+    <div className="scroll-container">
       {instruccionesD && (
         <div className="accordion-header" onClick={toggleAccordion}>
           <div className="nueva-vista-header">
@@ -172,8 +172,8 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula }) => {
           <p>{instruccionesD}</p>
         </div>
       )}
-      <h2>Regresión Lineal Interactiva</h2>
-      
+      <h2 className="ejerciciotitulo">Regresión Lineal Interactiva</h2>
+
       <div>
         <div className="graph-container">
           <div className="chart-section">
@@ -181,11 +181,10 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula }) => {
           </div>
           <div className="data-section">
             <h4>Datos (Editables):</h4>
-            <label  className="label-formula">
-             
-             <MathJax.Provider>
-                        <MathJax.Node formula={`\\(${formulaD}\\)`} />
-                      </MathJax.Provider>
+            <label className="label-formula">
+              <MathJax.Provider>
+                <MathJax.Node formula={`\\(${formulaD}\\)`} />
+              </MathJax.Provider>
             </label>
             <div className="insert-numbers">
               {data.map((item, index) => (
@@ -193,7 +192,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula }) => {
                   <label className="label-graph">
                     X:
                     <input
-                     className="input-graph"
+                      className="input-graph"
                       type="number"
                       value={item.punto_X}
                       onChange={(e) =>
@@ -201,10 +200,10 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula }) => {
                       }
                     />
                   </label>
-                  <label  className="label-graph">
+                  <label className="label-graph">
                     Y:
                     <input
-                    className="input-graph"
+                      className="input-graph"
                       type="number"
                       value={item.punto_Y}
                       onChange={(e) =>
@@ -212,7 +211,12 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula }) => {
                       }
                     />
                   </label>
-                  <button onClick={() => removeData(index)} className="graph-button">Eliminar</button>
+                  <button
+                    onClick={() => removeData(index)}
+                    className="graph-button"
+                  >
+                    Eliminar
+                  </button>
                 </div>
               ))}
               <button onClick={addData} className="add-button">
