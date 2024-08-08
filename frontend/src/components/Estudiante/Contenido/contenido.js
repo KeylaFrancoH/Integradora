@@ -186,6 +186,18 @@ const Contenido = () => {
           ? enlacesResponse.data
           : [];
         //Extraer Contenido
+        try {
+          // Realiza la solicitud a la API
+          const contenido = await axios.get(
+            `http://localhost:3000/api/temas/${temaId}`
+          );
+          const data = contenido.data;
+          const subtitulo = data.Subtitulo;
+          const material = data.Material;
+          console.log("DATA:", data);
+        } catch (error) {
+          console.error("Error al recuperar los datos:", error);
+        }
 
         // Separar enlaces de video y otros enlaces
         const enlacesVideos = enlacesData.filter((enlace) =>
@@ -254,7 +266,7 @@ const Contenido = () => {
   const stepContents = [
     {
       title: <div className="vista1titulo">{temaTitle}</div>,
-      content: "Teoría relacionada al tema",
+      content: <div>{material}</div>,
     },
     {
       title: <div className="vista1titulo">Enlaces de Consulta</div>,
