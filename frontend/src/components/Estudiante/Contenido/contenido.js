@@ -226,7 +226,7 @@ const Contenido = () => {
             (archivo) => archivo.archivo
           );
           const descripcionesExtraidas = archivos.map(
-            (archivo) => archivo.descripcion || "Descripción no disponible"
+            (archivo) => archivo.descripcion || ""
           );
 
           // Actualizar el estado
@@ -424,6 +424,10 @@ const Contenido = () => {
   const showSection2Button = enlaces.length > 0;
   const showSection3Button = enlacesVideos.length > 0;
   const showSection4Button = 0;
+  const obtenerNombreArchivo = (url) => {
+    const partes = url.split("/");
+    return partes[partes.length - 1];
+  };
   return (
     <div className="sequence-navigator">
       <div className="header-container">
@@ -483,15 +487,61 @@ const Contenido = () => {
         <div className="header-container">
           <h1 className="clases">Archivos</h1>
           <div className="underline"></div>
-          <ul>
-            {archivosLinks.map((link, index) => (
-              <li key={index}>
-                <a href={link} target="_blank" rel="noopener noreferrer">
-                  {link}
-                </a>
-                <p>{descripciones[index]}</p>
-              </li>
-            ))}
+          <ul style={{ listStyleType: "none", padding: 0 }}>
+            {archivosLinks.map((link, index) => {
+              const nombreArchivo = obtenerNombreArchivo(link);
+              return (
+                <li
+                  key={index}
+                  style={{
+                    marginBottom: "15px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      flexGrow: 1,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <span style={{ fontWeight: "bold" }}>
+                        {nombreArchivo}
+                      </span>
+                    </div>
+                    {descripciones[index] && (
+                      <p style={{ margin: 0, color: "#555" }}>
+                        {descripciones[index]}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    style={{
+                      marginLeft: "10px",
+                      height: "100%",
+                      alignSelf: "stretch",
+                      padding: "10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      backgroundColor: "#007bff",
+                      color: "#fff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Descargar
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
