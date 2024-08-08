@@ -155,7 +155,8 @@ const Contenido = () => {
   const [formula, setFormula] = useState("");
   const [enlacesVideos, setEnlacesVideos] = useState([]); // Definir estado para enlaces de video
   const [contenido, setContenido] = useState([]);
-
+  const [archivosLinks, setArchivosLinks] = useState([]);
+  const [descripciones, setDescripciones] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -212,14 +213,29 @@ const Contenido = () => {
         // Setear enlaces de video para mostrarlos en la sección 3
         setEnlacesVideos(enlacesVideos);
 
-        // Obtener archivos
-        const archivosResponse = await axios.get(
-          `http://localhost:3000/api/archivos?temaId=${temaId}`
-        );
-        setArchivos(
-          Array.isArray(archivosResponse.data) ? archivosResponse.data : []
-        );
+        try {
+          const archivosResponse = await axios.get(
+            `http://localhost:3000/api/archivos/tema/${temaId}`
+          );
+          const archivos = Array.isArray(archivosResponse.data)
+            ? archivosResponse.data
+            : [];
 
+          // Extraer enlaces y descripciones
+          const archivosLinksExtraidos = archivos.map(
+            (archivo) => archivo.archivo
+          );
+          const descripcionesExtraidas = archivos.map(
+            (archivo) => archivo.descripcion || "Descripción no disponible"
+          );
+
+          // Actualizar el estado
+          setArchivosLinks(archivosLinksExtraidos);
+          setDescripciones(descripcionesExtraidas);
+        } catch (error) {
+          console.error("Error al obtener los archivos:", error);
+        }
+        console.log(archivosLinks);
         // Obtener configuraciones y establecer idConfiguracion
         const configuracionesResponse = await axios.get(
           `http://localhost:3000/api/configuraciones?temaId=${temaId}`
@@ -464,7 +480,20 @@ const Contenido = () => {
           title={stepContents[currentStep - 1].title}
           content={stepContents[currentStep - 1].content}
         />
-        <p></p>
+        <div className="header-container">
+          <h1 className="clases">Archivos</h1>
+          <div className="underline"></div>
+          <ul>
+            {archivosLinks.map((link, index) => (
+              <li key={index}>
+                <a href={link} target="_blank" rel="noopener noreferrer">
+                  {link}
+                </a>
+                <p>{descripciones[index]}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
