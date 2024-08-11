@@ -1,29 +1,29 @@
-// src/components/InteractiveClusteringPlot.js
 import React, { useState, useMemo } from 'react';
 import { Scatter, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, ScatterController, PointElement, CategoryScale, LinearScale, Tooltip, Legend, LineElement } from 'chart.js';
+import { FaBookmark } from "react-icons/fa";
 
-// Register necessary components in Chart.js
 ChartJS.register(ScatterController, PointElement, CategoryScale, LinearScale, Tooltip, Legend, LineElement);
 
-const InteractiveClusteringPlot = () => {
+const InteractiveClusteringPlot = ({instrucciones}) => {
   const [param, setParam] = useState(1);
-
-  // Usa useMemo para memorizar los datos generados
+  const [instruccionesD, setInstruccionesD] = useState(instrucciones);
+  const [isOpen, setIsOpen] = useState(false);
+  
   const { kValues, distortions, centroids, dataPoints, optimalPointIndex, elbowPointIndex } = useMemo(() => {
     const kValues = Array.from({ length: 10 }, (_, i) => i + 1);
     const distortions = kValues.map(k => (param > 0 ? (10 / k) * Math.random() * param : 0));
 
-    // Encuentra el índice del punto óptimo (donde la distorsión es mínima)
+    
     const minDistortion = Math.min(...distortions);
     const optimalPointIndex = distortions.indexOf(minDistortion);
 
-    // Encuentra el índice del codo (donde la disminución comienza a desacelerarse)
+  
     const elbowPointIndex = distortions.slice(1).reduce((minIndex, d, i) => 
       d - distortions[i] < distortions[minIndex] - distortions[minIndex - 1] ? i + 1 : minIndex
     , 1);
 
-    // Genera centroides y puntos de datos para ilustrar
+  
     const centroids = kValues.map(k => ({
       x: k,
       y: (10 / k) * Math.random() * param
@@ -39,6 +39,10 @@ const InteractiveClusteringPlot = () => {
     return { kValues, distortions, centroids, dataPoints, optimalPointIndex, elbowPointIndex };
   }, [param]);
 
+  
+  const toggleAccordion = () => {
+    setIsOpen(!isOpen);
+  };
   // Configuración del gráfico de centroides y puntos de datos
   const clusteringData = {
     datasets: [
@@ -143,9 +147,30 @@ const InteractiveClusteringPlot = () => {
 
   return (
     <div className='scroll-container'>
-      <h1>Visualización Interactiva de Clustering</h1>
-
+      {instruccionesD && (
+        <div className="accordion-header" onClick={toggleAccordion}>
+          <div className="nueva-vista-header">
+            <FaBookmark className="nueva-vista-icon" />
+            <span>Instrucciones</span>
+          </div>
+          <div className={`accordion-icon ${isOpen ? "open" : ""}`}>
+            {isOpen ? "-" : "+"}
+          </div>
+        </div>
+      )}
+      {instruccionesD && (
+        <div className={`accordion-content ${isOpen ? "open" : ""}`}>
+          <p>{instruccionesD}</p>
+        </div>
+      )}
+      <h1 style={{textAlign:'center'}}>Visualización Interactiva de Clustering</h1>
+      <h2 style={{ marginTop: '40px' }}>Gráfica de Codo</h2>
+      <div className='graphics' style={{width:'50%', display:'flex'}}>
+      
+      <Line data={elbowData} options={elbowOptions} />
       <Scatter data={clusteringData} options={clusteringOptions} />
+      </div>
+ 
 
       <div style={{ marginTop: '20px' }}>
         <label htmlFor="param">Ajustar Parámetro:</label>
@@ -154,7 +179,7 @@ const InteractiveClusteringPlot = () => {
           type="range"
           min="1"
           max="10"
-          step="0.1"
+          step="1"
           value={param}
           onChange={(e) => setParam(parseFloat(e.target.value))}
           style={{ marginLeft: '10px' }}
@@ -162,26 +187,59 @@ const InteractiveClusteringPlot = () => {
         <span>{param.toFixed(1)}</span>
       </div>
 
-      <h2 style={{ marginTop: '40px' }}>Gráfica de Codo</h2>
-      <Line data={elbowData} options={elbowOptions} />
-
+      
       <h2 style={{ marginTop: '40px' }}>Tabla de Inercias</h2>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-        <thead>
-          <tr>
-            <th style={{ border: '1px solid black', padding: '8px' }}>Número de Clústeres (k)</th>
-            <th style={{ border: '1px solid black', padding: '8px' }}>Inercia (Distorsión)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {kValues.map((k, index) => (
-            <tr key={k} style={{ backgroundColor: index === elbowPointIndex ? 'lightyellow' : 'transparent' }}>
-              <td style={{ border: '1px solid black', padding: '8px' }}>{k}</td>
-              <td style={{ border: '1px solid black', padding: '8px' }}>{distortions[index].toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <table style={{ 
+  width: '80%', 
+  margin: '20px auto', 
+  borderCollapse: 'collapse', 
+  fontFamily: 'Roboto, sans-serif',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' 
+}}>
+  <thead>
+    <tr style={{ backgroundColor: '#f5f5f5', color: '#333' }}>
+      <th style={{ 
+        borderBottom: '2px solid #ddd', 
+        padding: '12px 15px', 
+        textAlign: 'left',
+        fontWeight: '600'
+      }}>
+        Número de Clústeres (k)
+      </th>
+      <th style={{ 
+        borderBottom: '2px solid #ddd', 
+        padding: '12px 15px', 
+        textAlign: 'left',
+        fontWeight: '600'
+      }}>
+        Inercia (Distorsión)
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {kValues.map((k, index) => (
+      <tr key={k} style={{ 
+        backgroundColor: index === elbowPointIndex ? '#eaeaea' : 'transparent',
+        transition: 'background-color 0.3s ease'
+      }}>
+        <td style={{ 
+          borderBottom: '1px solid #ddd', 
+          padding: '10px 15px' 
+        }}>
+          {k}
+        </td>
+        <td style={{ 
+          borderBottom: '1px solid #ddd', 
+          padding: '10px 15px' 
+        }}>
+          {distortions[index].toFixed(2)}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+
     </div>
   );
 };

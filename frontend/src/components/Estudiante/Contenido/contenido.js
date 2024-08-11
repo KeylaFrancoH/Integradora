@@ -235,7 +235,7 @@ const Contenido = () => {
         } catch (error) {
           console.error("Error al obtener los archivos:", error);
         }
-        console.log(archivosLinks);
+   
         // Obtener configuraciones y establecer idConfiguracion
         const configuracionesResponse = await axios.get(
           `http://localhost:3000/api/configuraciones?temaId=${temaId}`
@@ -244,7 +244,7 @@ const Contenido = () => {
           ? configuracionesResponse.data
           : [];
         setConfiguraciones(configuracionesData);
-        setInstrucciones(configuracionesData[0].instrucciones);
+        setInstrucciones(configuracionesData[temaId-1].instrucciones);
 
         if (configuracionesData.length > 0) {
           const configId = configuracionesData[0].idConfiguracion;
@@ -316,7 +316,7 @@ const Contenido = () => {
               <div key={index} className="video-wrapper">
                 <iframe
                   width="900"
-                  height="900" // Ajusta la altura según sea necesario
+                  height="900" 
                   src={enlace.Enlace.replace("watch?v=", "embed/")}
                   title={`Video ${index + 1}`}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -384,7 +384,7 @@ const Contenido = () => {
             formula={formula}
           />
         ) : (
-          <ElbowPlot />
+          <ElbowPlot instrucciones={instrucciones}/>
         ),
     },
   ];
