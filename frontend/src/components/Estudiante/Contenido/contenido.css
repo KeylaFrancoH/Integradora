@@ -1,3 +1,4 @@
+/* contenido.css */
 html, body, #root {
   height: 100%;
   margin: 0;
@@ -45,7 +46,7 @@ html, body, #root {
   flex-direction: column;
   justify-content: left;
   height: 75vh; /* 80% de la altura de la pantalla */
-  width: 75vw;  /* 80% del ancho de la pantalla */
+  width: 80vw;  /* 80% del ancho de la pantalla */
   border: 2px solid #00274C; /* Borde de color */
   border-radius: 8px;
   padding: 20px;
@@ -53,11 +54,8 @@ html, body, #root {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.enlace-item {
-  margin-bottom: 15px; /* Espacio entre cada enlace */
-}
 
-.configuraciones-container{
+.configuraciones-container {
   flex: 1;
   overflow: auto;
 }
@@ -131,7 +129,7 @@ html, body, #root {
   font-size: 16px;
 }
 
-.vista1titulo{
+.vista1titulo {
   font-size: 40px;
   display: flex;
   flex-direction: column;
@@ -139,6 +137,7 @@ html, body, #root {
   align-items: center;
   overflow-y: auto;
 }
+
 .video-container {
   text-align: center;
   align-content: center;
@@ -148,8 +147,41 @@ html, body, #root {
 
 .video-container iframe {
   width: 90%; 
-  height: 70vh;/* Ajusta la altura automáticamente */
+  height: 70vh; /* Ajusta la altura automáticamente */
   margin-bottom: 30px; /* Espacio entre videos */
 }
 
+.enlace-card {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  background-color: #f9f9f9;
+  justify-content: space-between;
+}
 
+.enlace {
+  text-decoration: none;
+  color: #000000;
+  flex-grow: 1;
+}
+
+.enlace:hover {
+  text-decoration: underline;
+}
+
+.share-button, .open-button {
+  margin-top: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 18px;
+  margin-left: 8px; /* Espacio entre los botones */
+}
+
+.share-button:hover, .open-button:hover {
+  color: #ffffff; /* Cambia el color al pasar el mouse */
+}

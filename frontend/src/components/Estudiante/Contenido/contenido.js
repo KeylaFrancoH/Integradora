@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./contenido.css"; 
+import "./contenido.css";
 import {
   FaBook,
   FaPencilAlt,
@@ -7,6 +7,8 @@ import {
   FaPuzzlePiece,
   FaArrowLeft,
   FaArrowRight,
+  FaShareAlt,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -137,6 +139,56 @@ const ContenidoEjerciciosList = ({ ejercicios }) => (
     )}
   </div>
 );
+const EnlacesConsulta = ({ enlaces }) => {
+  const handleShare = (enlace) => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Consulta Enlace",
+          url: enlace,
+        })
+        .then(() => console.log("Enlace compartido exitosamente"))
+        .catch((error) => console.error("Error al compartir:", error));
+    } else {
+      alert(
+        "La funcionalidad de compartir no está disponible en este navegador."
+      );
+    }
+  };
+
+  const handleOpenLink = (enlace) => {
+    window.open(enlace, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <div>
+      {enlaces.length > 0 ? (
+        enlaces.map((enlace, index) => (
+          <div key={index} className="enlace-card">
+            <a className="enlace">{enlace.Enlace}</a>
+            <div className="button-container">
+              <button
+                className="share-button"
+                onClick={() => handleShare(enlace.Enlace)}
+              >
+                <FaShareAlt />
+              </button>
+              <button
+                className="open-button"
+                onClick={() => handleOpenLink(enlace.Enlace)}
+              >
+                <FaExternalLinkAlt />
+              </button>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div>No hay enlaces disponibles.</div>
+      )}
+    </div>
+  );
+};
+
 // Componente del Navegador de Secuencia
 const Contenido = () => {
   const location = useLocation();
@@ -280,14 +332,17 @@ const Contenido = () => {
             setPuntos(puntosResponse.data);
           }
 
-       
           const parametrosResponse = await axios.get(
             `http://localhost:3000/api/parametros?idConfiguracion=${configId}`
           );
           setParametros(parametrosResponse.data);
           setFormula(parametrosResponse.data[temaId - 1].formula);
-          setNumeroClusters(parametrosResponse.data[temaId - 1].numero_clusters);
-          setNumeroIteraciones(parametrosResponse.data[temaId - 1].numero_iteraciones);
+          setNumeroClusters(
+            parametrosResponse.data[temaId - 1].numero_clusters
+          );
+          setNumeroIteraciones(
+            parametrosResponse.data[temaId - 1].numero_iteraciones
+          );
 
           if (idCurso == 2) {
             const contenidoEjercicioResponse = await axios.get(
@@ -321,26 +376,7 @@ const Contenido = () => {
     },
     {
       title: <div className="vista1titulo">Enlaces de Consulta</div>,
-      content: (
-        <ul>
-          {enlaces.length > 0 ? (
-            enlaces.map((enlace, index) => (
-              <li key={index}>
-                <a
-                  className="enlace"
-                  href={enlace.Enlace}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {enlace.Enlace}
-                </a>
-              </li>
-            ))
-          ) : (
-            <li>No hay enlaces disponibles.</li>
-          )}
-        </ul>
-      ),
+      content: <EnlacesConsulta enlaces={enlaces} />,
     },
     {
       title: <div className="vista1titulo">Videos</div>,
@@ -428,8 +464,8 @@ const Contenido = () => {
             tema={temaTitle}
             enunciado={enunciado}
             tituloEjercicio={tituloEjercicio}
-            n_cluster = {numero_clusters}
-            n_iter = {numero_iteraciones}
+            n_cluster={numero_clusters}
+            n_iter={numero_iteraciones}
           />
         ) : null,
     },
@@ -568,7 +604,11 @@ const Contenido = () => {
                       </p>
                     )}
                   </div>
-                  <button
+                  <a
+                    href={link}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
                     type="button"
                     style={{
                       marginLeft: "10px",
@@ -583,7 +623,7 @@ const Contenido = () => {
                     }}
                   >
                     Descargar
-                  </button>
+                  </a>
                 </li>
               );
             })}
