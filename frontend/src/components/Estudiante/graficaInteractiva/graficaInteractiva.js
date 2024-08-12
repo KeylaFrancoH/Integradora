@@ -14,6 +14,7 @@ import {
 import { FaBookmark } from "react-icons/fa";
 import "./graficaInteractiva.css";
 import CardEjercicio from "../Extras/CardEjercicio";
+import Questionnaire from "../Extras/preguntas";
 ChartJS.register(
   LineElement,
   CategoryScale,
@@ -243,6 +244,10 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="cuestionario" style={{ marginTop: "20px" }}>
+        <Questionnaire />
       </div>
     </div>
   );
