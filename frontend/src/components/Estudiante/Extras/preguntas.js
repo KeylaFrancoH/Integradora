@@ -38,17 +38,16 @@ const Questionnaire = () => {
   const [modalFeedback, setModalFeedback] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const handleAnswerChange = (event) => {
-    const { name, value } = event.target;
-    const newResponses = [...responses];
-    newResponses[name] = parseInt(value);
-    setResponses(newResponses);
+    const { value } = event.target;
+    setSelectedOption(parseInt(value));
   };
 
   const handleSubmit = () => {
     const current = questions[currentQuestion];
-    const response = responses[currentQuestion];
+    const response = selectedOption;
 
     if (response === null) {
       alert("Por favor, selecciona una opción.");
@@ -57,29 +56,41 @@ const Questionnaire = () => {
 
     if (response === current.correctAnswer) {
       setModalMessage("¡Felicidades! Respuesta correcta.");
+      setResponses(prev => {
+        const newResponses = [...prev];
+        newResponses[currentQuestion] = response;
+        return newResponses;
+      });
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
+        setSelectedOption(null);
       } else {
         // Calculate the final score
         const score = responses.reduce((total, response, index) => {
           return response === questions[index].correctAnswer ? total + questions[index].points : total;
-        }, 0);
-        setModalMessage(`Cuestionario finalizado. Tu puntuación final es ${score}/${questions.length * 10}.`);
+        }, 0) + (response === current.correctAnswer ? current.points : 0);
+        setModalMessage(`Cuestionario finalizado.`);
         setFinished(true);
       }
     } else {
       let newAttemptsLeft = [...attemptsLeft];
       newAttemptsLeft[currentQuestion] -= 1;
       if (newAttemptsLeft[currentQuestion] <= 0) {
+        setResponses(prev => {
+          const newResponses = [...prev];
+          newResponses[currentQuestion] = response;
+          return newResponses;
+        });
         if (currentQuestion < questions.length - 1) {
           setCurrentQuestion(currentQuestion + 1);
+          setSelectedOption(null);
         } else {
           setFinished(true);
           setModalMessage(`Respuesta incorrecta. La respuesta correcta es: ${current.options[current.correctAnswer]}. Cuestionario finalizado.`);
         }
       } else {
         setModalMessage(`Respuesta incorrecta. Intentos restantes: ${newAttemptsLeft[currentQuestion]}.`);
-        setModalFeedback(questions[currentQuestion].feedback);
+        setModalFeedback(current.feedback); // Update modal feedback
         setAttemptsLeft(newAttemptsLeft);
       }
     }
@@ -94,9 +105,15 @@ const Questionnaire = () => {
     }
   };
 
+  const calculateFinalScore = () => {
+    return responses.reduce((total, response, index) => {
+      return response === questions[index].correctAnswer ? total + questions[index].points : total;
+    }, 0);
+  };
+
   return (
     <div className="questionnaire">
-      <h1>Cuestionario</h1>
+      <h1 className="title">Cuestionario</h1>
       {!finished ? (
         <div className="question">
           <h2>Ejercicio {questions[currentQuestion].id}</h2>
@@ -108,8 +125,9 @@ const Questionnaire = () => {
                 <input
                   type="radio"
                   id={`q${questions[currentQuestion].id}o${i}`}
-                  name={currentQuestion}
+                  name="option"
                   value={i}
+                  checked={selectedOption === i}
                   onChange={handleAnswerChange}
                 />
                 <label htmlFor={`q${questions[currentQuestion].id}o${i}`}>{option}</label>
@@ -133,20 +151,15 @@ const Questionnaire = () => {
               <p><strong>Respuesta correcta:</strong> {question.options[question.correctAnswer]}</p>
             </div>
           ))}
-          <p><strong>Puntuación Total:</strong> {responses.reduce((total, response, index) => {
-            return response === questions[index].correctAnswer ? total + questions[index].points : total;
-          }, 0)}/{questions.length * 10}</p>
+          <p><strong>Puntuación Total:</strong> {calculateFinalScore()}/{questions.length * 10}</p>
         </div>
       )}
       {showModal && (
-        <div className="modal">
-          <div className="modal-content">
+        <div className="modal-cuestionario">
+          <div className="modal-content--cuestionario">
             <span className="close" onClick={() => setShowModal(false)}>&times;</span>
             <p>{modalMessage}</p>
             {modalFeedback && <p><strong>Retroalimentación:</strong> {modalFeedback}</p>}
-            {!finished && currentQuestion < questions.length - 1 && (
-              <button onClick={handleNextQuestion}>Siguiente Pregunta</button>
-            )}
           </div>
         </div>
       )}
