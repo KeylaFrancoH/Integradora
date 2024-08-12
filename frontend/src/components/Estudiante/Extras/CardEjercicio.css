@@ -1,0 +1,47 @@
+.cardEjercicio {
+    border: 1px solid #dcdcdc;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.iconContainer {
+    background-color: #FFC107;
+    padding: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.iconContainer img {
+    width: 24px;
+    height: 24px;
+}
+
+.cardHeader h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #dcdcdc;
+    margin: 10px 0;
+}
+
+.cardEjercicio p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}

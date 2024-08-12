@@ -154,11 +154,13 @@ const Contenido = () => {
   const [instrucciones, setInstrucciones] = useState("");
   const [formula, setFormula] = useState("");
   const [formulaD, setFormulaD] = useState([]);
-  const [enlacesVideos, setEnlacesVideos] = useState([]); 
+  const [enlacesVideos, setEnlacesVideos] = useState([]);
   const [contenido, setContenido] = useState([]);
   const [archivosLinks, setArchivosLinks] = useState([]);
   const [descripciones, setDescripciones] = useState([]);
   const [metodo, setMetodo] = useState("");
+  const [enunciado, setEnunciado] = useState("");
+  const [tituloEjercicio, setTituloEjercicio] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -215,35 +217,42 @@ const Contenido = () => {
           setEnlaces(enlacesNormales);
 
           setEnlacesVideos(enlacesVideos);
-          
         }
 
-       
         try {
-          const archivosResponse = await axios.get(
-            `http://localhost:3000/api/archivos/tema/${temaId}`
-          );
-          const archivos = Array.isArray(archivosResponse.data)
-            ? archivosResponse.data
-            : [];
+          if (temaId) {
+            // Verifica si temaId existe
+            const archivosResponse = await axios.get(
+              `http://localhost:3000/api/archivos/tema/${temaId}`
+            );
 
-          // Extraer enlaces y descripciones
-          const archivosLinksExtraidos = archivos.map(
-            (archivo) => archivo.archivo
-          );
-          const descripcionesExtraidas = archivos.map(
-            (archivo) => archivo.descripcion || ""
-          );
+            const archivos = Array.isArray(archivosResponse.data)
+              ? archivosResponse.data
+              : [];
 
-          // Actualizar el estado
-          setArchivosLinks(archivosLinksExtraidos);
-          setDescripciones(descripcionesExtraidas);
+            // Extraer enlaces y descripciones
+            const archivosLinksExtraidos = archivos.map(
+              (archivo) => archivo.archivo
+            );
+            const descripcionesExtraidas = archivos.map(
+              (archivo) => archivo.descripcion || ""
+            );
+
+            setArchivosLinks(archivosLinksExtraidos);
+            setDescripciones(descripcionesExtraidas);
+          } else {
+            console.warn(
+              "temaId no está definido. No se realizará la solicitud."
+            );
+            setArchivosLinks([]);
+            setDescripciones([]);
+          }
         } catch (error) {
           console.error("Error al obtener los archivos:", error);
+          setArchivosLinks([]);
+          setDescripciones([]);
         }
 
-  
-        
         // Obtener configuraciones y establecer idConfiguracion
         const configuracionesResponse = await axios.get(
           `http://localhost:3000/api/configuraciones?temaId=${temaId}`
@@ -253,6 +262,8 @@ const Contenido = () => {
           : [];
         setConfiguraciones(configuracionesData);
         setInstrucciones(configuracionesData[temaId - 1].instrucciones);
+        setEnunciado(configuracionesData[temaId - 1].Enunciado);
+        setTituloEjercicio(configuracionesData[temaId - 1].Titulo);
 
         if (configuracionesData.length > 0) {
           const configId = configuracionesData[0].idConfiguracion;
@@ -271,7 +282,7 @@ const Contenido = () => {
             `http://localhost:3000/api/parametros?idConfiguracion=${configId}`
           );
           setParametros(parametrosResponse.data);
-          setFormula(parametrosResponse.data[temaId-1].formula);
+          setFormula(parametrosResponse.data[temaId - 1].formula);
 
           if (idCurso == 2) {
             const contenidoEjercicioResponse = await axios.get(
@@ -281,7 +292,7 @@ const Contenido = () => {
             const metodosResponse = await axios.get(
               `http://localhost:3000/api/parametros?idConfiguracion=${configId}`
             );
-            setMetodo(metodosResponse.data[temaId-1].metodo_inicialización);
+            setMetodo(metodosResponse.data[temaId - 1].metodo_inicialización);
             console.log("confID", configId);
           }
         }
@@ -289,7 +300,9 @@ const Contenido = () => {
         console.error("Error al obtener datos:", error);
       }
 
-      const formulasResponse = await axios.get(`http://localhost:3000/api/formulas`);
+      const formulasResponse = await axios.get(
+        `http://localhost:3000/api/formulas`
+      );
       setFormulaD(formulasResponse.data);
     };
 
@@ -394,15 +407,23 @@ const Contenido = () => {
     {
       title: "",
       content:
-        (idCurso === 1 )? (
+        idCurso === 1 ? (
           <InteractiveChart
             initialPoints={puntos}
             instrucciones={instrucciones}
             formula={formula}
-            tema = {temaTitle}
+            tema={temaTitle}
+            enunciado={enunciado}
+            tituloEjercicio={tituloEjercicio}
           />
-        ) : idCurso === 2?(
-          <ElbowPlot instrucciones={instrucciones} metodo={metodo} tema= {temaTitle}/>
+        ) : idCurso === 2 ? (
+          <ElbowPlot
+            instrucciones={instrucciones}
+            metodo={metodo}
+            tema={temaTitle}
+            enunciado={enunciado}
+            tituloEjercicio={tituloEjercicio}
+          />
         ) : null,
     },
   ];

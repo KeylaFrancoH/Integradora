@@ -45,16 +45,13 @@ router.get("/tema/:temaId", async (req, res) => {
   const { temaId } = req.params;
   try {
     const archivos = await Archivo.findAll({
-      where: { idTema: temaId }, // Asegúrate de que 'idTema' es el campo correcto en tu tabla 'archivo'
+      where: { idTema: temaId }, 
     });
+
     if (archivos.length > 0) {
       res.status(200).json(archivos);
     } else {
-      res
-        .status(404)
-        .json({
-          error: "No se encontraron archivos para el tema proporcionado",
-        });
+      res.status(200).json([]);  
     }
   } catch (error) {
     console.error("Error al obtener archivos por temaId:", error);

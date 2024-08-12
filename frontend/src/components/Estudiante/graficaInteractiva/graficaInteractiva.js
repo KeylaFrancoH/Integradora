@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { FaBookmark } from "react-icons/fa";
 import "./graficaInteractiva.css";
+import CardEjercicio from "../Extras/CardEjercicio";
 ChartJS.register(
   LineElement,
   CategoryScale,
@@ -23,7 +24,7 @@ ChartJS.register(
   Legend
 );
 
-const InteractiveChart = ({ initialPoints, instrucciones, formula, tema}) => {
+const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enunciado, tituloEjercicio}) => {
   const [data, setData] = useState(
     Array.isArray(initialPoints) ? initialPoints : []
   );
@@ -31,6 +32,8 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formulaD, setFormulaD] = useState(formula);
   const [temaD, setTemaD] = useState(tema);
+  const [enunciadoD, setEnunciadoD] = useState(enunciado);
+  const [tituloE, setTituloE] = useState(tituloEjercicio);
 
   useEffect(() => {
     if (Array.isArray(initialPoints)) {
@@ -173,8 +176,10 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema}) => {
           <p>{instruccionesD}</p>
         </div>
       )}
-      <h2 className="ejerciciotitulo">{temaD}</h2>
+      <h2 style={{ textAlign: "center" }}>{temaD}</h2>
+      <CardEjercicio titulo={tituloE} enunciado={enunciadoD}/>
 
+      
       <div>
         <div className="graph-container">
           <div className="chart-section">
