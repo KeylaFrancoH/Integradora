@@ -5,10 +5,12 @@ import { FaBookmark } from "react-icons/fa";
 
 ChartJS.register(ScatterController, PointElement, CategoryScale, LinearScale, Tooltip, Legend, LineElement);
 
-const InteractiveClusteringPlot = ({instrucciones}) => {
+const InteractiveClusteringPlot = ({instrucciones, metodo}) => {
   const [param, setParam] = useState(1);
   const [instruccionesD, setInstruccionesD] = useState(instrucciones);
+  const [metodoD, setMetodoD] = useState(metodo);
   const [isOpen, setIsOpen] = useState(false);
+  console.log(metodo);
   
   const { kValues, distortions, centroids, dataPoints, optimalPointIndex, elbowPointIndex } = useMemo(() => {
     const kValues = Array.from({ length: 10 }, (_, i) => i + 1);

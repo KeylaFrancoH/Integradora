@@ -20,6 +20,7 @@ const Grafica = () => {
   const [variableModalOpen, setVariableModalOpen] = useState(false);
   const [pointModalOpen, setPointModalOpen] = useState(false);
   const [fileModalOpen, setFileModalOpen] = useState(false);
+  const [metodo, setMetodo] = useState("0");
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -259,7 +260,7 @@ const Grafica = () => {
           parametro_regularización: parametro || null,
           intercepto: true,
 
-          metodo_inicialización: "aleatorio",
+          metodo_inicialización: metodo||null,
 
           numero_clusters: numeroClusters || null,
           numero_iteraciones: numeroIteraciones || null,
@@ -650,43 +651,51 @@ const Grafica = () => {
                   <label className="param" htmlFor="metodo">
                     Método de Inicialización de Centroides
                   </label>
-                  <select id="metodo">
-                    <option>Aleatorio</option>
-                    {/* Otras opciones */}
+                  <select
+                    id="metodo"
+                    value={metodo}
+                    onChange={(e) => setMetodo(e.target.value)}
+                  >
+                    <option value="0">Seleccione una opción...</option>
+                    <option value="Aleatorio">Aleatorio</option>
                   </select>
                 </div>
-                <div className="input-conf">
-                  <label className="param" htmlFor="clusters">
-                    Número de Clusters (K)
-                  </label>
-                  <input
-                    type="number"
-                    value={numeroClusters}
-                    id="clusters"
-                    placeholder="Número de clústers"
-                    min={0}
-                    step={1}
-                    onChange={(e) => {
-                      setNumeroClusters(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="input-conf">
-                  <label className="param" htmlFor="iteraciones">
-                    Número Máximo de Iteraciones
-                  </label>
-                  <input
-                    type="number"
-                    value={numeroIteraciones}
-                    id="iteraciones"
-                    placeholder="Número de iteraciones"
-                    min={0}
-                    step={1}
-                    onChange={(e) => {
-                      setNumeroIteraciones(e.target.value);
-                    }}
-                  />
-                </div>
+                {metodo !== 'Aleatorio' && metodo == '0' && (
+        <>
+          <div className="input-conf">
+            <label className="param" htmlFor="clusters">
+              Número de Clústers (K)
+            </label>
+            <input
+              type="number"
+              value={numeroClusters}
+              id="clusters"
+              placeholder="Número de clústers"
+              min={0}
+              step={1}
+              onChange={(e) => {
+                setNumeroClusters(e.target.value);
+              }}
+            />
+          </div>
+          <div className="input-conf">
+            <label className="param" htmlFor="iteraciones">
+              Número Máximo de Iteraciones
+            </label>
+            <input
+              type="number"
+              value={numeroIteraciones}
+              id="iteraciones"
+              placeholder="Número de iteraciones"
+              min={0}
+              step={1}
+              onChange={(e) => {
+                setNumeroIteraciones(e.target.value);
+              }}
+            />
+          </div>
+        </>
+      )}
               </div>
             </div>
           </div>

@@ -157,6 +157,7 @@ const Contenido = () => {
   const [contenido, setContenido] = useState([]);
   const [archivosLinks, setArchivosLinks] = useState([]);
   const [descripciones, setDescripciones] = useState([]);
+  const [metodo, setMetodo] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -178,41 +179,45 @@ const Contenido = () => {
 
         // Extraer solo los idTema
         const idTemasArray = enlacesArray.map((enlace) => enlace.idTema);
+        console.log("IDTEMAS:", idTemasArray);
 
-        const enlacesResponse = await axios.get(
-          `http://localhost:3000/api/enlaces/${temaId}`
-        );
-
-        const enlacesData = Array.isArray(enlacesResponse.data)
-          ? enlacesResponse.data
-          : [];
-        //Extraer Contenido
-        try {
-          // Realiza la solicitud a la API
-          const contenido = await axios.get(
-            `http://localhost:3000/api/temas/${temaId}`
+        if (idTemasArray.includes(temaId)) {
+          const enlacesResponse = await axios.get(
+            `http://localhost:3000/api/enlaces/${temaId}`
           );
-          const data = contenido.data;
-          const subtitulo = data.Subtitulo;
-          const material = data.Material;
-          console.log("DATA:", data);
-        } catch (error) {
-          console.error("Error al recuperar los datos:", error);
+
+          const enlacesData = Array.isArray(enlacesResponse.data)
+            ? enlacesResponse.data
+            : [];
+          //Extraer Contenido
+          try {
+            // Realiza la solicitud a la API
+            const contenido = await axios.get(
+              `http://localhost:3000/api/temas/${temaId}`
+            );
+            const data = contenido.data;
+            const subtitulo = data.Subtitulo;
+            const material = data.Material;
+            console.log("DATA:", data);
+          } catch (error) {
+            console.error("Error al recuperar los datos:", error);
+          }
+
+          // Separar enlaces de video y otros enlaces
+          const enlacesVideos = enlacesData.filter((enlace) =>
+            enlace.Enlace.includes("youtube.com")
+          );
+          const enlacesNormales = enlacesData.filter(
+            (enlace) => !enlace.Enlace.includes("youtube.com")
+          );
+
+          setEnlaces(enlacesNormales);
+
+          setEnlacesVideos(enlacesVideos);
+          
         }
 
-        // Separar enlaces de video y otros enlaces
-        const enlacesVideos = enlacesData.filter((enlace) =>
-          enlace.Enlace.includes("youtube.com")
-        );
-        const enlacesNormales = enlacesData.filter(
-          (enlace) => !enlace.Enlace.includes("youtube.com")
-        );
-
-        setEnlaces(enlacesNormales);
-
-        // Setear enlaces de video para mostrarlos en la sección 3
-        setEnlacesVideos(enlacesVideos);
-
+       
         try {
           const archivosResponse = await axios.get(
             `http://localhost:3000/api/archivos/tema/${temaId}`
@@ -235,7 +240,9 @@ const Contenido = () => {
         } catch (error) {
           console.error("Error al obtener los archivos:", error);
         }
-   
+
+  
+        
         // Obtener configuraciones y establecer idConfiguracion
         const configuracionesResponse = await axios.get(
           `http://localhost:3000/api/configuraciones?temaId=${temaId}`
@@ -244,7 +251,7 @@ const Contenido = () => {
           ? configuracionesResponse.data
           : [];
         setConfiguraciones(configuracionesData);
-        setInstrucciones(configuracionesData[temaId-1].instrucciones);
+        setInstrucciones(configuracionesData[temaId - 1].instrucciones);
 
         if (configuracionesData.length > 0) {
           const configId = configuracionesData[0].idConfiguracion;
@@ -263,12 +270,18 @@ const Contenido = () => {
             `http://localhost:3000/api/parametros?idConfiguracion=${configId}`
           );
           setParametros(parametrosResponse.data);
-          setFormula(parametrosResponse.data[0].formula);
+          setFormula(parametrosResponse.data[temaId-1].formula);
+
           if (idCurso == 2) {
             const contenidoEjercicioResponse = await axios.get(
-              `http://localhost:3000/api/contenidoEjercicios?idConfiguracion=2`
+              `http://localhost:3000/api/contenidoEjercicios?idConfiguracion=${configId}`
             );
             setContenidoEjercicio(contenidoEjercicioResponse.data);
+            const metodosResponse = await axios.get(
+              `http://localhost:3000/api/parametros?idConfiguracion=${configId}`
+            );
+            setMetodo(metodosResponse.data[temaId-1].metodo_inicialización);
+            console.log("confID", configId);
           }
         }
       } catch (error) {
@@ -316,7 +329,7 @@ const Contenido = () => {
               <div key={index} className="video-wrapper">
                 <iframe
                   width="900"
-                  height="900" 
+                  height="900"
                   src={enlace.Enlace.replace("watch?v=", "embed/")}
                   title={`Video ${index + 1}`}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -384,7 +397,7 @@ const Contenido = () => {
             formula={formula}
           />
         ) : (
-          <ElbowPlot instrucciones={instrucciones}/>
+          <ElbowPlot instrucciones={instrucciones} metodo={metodo} />
         ),
     },
   ];
