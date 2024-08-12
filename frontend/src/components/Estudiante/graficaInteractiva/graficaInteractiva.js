@@ -23,13 +23,14 @@ ChartJS.register(
   Legend
 );
 
-const InteractiveChart = ({ initialPoints, instrucciones, formula }) => {
+const InteractiveChart = ({ initialPoints, instrucciones, formula, tema}) => {
   const [data, setData] = useState(
     Array.isArray(initialPoints) ? initialPoints : []
   );
   const [instruccionesD, setInstruccionesD] = useState(instrucciones);
   const [isOpen, setIsOpen] = useState(false);
   const [formulaD, setFormulaD] = useState(formula);
+  const [temaD, setTemaD] = useState(tema);
 
   useEffect(() => {
     if (Array.isArray(initialPoints)) {
@@ -172,7 +173,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula }) => {
           <p>{instruccionesD}</p>
         </div>
       )}
-      <h2 className="ejerciciotitulo">Regresión Lineal Interactiva</h2>
+      <h2 className="ejerciciotitulo">{temaD}</h2>
 
       <div>
         <div className="graph-container">

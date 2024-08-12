@@ -153,7 +153,8 @@ const Contenido = () => {
   const [contenidoEjercicio, setContenidoEjercicio] = useState([]);
   const [instrucciones, setInstrucciones] = useState("");
   const [formula, setFormula] = useState("");
-  const [enlacesVideos, setEnlacesVideos] = useState([]); // Definir estado para enlaces de video
+  const [formulaD, setFormulaD] = useState([]);
+  const [enlacesVideos, setEnlacesVideos] = useState([]); 
   const [contenido, setContenido] = useState([]);
   const [archivosLinks, setArchivosLinks] = useState([]);
   const [descripciones, setDescripciones] = useState([]);
@@ -287,6 +288,9 @@ const Contenido = () => {
       } catch (error) {
         console.error("Error al obtener datos:", error);
       }
+
+      const formulasResponse = await axios.get(`http://localhost:3000/api/formulas`);
+      setFormulaD(formulasResponse.data);
     };
 
     fetchData();
@@ -390,21 +394,21 @@ const Contenido = () => {
     {
       title: "",
       content:
-        idCurso === 1 ? (
+        (idCurso === 1 )? (
           <InteractiveChart
             initialPoints={puntos}
             instrucciones={instrucciones}
             formula={formula}
+            tema = {temaTitle}
           />
-        ) : (
-          <ElbowPlot instrucciones={instrucciones} metodo={metodo} />
-        ),
+        ) : idCurso === 2?(
+          <ElbowPlot instrucciones={instrucciones} metodo={metodo} tema= {temaTitle}/>
+        ) : null,
     },
   ];
 
   const goToPreviousStep = () => {
     let newStep = currentStep - 1;
-    // Encuentra el paso anterior que esté habilitado
     while (
       newStep > 0 &&
       ((newStep === 2 && !showSection2Button) ||

@@ -5,10 +5,11 @@ import { FaBookmark } from "react-icons/fa";
 
 ChartJS.register(ScatterController, PointElement, CategoryScale, LinearScale, Tooltip, Legend, LineElement);
 
-const InteractiveClusteringPlot = ({instrucciones, metodo}) => {
+const InteractiveClusteringPlot = ({instrucciones, metodo, tema}) => {
   const [param, setParam] = useState(1);
   const [instruccionesD, setInstruccionesD] = useState(instrucciones);
   const [metodoD, setMetodoD] = useState(metodo);
+  const [temaD, setTemaD] = useState(tema);
   const [isOpen, setIsOpen] = useState(false);
   console.log(metodo);
   
@@ -165,7 +166,7 @@ const InteractiveClusteringPlot = ({instrucciones, metodo}) => {
           <p>{instruccionesD}</p>
         </div>
       )}
-      <h1 style={{textAlign:'center'}}>Visualización Interactiva de Clustering</h1>
+      <h1 style={{textAlign:'center'}}>{temaD}</h1>
       <h2 style={{ marginTop: '40px' }}>Gráfica de Codo</h2>
       <div className='graphics' style={{width:'50%', display:'flex'}}>
       
