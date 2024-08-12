@@ -47,6 +47,18 @@ const InteractiveClusteringPlot = ({
     optimalPointIndex,
     elbowPointIndex,
   } = useMemo(() => {
+    // Valores predeterminados en caso de que metodoD sea "0"
+    if (metodoD === "0") {
+      return {
+        kValues: [],
+        distortions: [],
+        centroids: [],
+        dataPoints: [],
+        optimalPointIndex: 0,
+        elbowPointIndex: 0,
+      };
+    }
+
     const kValues = Array.from({ length: 10 }, (_, i) => i + 1);
     const distortions = kValues.map((k) =>
       param > 0 ? (10 / k) * Math.random() * param : 0
@@ -85,7 +97,7 @@ const InteractiveClusteringPlot = ({
       optimalPointIndex,
       elbowPointIndex,
     };
-  }, [param]);
+  }, [param, metodoD]);
 
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
