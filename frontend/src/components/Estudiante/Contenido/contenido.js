@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./contenido.css"; // Importa el archivo de estilos
+import "./contenido.css"; 
 import {
   FaBook,
   FaPencilAlt,
@@ -161,6 +161,9 @@ const Contenido = () => {
   const [metodo, setMetodo] = useState("");
   const [enunciado, setEnunciado] = useState("");
   const [tituloEjercicio, setTituloEjercicio] = useState("");
+  const [numero_clusters, setNumeroClusters] = useState(0);
+  const [numero_iteraciones, setNumeroIteraciones] = useState(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -277,12 +280,14 @@ const Contenido = () => {
             setPuntos(puntosResponse.data);
           }
 
-          // Obtener parámetros usando idConfiguracion
+       
           const parametrosResponse = await axios.get(
             `http://localhost:3000/api/parametros?idConfiguracion=${configId}`
           );
           setParametros(parametrosResponse.data);
           setFormula(parametrosResponse.data[temaId - 1].formula);
+          setNumeroClusters(parametrosResponse.data[temaId - 1].numero_clusters);
+          setNumeroIteraciones(parametrosResponse.data[temaId - 1].numero_iteraciones);
 
           if (idCurso == 2) {
             const contenidoEjercicioResponse = await axios.get(
@@ -423,6 +428,8 @@ const Contenido = () => {
             tema={temaTitle}
             enunciado={enunciado}
             tituloEjercicio={tituloEjercicio}
+            n_cluster = {numero_clusters}
+            n_iter = {numero_iteraciones}
           />
         ) : null,
     },

@@ -30,6 +30,8 @@ const InteractiveClusteringPlot = ({
   tema,
   enunciado,
   tituloEjercicio,
+  n_clusters,
+  n_iter
 }) => {
   const [param, setParam] = useState(1);
   const [instruccionesD, setInstruccionesD] = useState(instrucciones);
@@ -39,6 +41,13 @@ const InteractiveClusteringPlot = ({
   const [enunciadoD, setEnunciadoD] = useState(enunciado);
   const [tituloE, setTituloE] = useState(tituloEjercicio);
 
+  // Validación de n_clusters y n_iter
+  const validNClusters = Number.isInteger(n_clusters) && n_clusters > 0 ? n_clusters : 10;
+  const validNIter = Number.isInteger(n_iter) && n_iter > 0 ? n_iter : 10;
+
+  const [nValues, setKValues] = useState(validNClusters);
+  const [nIter, setNIter] = useState(validNIter);
+
   const {
     kValues,
     distortions,
@@ -47,7 +56,6 @@ const InteractiveClusteringPlot = ({
     optimalPointIndex,
     elbowPointIndex,
   } = useMemo(() => {
-    // Valores predeterminados en caso de que metodoD sea "0"
     if (metodoD === "0") {
       return {
         kValues: [],
@@ -59,7 +67,11 @@ const InteractiveClusteringPlot = ({
       };
     }
 
-    const kValues = Array.from({ length: 10 }, (_, i) => i + 1);
+    // Si metodoD no es "0", se usan nValues y nIter
+    const numClusters = nValues && nValues > 0 ? nValues : 10;
+    const numIterations = nIter && nIter > 0 ? nIter : 10;
+
+    const kValues = Array.from({ length: numClusters }, (_, i) => i + 1);
     const distortions = kValues.map((k) =>
       param > 0 ? (10 / k) * Math.random() * param : 0
     );
@@ -83,7 +95,7 @@ const InteractiveClusteringPlot = ({
     }));
 
     const dataPoints = kValues.flatMap((k) =>
-      Array.from({ length: 5 }, () => ({
+      Array.from({ length: numIterations }, () => ({
         x: k + (Math.random() - 0.5),
         y: (10 / k) * Math.random() * param + (Math.random() - 0.5),
       }))
@@ -97,11 +109,12 @@ const InteractiveClusteringPlot = ({
       optimalPointIndex,
       elbowPointIndex,
     };
-  }, [param, metodoD]);
+  }, [param, metodoD, nValues, nIter]);
 
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
+
   // Configuración del gráfico de centroides y puntos de datos
   const clusteringData = {
     datasets: [
@@ -281,24 +294,17 @@ const InteractiveClusteringPlot = ({
                 fontWeight: "600",
               }}
             >
-              Inercia (Distorsión)
+              Distorsión
             </th>
           </tr>
         </thead>
         <tbody>
           {kValues.map((k, index) => (
-            <tr
-              key={k}
-              style={{
-                backgroundColor:
-                  index === elbowPointIndex ? "#eaeaea" : "transparent",
-                transition: "background-color 0.3s ease",
-              }}
-            >
+            <tr key={k}>
               <td
                 style={{
                   borderBottom: "1px solid #ddd",
-                  padding: "10px 15px",
+                  padding: "12px 15px",
                 }}
               >
                 {k}
@@ -306,7 +312,7 @@ const InteractiveClusteringPlot = ({
               <td
                 style={{
                   borderBottom: "1px solid #ddd",
-                  padding: "10px 15px",
+                  padding: "12px 15px",
                 }}
               >
                 {distortions[index].toFixed(2)}
@@ -319,7 +325,6 @@ const InteractiveClusteringPlot = ({
         <Questionnaire idCurso={2}/>
       </div>
     </div>
-    
   );
 };
 
