@@ -75,6 +75,7 @@ const Questionnaire = () => {
     } else {
       let newAttemptsLeft = [...attemptsLeft];
       newAttemptsLeft[currentQuestion] -= 1;
+      setModalFeedback(current.feedback); // Ensure feedback is set here
       if (newAttemptsLeft[currentQuestion] <= 0) {
         setResponses(prev => {
           const newResponses = [...prev];
@@ -90,18 +91,13 @@ const Questionnaire = () => {
         }
       } else {
         setModalMessage(`Respuesta incorrecta. Intentos restantes: ${newAttemptsLeft[currentQuestion]}.`);
-        setModalFeedback(current.feedback); // Update modal feedback
         setAttemptsLeft(newAttemptsLeft);
       }
+      setShowModal(true);
     }
 
-    setShowModal(true);
-  };
-
-  const handleNextQuestion = () => {
-    setShowModal(false);
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+    if (response === current.correctAnswer) {
+      setShowModal(true);
     }
   };
 
@@ -136,9 +132,6 @@ const Questionnaire = () => {
           </div>
           <p><strong>Intentos restantes:</strong> {attemptsLeft[currentQuestion]}</p>
           <button onClick={handleSubmit}>Calificar</button>
-          {questions[currentQuestion].attempts > 1 && !finished && currentQuestion < questions.length - 1 && (
-            <button onClick={() => setCurrentQuestion(currentQuestion + 1)}>Siguiente Pregunta</button>
-          )}
         </div>
       ) : (
         <div className="final-results">
