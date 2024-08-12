@@ -4,6 +4,7 @@ import './preguntas.css';
 const questions = [
   {
     id: 1,
+    idCurso: 1,
     text: "¿Cuál es el objetivo principal de la regresión lineal?",
     points: 10,
     options: [
@@ -17,6 +18,7 @@ const questions = [
   },
   {
     id: 2,
+    idCurso: 1,
     text: "¿Qué representa la pendiente (coeficiente) en una ecuación de regresión lineal?",
     points: 10,
     options: [
@@ -27,12 +29,56 @@ const questions = [
     correctAnswer: 0,
     attempts: 2,
     feedback: "La pendiente en una ecuación de regresión lineal representa el cambio en la variable dependiente por unidad de cambio en la variable independiente."
+  },
+  {
+    id: 1,
+    idCurso: 2,
+    text: "¿Cuál es el objetivo principal del algoritmo K-means?",
+    points: 10,
+    options: [
+      "Minimizar la suma de las distancias cuadradas entre los puntos y el centro del cluster",
+      "Maximizar la separación entre los clusters",
+      "Encontrar la media de todas las variables"
+    ],
+    correctAnswer: 0,
+    attempts: 1,
+    feedback: "El objetivo principal del algoritmo K-means es minimizar la suma de las distancias cuadradas entre los puntos y el centro del cluster."
+  },
+  {
+    id: 2,
+    idCurso: 2,
+    text: "¿Cómo se determina el número de clusters (K) en K-means?",
+    points: 10,
+    options: [
+      "Mediante el método del codo",
+      "Utilizando una validación cruzada",
+      "Basado en la distancia entre puntos"
+    ],
+    correctAnswer: 0,
+    attempts: 2,
+    feedback: "El número de clusters (K) en K-means se determina comúnmente utilizando el método del codo, que busca el punto donde la reducción en la suma de las distancias cuadradas se estabiliza."
+  },
+  {
+    id: 3,
+    idCurso: 2,
+    text: "¿Qué sucede si el valor de K en K-means es muy alto?",
+    points: 10,
+    options: [
+      "Los clusters pueden ser muy pequeños y específicos, lo que puede llevar al sobreajuste.",
+      "Los clusters serán demasiado grandes y poco específicos.",
+      "El algoritmo no podrá converger correctamente."
+    ],
+    correctAnswer: 0,
+    attempts: 1,
+    feedback: "Si el valor de K es muy alto, los clusters pueden ser muy pequeños y específicos, lo que puede llevar al sobreajuste."
   }
 ];
 
-const Questionnaire = () => {
-  const [responses, setResponses] = useState(Array(questions.length).fill(null));
-  const [attemptsLeft, setAttemptsLeft] = useState(questions.map(question => question.attempts));
+const Questionnaire = ({ idCurso }) => {
+  const filteredQuestions = questions.filter(question => question.idCurso === idCurso);
+  
+  const [responses, setResponses] = useState(Array(filteredQuestions.length).fill(null));
+  const [attemptsLeft, setAttemptsLeft] = useState(filteredQuestions.map(question => question.attempts));
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalFeedback, setModalFeedback] = useState("");
@@ -46,7 +92,7 @@ const Questionnaire = () => {
   };
 
   const handleSubmit = () => {
-    const current = questions[currentQuestion];
+    const current = filteredQuestions[currentQuestion];
     const response = selectedOption;
 
     if (response === null) {
@@ -61,13 +107,13 @@ const Questionnaire = () => {
         newResponses[currentQuestion] = response;
         return newResponses;
       });
-      if (currentQuestion < questions.length - 1) {
+      if (currentQuestion < filteredQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setSelectedOption(null);
       } else {
         // Calculate the final score
         const score = responses.reduce((total, response, index) => {
-          return response === questions[index].correctAnswer ? total + questions[index].points : total;
+          return response === filteredQuestions[index].correctAnswer ? total + filteredQuestions[index].points : total;
         }, 0) + (response === current.correctAnswer ? current.points : 0);
         setModalMessage(`Cuestionario finalizado.`);
         setFinished(true);
@@ -82,7 +128,7 @@ const Questionnaire = () => {
           newResponses[currentQuestion] = response;
           return newResponses;
         });
-        if (currentQuestion < questions.length - 1) {
+        if (currentQuestion < filteredQuestions.length - 1) {
           setCurrentQuestion(currentQuestion + 1);
           setSelectedOption(null);
         } else {
@@ -103,7 +149,7 @@ const Questionnaire = () => {
 
   const calculateFinalScore = () => {
     return responses.reduce((total, response, index) => {
-      return response === questions[index].correctAnswer ? total + questions[index].points : total;
+      return response === filteredQuestions[index].correctAnswer ? total + filteredQuestions[index].points : total;
     }, 0);
   };
 
@@ -112,21 +158,21 @@ const Questionnaire = () => {
       <h1 className="title">Cuestionario</h1>
       {!finished ? (
         <div className="question">
-          <h2>Ejercicio {questions[currentQuestion].id}</h2>
-          <p>{questions[currentQuestion].text}</p>
-          <p><strong>Puntuación:</strong> {questions[currentQuestion].points}</p>
+          <h2>Ejercicio {filteredQuestions[currentQuestion].id}</h2>
+          <p>{filteredQuestions[currentQuestion].text}</p>
+          <p><strong>Puntuación:</strong> {filteredQuestions[currentQuestion].points}</p>
           <div className="options">
-            {questions[currentQuestion].options.map((option, i) => (
+            {filteredQuestions[currentQuestion].options.map((option, i) => (
               <div key={i} className="option">
                 <input
                   type="radio"
-                  id={`q${questions[currentQuestion].id}o${i}`}
+                  id={`q${filteredQuestions[currentQuestion].id}o${i}`}
                   name="option"
                   value={i}
                   checked={selectedOption === i}
                   onChange={handleAnswerChange}
                 />
-                <label htmlFor={`q${questions[currentQuestion].id}o${i}`}>{option}</label>
+                <label htmlFor={`q${filteredQuestions[currentQuestion].id}o${i}`}>{option}</label>
               </div>
             ))}
           </div>
@@ -136,7 +182,7 @@ const Questionnaire = () => {
       ) : (
         <div className="final-results">
           <h2>Resultados Finales</h2>
-          {questions.map((question, index) => (
+          {filteredQuestions.map((question, index) => (
             <div key={index} className="question">
               <h3>Ejercicio {question.id}</h3>
               <p>{question.text}</p>
@@ -144,7 +190,7 @@ const Questionnaire = () => {
               <p><strong>Respuesta correcta:</strong> {question.options[question.correctAnswer]}</p>
             </div>
           ))}
-          <p><strong>Puntuación Total:</strong> {calculateFinalScore()}/{questions.length * 10}</p>
+          <p><strong>Puntuación Total:</strong> {calculateFinalScore()}/{filteredQuestions.length * 10}</p>
         </div>
       )}
       {showModal && (

@@ -12,6 +12,7 @@ import {
 } from "chart.js";
 import { FaBookmark } from "react-icons/fa";
 import CardEjercicio from "../Extras/CardEjercicio";
+import Questionnaire from "../Extras/preguntas";
 
 ChartJS.register(
   ScatterController,
@@ -302,7 +303,11 @@ const InteractiveClusteringPlot = ({
           ))}
         </tbody>
       </table>
+      <div className="cuestionario" style={{ marginTop: "20px" }}>
+        <Questionnaire idCurso={2}/>
+      </div>
     </div>
+    
   );
 };
 

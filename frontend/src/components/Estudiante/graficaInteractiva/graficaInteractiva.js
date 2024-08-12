@@ -247,7 +247,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
       </div>
 
       <div className="cuestionario" style={{ marginTop: "20px" }}>
-        <Questionnaire />
+        <Questionnaire idCurso={1}/>
       </div>
     </div>
   );
