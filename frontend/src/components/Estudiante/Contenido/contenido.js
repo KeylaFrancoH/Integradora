@@ -14,6 +14,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios"
 import InteractiveChart from "../graficaInteractiva/graficaInteractiva";
 import InteractiveClusteringPlot from "../kmeans/InteractiveClusteringPlot";
+import InteractiveClusteringCSV from "../kmeans/InteractiveClusteringCSV";
 import ElbowPlot from "../graficaCodo/codo";
 const StepCard = ({ title, content }) => (
   <div className="step-card">
@@ -459,15 +460,19 @@ const Contenido = () => {
             tituloEjercicio={tituloEjercicio}
           />
         ) : idCurso === 2 ? (
-          <InteractiveClusteringPlot 
-          instrucciones={instrucciones}
-            metodo={metodo}
-            tema={temaTitle}
-            enunciado={enunciado}
-            tituloEjercicio={tituloEjercicio}
-            n_cluster={numero_clusters}
-            n_iter={numero_iteraciones}
-          />
+          (
+            metodo !== "0" ? (
+              <InteractiveClusteringPlot
+                instrucciones={instrucciones}
+                metodo={metodo}
+                tema={temaTitle}
+                enunciado={enunciado}
+                tituloEjercicio={tituloEjercicio}
+                n_cluster={numero_clusters}
+                n_iter={numero_iteraciones}
+              />
+            ) : <InteractiveClusteringCSV file={"crime.csv"} />
+         
           /*
           <ElbowPlot
             instrucciones={instrucciones}
@@ -478,7 +483,7 @@ const Contenido = () => {
             n_cluster={numero_clusters}
             n_iter={numero_iteraciones}
           />*/
-        ) : null,
+        )) : null,
     },
   ];
 

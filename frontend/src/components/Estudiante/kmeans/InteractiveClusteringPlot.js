@@ -266,7 +266,6 @@ const InteractiveClusteringPlot = ({
       </div>
 
       <div style={{ marginTop: "20px" }}>
-        <h2>Cuestionario</h2>
         <Questionnaire idCurso={2}/>
       </div>
     </div>

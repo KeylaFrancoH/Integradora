@@ -81,6 +81,30 @@ app.use('/api/archivoejercicios', archivoEjercicio);
 app.use('/Archivos', express.static(path.join(__dirname, 'Archivos')));
 app.use('/ArchivosEjercicios', express.static(path.join(__dirname, 'ArchivosEjercicios')));
 
+
+// index.js (modifica la ruta existente)
+
+app.get('/api/read-csv', (req, res) => {
+  const fileName = req.query.fileName;
+  if (!fileName) {
+    return res.status(400).send('El nombre del archivo es necesario.');
+  }
+
+  const filePath = path.join(__dirname, 'ArchivosEjercicios', fileName);
+  const results = [];
+
+  fs.createReadStream(filePath)
+    .pipe(csv())
+    .on('data', (data) => results.push(data))
+    .on('end', () => {
+      res.json(results);
+    })
+    .on('error', (error) => {
+      res.status(500).send('Error al leer el archivo CSV');
+    });
+});
+
+
 // Subida de archivos generales
 app.post('/upload', (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {

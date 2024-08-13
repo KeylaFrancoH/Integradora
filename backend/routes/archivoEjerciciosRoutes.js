@@ -46,6 +46,32 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/buscar', async (req, res) => {
+  const { idTema, idConfiguracion } = req.query;
+
+  if (!idTema || !idConfiguracion) {
+    return res.status(400).json({ error: 'idTema e idConfiguracion son requeridos' });
+  }
+
+  try {
+    const archivos = await ArchivoEjercicio.findAll({
+      where: {
+        idTema: idTema,
+        idConfiguracion: idConfiguracion
+      }
+    });
+
+    if (archivos.length > 0) {
+      res.status(200).json(archivos);
+    } else {
+      res.status(200).json([]);  
+    }
+  } catch (error) {
+    console.error('Error al obtener archivos por idTema e idConfiguracion:', error);
+    res.status(500).json({ error: 'Error al obtener archivos por idTema e idConfiguracion' });
+  }
+});
+
 // GET para obtener un archivo de ejercicio por ID
 router.get('/:id', async (req, res) => {
   try {
