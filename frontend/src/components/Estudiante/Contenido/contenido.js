@@ -11,8 +11,9 @@ import {
   FaExternalLinkAlt,
 } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
+import axios from "axios"
 import InteractiveChart from "../graficaInteractiva/graficaInteractiva";
+import InteractiveClusteringPlot from "../kmeans/InteractiveClusteringPlot";
 import ElbowPlot from "../graficaCodo/codo";
 const StepCard = ({ title, content }) => (
   <div className="step-card">
@@ -458,6 +459,16 @@ const Contenido = () => {
             tituloEjercicio={tituloEjercicio}
           />
         ) : idCurso === 2 ? (
+          <InteractiveClusteringPlot 
+          instrucciones={instrucciones}
+            metodo={metodo}
+            tema={temaTitle}
+            enunciado={enunciado}
+            tituloEjercicio={tituloEjercicio}
+            n_cluster={numero_clusters}
+            n_iter={numero_iteraciones}
+          />
+          /*
           <ElbowPlot
             instrucciones={instrucciones}
             metodo={metodo}
@@ -466,7 +477,7 @@ const Contenido = () => {
             tituloEjercicio={tituloEjercicio}
             n_cluster={numero_clusters}
             n_iter={numero_iteraciones}
-          />
+          />*/
         ) : null,
     },
   ];
