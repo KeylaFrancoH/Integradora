@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import Papa from 'papaparse';
 import { Scatter, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -13,7 +14,6 @@ import {
 import { FaBookmark } from "react-icons/fa";
 import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
-import Papa from 'papaparse';
 
 ChartJS.register(
   ScatterController,
@@ -55,27 +55,51 @@ const InteractiveClusteringCSV = ({
     setIsOpen(prevState => !prevState);
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      Papa.parse(file, {
-        header: true,
-        complete: (results) => {
-          setCsvData(results.data);
-        },
-        error: (error) => {
-          console.error("Error al leer el archivo CSV:", error);
-        },
-      });
-    }
+  const fetchCSVData = () => {
+    const url = "http://localhost:3000/ArchivosEjercicios/crime.csv";
+    Papa.parse(url, {
+      download: true,
+      header: true,
+      complete: (results) => {
+        setCsvData(results.data);
+      },
+      error: (error) => {
+        console.error("Error al leer el archivo CSV:", error);
+      },
+    });
   };
 
-  // Procesar datos del CSV y generar blobs
+  // Función para calcular la distancia euclidiana entre dos puntos
+  const euclideanDistance = (point1, point2) => {
+    return Math.sqrt(
+      Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
+    );
+  };
+
+  // Función para asignar puntos al clúster más cercano
+  const assignPointsToCentroids = (dataPoints, centroids) => {
+    return dataPoints.map((point) => {
+      let closestCentroid = null;
+      let minDistance = Infinity;
+      centroids.forEach((centroid) => {
+        const distance = euclideanDistance(point, centroid);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestCentroid = centroid;
+        }
+      });
+      return {
+        ...point,
+        cluster: closestCentroid ? centroids.indexOf(closestCentroid) : -1,
+      };
+    });
+  };
+
+  // Procesar datos del CSV y generar centroides
   const processData = (data) => {
     const processedData = data.map(row => ({
       x: parseFloat(row.x),
       y: parseFloat(row.y),
-      cluster: parseInt(row.cluster, 10),
       color: row.color || 'gray',
     }));
 
@@ -89,8 +113,14 @@ const InteractiveClusteringCSV = ({
       });
     }
 
-    return { centroids, data: processedData };
+    const assignedPoints = assignPointsToCentroids(processedData, centroids);
+    return { centroids, data: assignedPoints };
   };
+
+  // Llamar a fetchCSVData al montar el componente
+  useEffect(() => {
+    fetchCSVData();
+  }, []);
 
   // Actualizar los datos y centroides cuando cambie el número de clusters o el CSV
   useEffect(() => {
@@ -113,7 +143,7 @@ const InteractiveClusteringCSV = ({
       },
       {
         label: "Centroides",
-        data: (centroids || []).map(({ x, y, color }) => ({ x, y, backgroundColor: color || 'gray' })),
+        data: (centroids || []).map(({ x, y, color }) => ({ x, y })),
         backgroundColor: (centroids || []).map(({ color }) => `${color || 'gray'}B0`),
         borderColor: (centroids || []).map(({ color }) => color || 'gray'),
         borderWidth: 3,
@@ -232,27 +262,22 @@ const InteractiveClusteringCSV = ({
           <p>{instrucciones}</p>
         </div>
       )}
-      <h2 style={{ textAlign: "center" }}>{tema}</h2>
-      <CardEjercicio titulo={tituloEjercicio} enunciado={enunciado} />
 
-      <div style={{ margin: "20px 0", textAlign: "center" }}>
-        <label htmlFor="clusterCount">Número de Clústeres:</label>
-        <input
-          id="clusterCount"
-          type="number"
-          value={nClusters}
-          min="1"
-          onChange={handleClusterChange}
-          style={{ marginLeft: "10px", width: "60px", textAlign: "center" }}
-        />
+      <div style={{ marginTop: "20px" }}>
+        <h2>{tituloEjercicio}</h2>
+        <p>{enunciado}</p>
       </div>
 
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
+      <div style={{ marginTop: "20px" }}>
+        <label htmlFor="numClusters">Número de Clústeres:</label>
         <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileChange}
-          style={{ marginBottom: "20px" }}
+          type="number"
+          id="numClusters"
+          value={nClusters}
+          onChange={handleClusterChange}
+          min="1"
+          max="10"
+          style={{ width: "100px", marginLeft: "10px" }}
         />
       </div>
 
@@ -290,7 +315,7 @@ const InteractiveClusteringCSV = ({
       </div>
 
       <Questionnaire
-        idCurso={2}
+       idCurso={2}
       />
     </div>
   );
