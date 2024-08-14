@@ -15,6 +15,7 @@ import { FaBookmark } from "react-icons/fa";
 import "./graficaInteractiva.css";
 import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
+
 ChartJS.register(
   LineElement,
   CategoryScale,
@@ -25,16 +26,25 @@ ChartJS.register(
   Legend
 );
 
-const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enunciado, tituloEjercicio}) => {
-  const [data, setData] = useState(
-    Array.isArray(initialPoints) ? initialPoints : []
-  );
+const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enunciado, tituloEjercicio }) => {
+  const [data, setData] = useState(Array.isArray(initialPoints) ? initialPoints : []);
   const [instruccionesD, setInstruccionesD] = useState(instrucciones);
   const [isOpen, setIsOpen] = useState(false);
   const [formulaD, setFormulaD] = useState(formula);
   const [temaD, setTemaD] = useState(tema);
   const [enunciadoD, setEnunciadoD] = useState(enunciado);
   const [tituloE, setTituloE] = useState(tituloEjercicio);
+
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+  const [mse, setMSE] = useState(0);
+  const [variance, setVariance] = useState(0);
+  const [regressionSteps, setRegressionSteps] = useState([]);
+  
+  const [mae, setMAE] = useState(0);
+  const [rmse, setRMSE] = useState(0);
+  const [r2, setR2] = useState(0);
+  const [pearson, setPearson] = useState(0);
 
   useEffect(() => {
     if (Array.isArray(initialPoints)) {
@@ -46,11 +56,6 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
-  const [a, setA] = useState(0);
-  const [b, setB] = useState(0);
-  const [mse, setMSE] = useState(0);
-  const [variance, setVariance] = useState(0);
-  const [regressionSteps, setRegressionSteps] = useState([]);
 
   const handleDataChange = (index, key, value) => {
     const updatedData = [...data];
@@ -60,7 +65,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
   };
 
   const addData = () => {
-    setData([...data, { "Word count": 0, "# Shares": 0 }]);
+    setData([...data, { "punto_X": 0, "punto_Y": 0 }]);
   };
 
   const removeData = (index) => {
@@ -76,16 +81,17 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
     const xPoints = data.map((item) => item.punto_X);
     const yPoints = data.map((item) => item.punto_Y);
 
-    const { slope, intercept, mse, variance, steps } = linearRegression(
-      xPoints,
-      yPoints
-    );
+    const { slope, intercept, mse, variance, steps, mae, rmse, r2, pearson } = linearRegression(xPoints, yPoints);
 
     setA(slope);
     setB(intercept);
     setMSE(mse);
     setVariance(variance);
     setRegressionSteps(steps);
+    setMAE(mae);
+    setRMSE(rmse);
+    setR2(r2);
+    setPearson(pearson);
   };
 
   const linearRegression = (x, y) => {
@@ -94,28 +100,30 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
     const yMean = y.reduce((a, b) => a + b) / n;
 
     const ssXX = x.map((xi) => (xi - xMean) ** 2).reduce((a, b) => a + b);
-    const ssXY = x
-      .map((xi, i) => (xi - xMean) * (y[i] - yMean))
-      .reduce((a, b) => a + b);
+    const ssXY = x.map((xi, i) => (xi - xMean) * (y[i] - yMean)).reduce((a, b) => a + b);
 
     const slope = ssXY / ssXX;
     const intercept = yMean - slope * xMean;
 
     const yPred = x.map((xi) => slope * xi + intercept);
-    const mse =
-      y.map((yi, i) => (yi - yPred[i]) ** 2).reduce((a, b) => a + b) / n;
-    const variance =
-      1 - mse / y.map((yi) => (yi - yMean) ** 2).reduce((a, b) => a + b) / n;
+
+    const mse = y.map((yi, i) => (yi - yPred[i]) ** 2).reduce((a, b) => a + b) / n;
+    const mae = y.map((yi, i) => Math.abs(yi - yPred[i])).reduce((a, b) => a + b) / n;
+    const rmse = Math.sqrt(mse);
+    const ssTot = y.map((yi) => (yi - yMean) ** 2).reduce((a, b) => a + b);
+    const r2 = 1 - mse / (ssTot / n);
+    const covariance = x.map((xi, i) => (xi - xMean) * (y[i] - yMean)).reduce((a, b) => a + b) / n;
+    const xVariance = x.map((xi) => (xi - xMean) ** 2).reduce((a, b) => a + b) / n;
+    const yVariance = y.map((yi) => (yi - yMean) ** 2).reduce((a, b) => a + b) / n;
+    const pearson = covariance / Math.sqrt(xVariance * yVariance);
 
     const steps = [];
     for (let i = 0; i < n; i++) {
-      const step = `Paso ${i + 1}: (${x[i]}, ${y[i]}) => y = ${slope.toFixed(
-        2
-      )} * ${x[i]} + ${intercept.toFixed(2)} = ${yPred[i].toFixed(2)}`;
+      const step = `Paso ${i + 1}: (${x[i]}, ${y[i]}) => y = ${slope.toFixed(2)} * ${x[i]} + ${intercept.toFixed(2)} = ${yPred[i].toFixed(2)}`;
       steps.push(step);
     }
 
-    return { slope, intercept, mse, variance, steps };
+    return { slope, intercept, mse, variance, steps, mae, rmse, r2, pearson };
   };
 
   const chartData = {
@@ -126,9 +134,9 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
         data: data.map((d) => d.punto_Y),
         backgroundColor: "blue",
         borderColor: "blue",
-        borderWidth: 1,
-        fill: false,
+        borderWidth: 0,
         pointRadius: 5,
+        showLine: false, // Solo puntos
       },
       {
         label: "Regresión Lineal",
@@ -137,6 +145,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
         borderWidth: 2,
         fill: false,
         pointRadius: 0,
+        showLine: true,
       },
     ],
   };
@@ -147,13 +156,13 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
       x: {
         title: {
           display: true,
-          text: "Word count",
+          text: "Punto X",
         },
       },
       y: {
         title: {
           display: true,
-          text: "# Shares",
+          text: "Punto Y",
         },
       },
     },
@@ -180,7 +189,6 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
       <h2 style={{ textAlign: "center" }}>{temaD}</h2>
       <CardEjercicio titulo={tituloE} enunciado={enunciadoD}/>
 
-      
       <div>
         <div className="graph-container">
           <div className="chart-section">
@@ -218,38 +226,34 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
                       }
                     />
                   </label>
-                  <button
-                    onClick={() => removeData(index)}
-                    className="graph-button"
-                  >
-                    Eliminar
-                  </button>
+                  <button onClick={() => removeData(index)}>Eliminar</button>
                 </div>
               ))}
-              <button onClick={addData} className="add-button">
-                Agregar Fila
-              </button>
             </div>
+            <button onClick={addData}>Agregar punto</button>
             <div className="results-section">
-              <p>Pendiente (a): {a.toFixed(2)}</p>
-              <p>Intercepto (b): {b.toFixed(2)}</p>
-              <p>Error Cuadrado Medio: {mse.toFixed(2)}</p>
-              <p>Puntaje de Varianza: {variance.toFixed(2)}</p>
-              <h2>Proceso de Regresión Lineal:</h2>
-              <ol className="name-pasos">
-                {regressionSteps.map((step, index) => (
-                  <li key={index}>{step}</li>
-                ))}
-              </ol>
-            </div>
+          <p>Pendiente (a): {a.toFixed(2)}</p>
+          <p>Intercepto (b): {b.toFixed(2)}</p>
+          <p>Error Cuadrado Medio (MSE): {mse.toFixed(2)}</p>
+          <p>Puntaje de Varianza: {variance.toFixed(2)}</p>
+          <p>Error Absoluto Medio (MAE): {mae.toFixed(2)}</p>
+          <p>Raíz del Error Cuadrático Medio (RMSE): {rmse.toFixed(2)}</p>
+          <p>Coeficiente de Determinación (R²): {r2.toFixed(2)}</p>
+          <p>Coeficiente de Correlación de Pearson: {pearson.toFixed(2)}</p>
+          <h2>Proceso de Regresión Lineal:</h2>
+          <ol className="name-pasos">
+            {regressionSteps.map((step, index) => (
+              <li key={index}>{step}</li>
+            ))}
+          </ol>
+        </div>
           </div>
         </div>
+      
       </div>
-
-      <div className="cuestionario" style={{ marginTop: "20px" }}>
-        <Questionnaire idCurso={1}/>
-      </div>
+      <Questionnaire idCurso={2}/>
     </div>
   );
 };
+
 export default InteractiveChart;

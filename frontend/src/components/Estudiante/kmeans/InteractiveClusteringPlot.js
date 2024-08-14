@@ -69,10 +69,10 @@ const InteractiveClusteringPlot = ({
   const [enunciadoD, setEnunciadoD] = useState(enunciado);
   const [tituloE, setTituloE] = useState(tituloEjercicio);
 
-  const validNIter = Number.isInteger(n_iter) && n_iter > 0 ? n_iter : 100;
+  const validNIter = Number.isInteger(n_iter) && n_iter > 0 ? n_iter : 400;
 
   const [nClusters, setNClusters] = useState(4);
-  const [nPoints] = useState(400);
+  const [nPoints] = useState(100);
 
   // Generar datos con blobs
   const { dataPoints, centroids } = useMemo(() => generateBlobs(nClusters, nPoints), [nClusters, nPoints]);
