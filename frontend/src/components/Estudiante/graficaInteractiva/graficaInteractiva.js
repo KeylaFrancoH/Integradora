@@ -12,9 +12,16 @@ import {
   Legend,
 } from "chart.js";
 import { FaBookmark } from "react-icons/fa";
+import * as tf from '@tensorflow/tfjs'; // Importa TensorFlow
+import * as sk from 'scikitjs'; // Importa scikitjs
+import { LinearRegression, metrics } from "scikitjs";
+import regression from 'regression'; // Asegúrate de importar la librería de regresión correcta
 import "./graficaInteractiva.css";
 import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
+
+// Configura el backend de scikitjs con TensorFlow
+sk.setBackend(tf);
 
 ChartJS.register(
   LineElement,
@@ -38,13 +45,12 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
   const [a, setA] = useState(0);
   const [b, setB] = useState(0);
   const [mse, setMSE] = useState(0);
-  const [variance, setVariance] = useState(0);
-  const [regressionSteps, setRegressionSteps] = useState([]);
-  
   const [mae, setMAE] = useState(0);
   const [rmse, setRMSE] = useState(0);
   const [r2, setR2] = useState(0);
   const [pearson, setPearson] = useState(0);
+  const [variance, setVariance] = useState(0);
+  const [regressionSteps, setRegressionSteps] = useState([]);
 
   useEffect(() => {
     if (Array.isArray(initialPoints)) {
@@ -75,55 +81,69 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
     calculateAndDrawRegression(updatedData);
   };
 
-  const calculateAndDrawRegression = (data) => {
-    if (data.length === 0) return;
+  const calculatePearsonCorrelation = (xPoints, yPoints) => {
+    const n = xPoints.length;
+    const sumX = xPoints.reduce((a, b) => a + b, 0);
+    const sumY = yPoints.reduce((a, b) => a + b, 0);
+    const sumXY = xPoints.reduce((sum, xi, i) => sum + xi * yPoints[i], 0);
+    const sumX2 = xPoints.reduce((sum, xi) => sum + xi * xi, 0);
+    const sumY2 = yPoints.reduce((sum, yi) => sum + yi * yi, 0);
 
-    const xPoints = data.map((item) => item.punto_X);
-    const yPoints = data.map((item) => item.punto_Y);
+    const numerator = (n * sumXY) - (sumX * sumY);
+    const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
 
-    const { slope, intercept, mse, variance, steps, mae, rmse, r2, pearson } = linearRegression(xPoints, yPoints);
-
-    setA(slope);
-    setB(intercept);
-    setMSE(mse);
-    setVariance(variance);
-    setRegressionSteps(steps);
-    setMAE(mae);
-    setRMSE(rmse);
-    setR2(r2);
-    setPearson(pearson);
+    return denominator === 0 ? 0 : numerator / denominator;
   };
 
-  const linearRegression = (x, y) => {
-    const n = x.length;
-    const xMean = x.reduce((a, b) => a + b) / n;
-    const yMean = y.reduce((a, b) => a + b) / n;
-
-    const ssXX = x.map((xi) => (xi - xMean) ** 2).reduce((a, b) => a + b);
-    const ssXY = x.map((xi, i) => (xi - xMean) * (y[i] - yMean)).reduce((a, b) => a + b);
-
-    const slope = ssXY / ssXX;
-    const intercept = yMean - slope * xMean;
-
-    const yPred = x.map((xi) => slope * xi + intercept);
-
-    const mse = y.map((yi, i) => (yi - yPred[i]) ** 2).reduce((a, b) => a + b) / n;
-    const mae = y.map((yi, i) => Math.abs(yi - yPred[i])).reduce((a, b) => a + b) / n;
-    const rmse = Math.sqrt(mse);
-    const ssTot = y.map((yi) => (yi - yMean) ** 2).reduce((a, b) => a + b);
-    const r2 = 1 - mse / (ssTot / n);
-    const covariance = x.map((xi, i) => (xi - xMean) * (y[i] - yMean)).reduce((a, b) => a + b) / n;
-    const xVariance = x.map((xi) => (xi - xMean) ** 2).reduce((a, b) => a + b) / n;
-    const yVariance = y.map((yi) => (yi - yMean) ** 2).reduce((a, b) => a + b) / n;
-    const pearson = covariance / Math.sqrt(xVariance * yVariance);
-
-    const steps = [];
-    for (let i = 0; i < n; i++) {
-      const step = `Paso ${i + 1}: (${x[i]}, ${y[i]}) => y = ${slope.toFixed(2)} * ${x[i]} + ${intercept.toFixed(2)} = ${yPred[i].toFixed(2)}`;
-      steps.push(step);
+  const calculateAndDrawRegression = (data) => {
+    if (data.length === 0) return;
+  
+    const points = data.map((item) => [item.punto_X, item.punto_Y]);
+  
+    if (points.length === 0) return;
+  
+    try {
+      // Ajuste del modelo usando la librería 'regression-js'
+      const result = regression.linear(points);
+  
+      const slope = result.equation[0];
+      const intercept = result.equation[1];
+  
+      if (slope === undefined || intercept === undefined) {
+        throw new Error("Coeficientes del modelo no están definidos.");
+      }
+  
+      const yPred = points.map(point => slope * point[0] + intercept);
+  
+      const yPoints = points.map(point => point[1]);
+      const mse = metrics.meanSquaredError(yPoints, yPred);
+      const mae = metrics.meanAbsoluteError(yPoints, yPred);
+      const rmse = Math.sqrt(mse);
+      const r2 = metrics.r2Score(yPoints, yPred);
+      const pearson = calculatePearsonCorrelation(points.map(point => point[0]), yPoints);
+  
+      const meanY = yPoints.reduce((a, b) => a + b, 0) / yPoints.length;
+      const variance = yPoints.reduce((acc, y) => acc + Math.pow(y - meanY, 2), 0) / yPoints.length;
+  
+      setA(slope);
+      setB(intercept);
+      setMSE(mse);
+      setMAE(mae);
+      setRMSE(rmse);
+      setR2(r2);
+      setPearson(pearson);
+      setVariance(variance);
+  
+      const steps = data.map((point, i) => {
+        const x = point.punto_X;
+        const y = point.punto_Y;
+        const yPred = slope * x + intercept;
+        return `Paso ${i + 1}: (${x}, ${y}) => Predicción: ${yPred.toFixed(2)}`;
+      });
+      setRegressionSteps(steps);
+    } catch (error) {
+      console.error("Error en el cálculo de la regresión:", error);
     }
-
-    return { slope, intercept, mse, variance, steps, mae, rmse, r2, pearson };
   };
 
   const chartData = {
@@ -139,6 +159,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
         showLine: false, // Solo puntos
       },
       {
+        //${a.toFixed(2)}x + ${b.toFixed(2)}
         label: "Regresión Lineal",
         data: data.map((d) => a * d.punto_X + b),
         borderColor: "red",
@@ -149,7 +170,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
       },
     ],
   };
-
+console.log("data", chartData.datasets[1].data);
   const options = {
     responsive: true,
     scales: {
@@ -196,62 +217,52 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
           </div>
           <div className="data-section">
             <h4>Datos (Editables):</h4>
-            <label className="label-formula">
-              <MathJax.Provider>
-                <MathJax.Node formula={`\\(${formulaD}\\)`} />
-              </MathJax.Provider>
-            </label>
-            <div className="insert-numbers">
-              {data.map((item, index) => (
-                <div key={index} className="data-item">
-                  <label className="label-graph">
-                    X:
-                    <input
-                      className="input-graph"
-                      type="number"
-                      value={item.punto_X}
-                      onChange={(e) =>
-                        handleDataChange(index, "punto_X", e.target.value)
-                      }
-                    />
-                  </label>
-                  <label className="label-graph">
-                    Y:
-                    <input
-                      className="input-graph"
-                      type="number"
-                      value={item.punto_Y}
-                      onChange={(e) =>
-                        handleDataChange(index, "punto_Y", e.target.value)
-                      }
-                    />
-                  </label>
+            <ul>
+              {data.map((point, index) => (
+                <li key={index} className="data-item">
+                  <input
+                    type="number"
+                    value={point.punto_X}
+                    onChange={(e) => handleDataChange(index, "punto_X", e.target.value)}
+                  />
+                  <input
+                    type="number"
+                    value={point.punto_Y}
+                    onChange={(e) => handleDataChange(index, "punto_Y", e.target.value)}
+                  />
                   <button onClick={() => removeData(index)}>Eliminar</button>
-                </div>
+                </li>
               ))}
-            </div>
-            <button onClick={addData}>Agregar punto</button>
+            </ul>
+            <button onClick={addData}>Agregar Punto</button>
             <div className="results-section">
-          <p>Pendiente (a): {a.toFixed(2)}</p>
-          <p>Intercepto (b): {b.toFixed(2)}</p>
-          <p>Error Cuadrado Medio (MSE): {mse.toFixed(2)}</p>
-          <p>Puntaje de Varianza: {variance.toFixed(2)}</p>
-          <p>Error Absoluto Medio (MAE): {mae.toFixed(2)}</p>
-          <p>Raíz del Error Cuadrático Medio (RMSE): {rmse.toFixed(2)}</p>
-          <p>Coeficiente de Determinación (R²): {r2.toFixed(2)}</p>
-          <p>Coeficiente de Correlación de Pearson: {pearson.toFixed(2)}</p>
-          <h2>Proceso de Regresión Lineal:</h2>
-          <ol className="name-pasos">
+          <h3>Ecuación de la Recta</h3>
+          <MathJax.Provider>
+            <MathJax.Node formula={`y = ${a.toFixed(2)}x + ${b.toFixed(2)}`} />
+          </MathJax.Provider>
+          <h3>Evaluación de la Regresión</h3>
+          <ul>
+            <li><strong>Coeficiente (a):</strong> {a.toFixed(2)}</li>
+            <li><strong>Intercepto (b):</strong> {b.toFixed(2)}</li>
+            <li><strong>Mean Squared Error (MSE):</strong> {mse.toFixed(2)}</li>
+            <li><strong>Mean Absolute Error (MAE):</strong> {mae.toFixed(2)}</li>
+            <li><strong>Root Mean Squared Error (RMSE):</strong> {rmse.toFixed(2)}</li>
+            <li><strong>R² Score:</strong> {r2.toFixed(2)}</li>
+            <li><strong>Pearson Correlation:</strong> {pearson.toFixed(2)}</li>
+            <li><strong>Variance:</strong> {variance.toFixed(2)}</li>
+          </ul>
+          <h4>Pasos del Ajuste</h4>
+          <ul>
             {regressionSteps.map((step, index) => (
               <li key={index}>{step}</li>
             ))}
-          </ol>
+          </ul>
         </div>
           </div>
+          
         </div>
-      
+       
       </div>
-      <Questionnaire idCurso={2}/>
     </div>
   );
 };
