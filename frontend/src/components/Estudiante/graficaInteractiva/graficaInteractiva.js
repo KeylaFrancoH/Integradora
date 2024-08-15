@@ -12,10 +12,10 @@ import {
   Legend,
 } from "chart.js";
 import { FaBookmark } from "react-icons/fa";
-import * as tf from '@tensorflow/tfjs'; // Importa TensorFlow
-import * as sk from 'scikitjs'; // Importa scikitjs
+import * as tf from "@tensorflow/tfjs"; // Importa TensorFlow
+import * as sk from "scikitjs"; // Importa scikitjs
 import { LinearRegression, metrics } from "scikitjs";
-import regression from 'regression'; // Asegúrate de importar la librería de regresión correcta
+import regression from "regression"; // Asegúrate de importar la librería de regresión correcta
 import "./graficaInteractiva.css";
 import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
@@ -33,8 +33,17 @@ ChartJS.register(
   Legend
 );
 
-const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enunciado, tituloEjercicio }) => {
-  const [data, setData] = useState(Array.isArray(initialPoints) ? initialPoints : []);
+const InteractiveChart = ({
+  initialPoints,
+  instrucciones,
+  formula,
+  tema,
+  enunciado,
+  tituloEjercicio,
+}) => {
+  const [data, setData] = useState(
+    Array.isArray(initialPoints) ? initialPoints : []
+  );
   const [instruccionesD, setInstruccionesD] = useState(instrucciones);
   const [isOpen, setIsOpen] = useState(false);
   const [formulaD, setFormulaD] = useState(formula);
@@ -71,7 +80,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
   };
 
   const addData = () => {
-    setData([...data, { "punto_X": 0, "punto_Y": 0 }]);
+    setData([...data, { punto_X: 0, punto_Y: 0 }]);
   };
 
   const removeData = (index) => {
@@ -89,42 +98,53 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
     const sumX2 = xPoints.reduce((sum, xi) => sum + xi * xi, 0);
     const sumY2 = yPoints.reduce((sum, yi) => sum + yi * yi, 0);
 
-    const numerator = (n * sumXY) - (sumX * sumY);
-    const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+    const numerator = n * sumXY - sumX * sumY;
+    const denominator = Math.sqrt(
+      (n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY)
+    );
 
     return denominator === 0 ? 0 : numerator / denominator;
   };
 
   const calculateAndDrawRegression = (data) => {
     if (data.length === 0) return;
-  
+
+    // Convertir los datos a puntos para la regresión
     const points = data.map((item) => [item.punto_X, item.punto_Y]);
-  
+
     if (points.length === 0) return;
-  
+
     try {
       // Ajuste del modelo usando la librería 'regression-js'
       const result = regression.linear(points);
-  
+
       const slope = result.equation[0];
       const intercept = result.equation[1];
-  
+
       if (slope === undefined || intercept === undefined) {
         throw new Error("Coeficientes del modelo no están definidos.");
       }
-  
-      const yPred = points.map(point => slope * point[0] + intercept);
-  
-      const yPoints = points.map(point => point[1]);
+
+      // Predicción de y usando la ecuación de la recta
+      const yPred = points.map((point) => slope * point[0] + intercept);
+
+      const yPoints = points.map((point) => point[1]);
       const mse = metrics.meanSquaredError(yPoints, yPred);
       const mae = metrics.meanAbsoluteError(yPoints, yPred);
       const rmse = Math.sqrt(mse);
       const r2 = metrics.r2Score(yPoints, yPred);
-      const pearson = calculatePearsonCorrelation(points.map(point => point[0]), yPoints);
-  
+      const pearson = calculatePearsonCorrelation(
+        points.map((point) => point[0]),
+        yPoints
+      );
+
+      // Cálculo de la varianza
       const meanY = yPoints.reduce((a, b) => a + b, 0) / yPoints.length;
-      const variance = yPoints.reduce((acc, y) => acc + Math.pow(y - meanY, 2), 0) / yPoints.length;
-  
+      const variance =
+        yPoints.reduce((acc, y) => acc + Math.pow(y - meanY, 2), 0) /
+        yPoints.length;
+
+      // Actualización del estado con los resultados
       setA(slope);
       setB(intercept);
       setMSE(mse);
@@ -133,7 +153,8 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
       setR2(r2);
       setPearson(pearson);
       setVariance(variance);
-  
+
+      // Preparación de los pasos para la visualización
       const steps = data.map((point, i) => {
         const x = point.punto_X;
         const y = point.punto_Y;
@@ -159,9 +180,18 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
         showLine: false, // Solo puntos
       },
       {
-        //${a.toFixed(2)}x + ${b.toFixed(2)}
         label: "Regresión Lineal",
-        data: data.map((d) => a * d.punto_X + b),
+        // Aquí se ajusta la línea de regresión para que cubra todo el rango de los datos
+        data: [
+          {
+            x: Math.min(...data.map((d) => d.punto_X)),
+            y: a * Math.min(...data.map((d) => d.punto_X)) + b,
+          },
+          {
+            x: Math.max(...data.map((d) => d.punto_X)),
+            y: a * Math.max(...data.map((d) => d.punto_X)) + b,
+          },
+        ],
         borderColor: "red",
         borderWidth: 2,
         fill: false,
@@ -170,7 +200,7 @@ const InteractiveChart = ({ initialPoints, instrucciones, formula, tema, enuncia
       },
     ],
   };
-console.log("data", chartData.datasets[1].data);
+
   const options = {
     responsive: true,
     scales: {
@@ -178,6 +208,9 @@ console.log("data", chartData.datasets[1].data);
         title: {
           display: true,
           text: "Punto X",
+        },
+        ticks: {
+          autoSkip: true,
         },
       },
       y: {
@@ -208,7 +241,7 @@ console.log("data", chartData.datasets[1].data);
         </div>
       )}
       <h2 style={{ textAlign: "center" }}>{temaD}</h2>
-      <CardEjercicio titulo={tituloE} enunciado={enunciadoD}/>
+      <CardEjercicio titulo={tituloE} enunciado={enunciadoD} />
 
       <div>
         <div className="graph-container">
@@ -223,12 +256,16 @@ console.log("data", chartData.datasets[1].data);
                   <input
                     type="number"
                     value={point.punto_X}
-                    onChange={(e) => handleDataChange(index, "punto_X", e.target.value)}
+                    onChange={(e) =>
+                      handleDataChange(index, "punto_X", e.target.value)
+                    }
                   />
                   <input
                     type="number"
                     value={point.punto_Y}
-                    onChange={(e) => handleDataChange(index, "punto_Y", e.target.value)}
+                    onChange={(e) =>
+                      handleDataChange(index, "punto_Y", e.target.value)
+                    }
                   />
                   <button onClick={() => removeData(index)}>Eliminar</button>
                 </li>
@@ -236,32 +273,49 @@ console.log("data", chartData.datasets[1].data);
             </ul>
             <button onClick={addData}>Agregar Punto</button>
             <div className="results-section">
-          <h3>Ecuación de la Recta</h3>
-          <MathJax.Provider>
-            <MathJax.Node formula={`y = ${a.toFixed(2)}x + ${b.toFixed(2)}`} />
-          </MathJax.Provider>
-          <h3>Evaluación de la Regresión</h3>
-          <ul>
-            <li><strong>Coeficiente (a):</strong> {a.toFixed(2)}</li>
-            <li><strong>Intercepto (b):</strong> {b.toFixed(2)}</li>
-            <li><strong>Mean Squared Error (MSE):</strong> {mse.toFixed(2)}</li>
-            <li><strong>Mean Absolute Error (MAE):</strong> {mae.toFixed(2)}</li>
-            <li><strong>Root Mean Squared Error (RMSE):</strong> {rmse.toFixed(2)}</li>
-            <li><strong>R² Score:</strong> {r2.toFixed(2)}</li>
-            <li><strong>Pearson Correlation:</strong> {pearson.toFixed(2)}</li>
-            <li><strong>Variance:</strong> {variance.toFixed(2)}</li>
-          </ul>
-          <h4>Pasos del Ajuste</h4>
-          <ul>
-            {regressionSteps.map((step, index) => (
-              <li key={index}>{step}</li>
-            ))}
-          </ul>
-        </div>
+              <h3>Ecuación de la Recta</h3>
+              <MathJax.Provider>
+                <MathJax.Node
+                  formula={`y = ${a.toFixed(2)}x + ${b.toFixed(2)}`}
+                />
+              </MathJax.Provider>
+              <h3>Evaluación de la Regresión</h3>
+              <ul>
+                <li>
+                  <strong>Coeficiente (a):</strong> {a.toFixed(2)}
+                </li>
+                <li>
+                  <strong>Intercepto (b):</strong> {b.toFixed(2)}
+                </li>
+                <li>
+                  <strong>Mean Squared Error (MSE):</strong> {mse.toFixed(2)}
+                </li>
+                <li>
+                  <strong>Mean Absolute Error (MAE):</strong> {mae.toFixed(2)}
+                </li>
+                <li>
+                  <strong>Root Mean Squared Error (RMSE):</strong>{" "}
+                  {rmse.toFixed(2)}
+                </li>
+                <li>
+                  <strong>R² Score:</strong> {r2.toFixed(2)}
+                </li>
+                <li>
+                  <strong>Pearson Correlation:</strong> {pearson.toFixed(2)}
+                </li>
+                <li>
+                  <strong>Variance:</strong> {variance.toFixed(2)}
+                </li>
+              </ul>
+              <h4>Pasos del Ajuste</h4>
+              <ul>
+                {regressionSteps.map((step, index) => (
+                  <li key={index}>{step}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-          
         </div>
-       
       </div>
     </div>
   );
