@@ -317,6 +317,9 @@ const InteractiveChart = ({
           </div>
         </div>
       </div>
+      <div style={{ marginTop: "20px" }}>
+        <Questionnaire idCurso={1} />
+      </div>
     </div>
   );
 };
