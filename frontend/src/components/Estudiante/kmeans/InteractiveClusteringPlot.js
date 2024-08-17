@@ -18,7 +18,10 @@ import Questionnaire from "../Extras/preguntas";
 const generateBlobs = (nClusters, nPoints) => {
   const dataPoints = [];
   const centroids = [];
-  const colors = Array.from({ length: nClusters }, (_, i) => `hsl(${(i * 360) / nClusters}, 70%, 50%)`);
+  const colors = Array.from(
+    { length: nClusters },
+    (_, i) => `hsl(${(i * 360) / nClusters}, 70%, 50%)`
+  );
 
   for (let i = 0; i < nClusters; i++) {
     const centroid = {
@@ -30,8 +33,8 @@ const generateBlobs = (nClusters, nPoints) => {
 
     for (let j = 0; j < nPoints / nClusters; j++) {
       const point = {
-        x: centroid.x + (Math.random() - 0.5) * 6,  // Ajustar dispersión
-        y: centroid.y + (Math.random() - 0.5) * 6,  // Ajustar dispersión
+        x: centroid.x + (Math.random() - 0.5) * 6, // Ajustar dispersión
+        y: centroid.y + (Math.random() - 0.5) * 6, // Ajustar dispersión
         color: centroid.color,
         borderColor: `hsl(${(i * 360) / nClusters}, 70%, 30%)`, // Colores más oscuros para los bordes
         borderWidth: 1, // Añadir borde
@@ -75,7 +78,10 @@ const InteractiveClusteringPlot = ({
   const [nPoints] = useState(100);
 
   // Generar datos con blobs
-  const { dataPoints, centroids } = useMemo(() => generateBlobs(nClusters, nPoints), [nClusters, nPoints]);
+  const { dataPoints, centroids } = useMemo(
+    () => generateBlobs(nClusters, nPoints),
+    [nClusters, nPoints]
+  );
 
   const handleClusterChange = (event) => {
     const newClusterCount = parseInt(event.target.value);
@@ -87,14 +93,18 @@ const InteractiveClusteringPlot = ({
       {
         label: "Puntos de Datos",
         data: dataPoints,
-        backgroundColor: dataPoints.map(point => point.color),
-        borderColor: dataPoints.map(point => point.borderColor),
+        backgroundColor: dataPoints.map((point) => point.color),
+        borderColor: dataPoints.map((point) => point.borderColor),
         borderWidth: 1,
         radius: 6,
       },
       {
         label: "Centroides",
-        data: centroids.map(({ x, y, color }) => ({ x, y, backgroundColor: color })),
+        data: centroids.map(({ x, y, color }) => ({
+          x,
+          y,
+          backgroundColor: color,
+        })),
         backgroundColor: centroids.map(({ color }) => `${color}B0`), // Tono más oscuro
         borderColor: centroids.map(({ color }) => color),
         borderWidth: 3,
@@ -114,8 +124,12 @@ const InteractiveClusteringPlot = ({
         callbacks: {
           label: (context) => {
             return context.dataset.label === "Centroides"
-              ? `Centroides: (${context.raw.x.toFixed(1)}, ${context.raw.y.toFixed(1)})`
-              : `Punto de Datos: (${context.raw.x.toFixed(1)}, ${context.raw.y.toFixed(1)})`;
+              ? `Centroides: (${context.raw.x.toFixed(
+                  1
+                )}, ${context.raw.y.toFixed(1)})`
+              : `Punto de Datos: (${context.raw.x.toFixed(
+                  1
+                )}, ${context.raw.y.toFixed(1)})`;
           },
         },
       },
@@ -140,7 +154,7 @@ const InteractiveClusteringPlot = ({
   const distortions = kValues.map((k) => (10 / k) * Math.random() * param);
   const minDistortion = Math.min(...distortions);
   const startDeclineIndex = distortions.findIndex((d) => d === minDistortion);
-  
+
   // Calcular el índice donde la distorsión comienza a disminuir significativamente
   const significantDeclineIndex = distortions.findIndex((d, i, arr) => {
     if (i === 0 || i === arr.length - 1) return false;
@@ -246,7 +260,10 @@ const InteractiveClusteringPlot = ({
         </div>
         <div style={{ width: "50%", paddingLeft: "10px" }}>
           <h2>Tabla de Inercia</h2>
-          <table border="1" style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table
+            border="1"
+            style={{ width: "100%", borderCollapse: "collapse" }}
+          >
             <thead>
               <tr>
                 <th>k (Número de Clústeres)</th>
@@ -255,7 +272,10 @@ const InteractiveClusteringPlot = ({
             </thead>
             <tbody>
               {kValues.map((k, index) => (
-                <tr key={k} className={index >= startDeclineIndex ? 'highlight-row' : ''}>
+                <tr
+                  key={k}
+                  className={index >= startDeclineIndex ? "highlight-row" : ""}
+                >
                   <td>{k}</td>
                   <td>{distortions[index].toFixed(2)}</td>
                 </tr>
@@ -266,7 +286,7 @@ const InteractiveClusteringPlot = ({
       </div>
 
       <div style={{ marginTop: "20px" }}>
-        <Questionnaire idCurso={2}/>
+        <Questionnaire idCurso={2} />
       </div>
     </div>
   );

@@ -11,11 +11,12 @@ import {
   FaExternalLinkAlt,
 } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import axios from "axios"
+import axios from "axios";
 import InteractiveChart from "../graficaInteractiva/graficaInteractiva";
 import InteractiveClusteringPlot from "../kmeans/InteractiveClusteringPlot";
 import InteractiveClusteringCSV from "../kmeans/InteractiveClusteringCSV";
 import ElbowPlot from "../graficaCodo/codo";
+import KMeansChart from "../kmeans/prueba";
 const StepCard = ({ title, content }) => (
   <div className="step-card">
     <h2>{title}</h2>
@@ -460,8 +461,7 @@ const Contenido = () => {
             tituloEjercicio={tituloEjercicio}
           />
         ) : idCurso === 2 ? (
-          (
-            metodo !== "0" ? (
+          metodo !== "0" /*
               <InteractiveClusteringPlot
                 instrucciones={instrucciones}
                 metodo={metodo}
@@ -470,10 +470,12 @@ const Contenido = () => {
                 tituloEjercicio={tituloEjercicio}
                 n_cluster={numero_clusters}
                 n_iter={numero_iteraciones}
-              />
-            ) : <InteractiveClusteringCSV file={"crime.csv"} />
-         
-          /*
+              /> */ ? (
+            <KMeansChart />
+          ) : (
+            <InteractiveClusteringCSV file={"crime.csv"} />
+          )
+        ) : /*
           <ElbowPlot
             instrucciones={instrucciones}
             metodo={metodo}
@@ -483,7 +485,7 @@ const Contenido = () => {
             n_cluster={numero_clusters}
             n_iter={numero_iteraciones}
           />*/
-        )) : null,
+        null,
     },
   ];
 
