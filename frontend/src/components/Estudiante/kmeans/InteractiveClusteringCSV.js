@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Scatter, Line } from "react-chartjs-2";
+import { Scatter, Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Tooltip,
   Legend,
 } from "chart.js";
@@ -18,6 +19,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Tooltip,
   Legend
 );
@@ -63,8 +65,23 @@ const silhouetteScore = (data, clusters, centroids) => {
   return silhouetteScores.reduce((sum, score) => sum + score, 0) / n;
 };
 
+// Define colores pastel más fuertes para los clusters
+const pastelColors = [
+  "#FF8C8C",
+  "#FFBF8C",
+  "#FFFF8C",
+  "#B9FBC0",
+  "#A3C2F0",
+  "#FF8C8C",
+  "#FFC3A0",
+  "#B9FBC0",
+  "#A3E4D7",
+  "#D4A5A5",
+];
+
 const KMeansChart = () => {
   const [numClusters, setNumClusters] = useState(3);
+  const [barRadius, setBarRadius] = useState(5); // Radio de las puntas
   const [chartData, setChartData] = useState({ datasets: [] });
   const [elbowData, setElbowData] = useState({ labels: [], datasets: [] });
   const [silhouetteData, setSilhouetteData] = useState({
@@ -98,10 +115,7 @@ const KMeansChart = () => {
             const clusters = result.clusters;
             const centroids = result.centroids;
 
-            const colors = Array.from(
-              { length: numClusters },
-              (_, i) => `hsl(${i * (360 / numClusters)}, 100%, 50%)`
-            );
+            const colors = pastelColors.slice(0, numClusters);
 
             const clusterData = data.map((point, index) => ({
               x: point[0],
@@ -109,15 +123,16 @@ const KMeansChart = () => {
               backgroundColor: colors[clusters[index]],
               borderColor: colors[clusters[index]],
               borderWidth: 1,
+              pointRadius: 8, // Tamaño de los puntos de los clusters
             }));
 
             const centroidData = centroids.map((centroid, index) => ({
               x: centroid[0],
               y: centroid[1],
               backgroundColor: colors[index],
-              borderColor: colors[index],
-              borderWidth: 2,
-              pointRadius: 10,
+              borderColor: "#000000", // Borde negro para los centroides
+              borderWidth: 3, // Borde grueso para los centroides
+              pointRadius: 12, // Tamaño ajustado para los centroides
             }));
 
             setChartData({
@@ -128,13 +143,15 @@ const KMeansChart = () => {
                   backgroundColor: clusterData.map((d) => d.backgroundColor),
                   borderColor: clusterData.map((d) => d.borderColor),
                   borderWidth: 1,
+                  pointRadius: 8,
                 },
                 {
                   label: "Centroids",
                   data: centroidData,
                   backgroundColor: centroidData.map((d) => d.backgroundColor),
                   borderColor: centroidData.map((d) => d.borderColor),
-                  borderWidth: 1,
+                  borderWidth: 3, // Borde negro grueso
+                  pointRadius: 12, // Tamaño ajustado para los centroides
                 },
               ],
             });
@@ -145,7 +162,7 @@ const KMeansChart = () => {
               const silhouetteX = [];
               const silhouetteY = [];
 
-              for (let k = 1; k <= 10; k++) {
+              for (let k = 1; k <= numClusters; k++) {
                 const result = kmeans(data, k);
                 const clusters = result.clusters;
                 const centroids = result.centroids;
@@ -174,21 +191,29 @@ const KMeansChart = () => {
                     label: "WCSS",
                     data: elbowY,
                     fill: false,
-                    borderColor: "rgba(75,192,192,1)",
+                    borderColor: "#FF6F61",
                     tension: 0.1,
                   },
                 ],
               });
 
+              // Ordenar y actualizar los datos de silueta en orden descendente
+              const reversedSilhouetteX = silhouetteX.slice().reverse();
+              const reversedSilhouetteY = silhouetteY.slice().reverse();
+
               setSilhouetteData({
-                labels: silhouetteX,
+                labels: reversedSilhouetteX,
                 datasets: [
                   {
                     label: "Silhouette Score",
-                    data: silhouetteY,
-                    fill: false,
-                    borderColor: "rgba(75,192,192,1)",
-                    tension: 0.1,
+                    data: reversedSilhouetteY,
+                    backgroundColor: reversedSilhouetteX.map(
+                      (k) => pastelColors[k - 1]
+                    ),
+                    borderColor: reversedSilhouetteX.map(
+                      (k) => pastelColors[k - 1]
+                    ),
+                    borderWidth: 1,
                   },
                 ],
               });
@@ -219,6 +244,19 @@ const KMeansChart = () => {
         style={{ marginBottom: "20px" }}
       />
       <span>{numClusters}</span>
+      <div style={{ marginTop: "20px" }}>
+        <label htmlFor="barRadius">Bar Radius:</label>
+        <input
+          id="barRadius"
+          type="range"
+          min="0"
+          max="20"
+          value={barRadius}
+          onChange={(e) => setBarRadius(Number(e.target.value))}
+          style={{ marginBottom: "20px", display: "block" }}
+        />
+        <span>{barRadius}px</span>
+      </div>
       <Scatter
         data={chartData}
         options={{
@@ -283,8 +321,8 @@ const KMeansChart = () => {
         />
       </div>
       <div style={{ marginTop: "30px" }}>
-        <h2>Silhouette Score</h2>
-        <Line
+        <h2>Siluette Method</h2>
+        <Bar
           data={silhouetteData}
           options={{
             responsive: true,
@@ -300,18 +338,24 @@ const KMeansChart = () => {
                 },
               },
             },
+            indexAxis: "y", // Esto cambia las barras a horizontal
+            elements: {
+              bar: {
+                borderRadius: 15, // Modifica el radio de las puntas de las barras
+              },
+            },
             scales: {
               x: {
                 title: {
                   display: true,
-                  text: "Number of Clusters (K)",
+                  text: "Silhouette Score",
                 },
                 beginAtZero: true,
               },
               y: {
                 title: {
                   display: true,
-                  text: "Silhouette Score",
+                  text: "Number of Clusters (K)",
                 },
                 beginAtZero: true,
               },
