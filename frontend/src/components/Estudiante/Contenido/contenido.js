@@ -471,7 +471,11 @@ const Contenido = () => {
                 n_cluster={numero_clusters}
                 n_iter={numero_iteraciones}
               /> */ ? (
-            <KMeansChart />
+            <KMeansChart  instrucciones={instrucciones}
+            metodo={metodo}
+            tema={temaTitle}
+            enunciado={enunciado}
+            tituloEjercicio={tituloEjercicio}/>
           ) : (
             <InteractiveClusteringCSV file={"crime.csv"} />
           )

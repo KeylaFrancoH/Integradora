@@ -17,8 +17,8 @@ html, body, #root {
 }
 
 .header-container {
-  width: 80vw; /* Ajusta el ancho al mismo que los botones de navegación */
-  text-align: left; /* Alinea el texto a la izquierda */
+  width: 85vw; 
+  text-align: left; 
 }
 
 .clases {
@@ -27,27 +27,27 @@ html, body, #root {
 
 .underline {
   height: 3px;
-  background-color: #000; /* Color de la línea subrayada */
-  margin-top: 5px; /* Espacio entre el h1 y la línea */
-  margin-bottom: 20px; /* Espacio entre la línea y los demás elementos */
-  width: 100%; /* Asegura que la línea ocupe todo el ancho del contenedor */
+  background-color: #000; 
+  margin-top: 5px; 
+  margin-bottom: 20px; 
+  width: 100%; 
 }
 
 .overline {
   height: 4px;
-  background-color: #000; /* Color de la línea subrayada */
-  margin-top: 5px; /* Espacio entre el h1 y la línea */
-  margin-bottom: 20px; /* Espacio entre la línea y los demás elementos */
-  width: 100%; /* Asegura que la línea ocupe todo el ancho del contenedor */
+  background-color: #000; 
+  margin-top: 5px; 
+  margin-bottom: 20px; 
+  width: 100%; 
 }
 
 .step-card {
   display: flex;
   flex-direction: column;
   justify-content: left;
-  height: 75vh; /* 80% de la altura de la pantalla */
-  width: 80vw;  /* 80% del ancho de la pantalla */
-  border: 2px solid #00274C; /* Borde de color */
+  height: 80vh; 
+  width: 80vw;  
+  border: 2px solid #00274C; 
   border-radius: 8px;
   padding: 20px;
   background-color: #f9f9f9;

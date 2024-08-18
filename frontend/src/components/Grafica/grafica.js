@@ -1,8 +1,5 @@
 import "./grafica.css";
-import {
-  useParams,
-  useLocation,
-} from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import MathJax from "react-mathjax";
 import axios from "axios";
@@ -279,23 +276,24 @@ const Grafica = () => {
       if (idCurso === "2") {
         let isValid = true;
 
-  // Usar .trim() para eliminar espacios en blanco y verificar si el valor es una cadena vacía
-  if (!numeroClusters?.trim()) {
-    setErrorClusters("Es necesario introducir un número de clústers.");
-    isValid = false;
-  } else {
-    setErrorClusters("");
-  }
+        // Usar .trim() para eliminar espacios en blanco y verificar si el valor es una cadena vacía
+        if (!numeroClusters?.trim()) {
+          setErrorClusters("Es necesario introducir un número de clústers.");
+          isValid = false;
+        } else {
+          setErrorClusters("");
+        }
 
-  if (!numeroIteraciones?.trim()) {
-    setErrorIteraciones("Es necesario introducir un número de iteraciones.");
-    isValid = false;
-  } else {
-    setErrorIteraciones("");
-  }
+        if (!numeroIteraciones?.trim()) {
+          setErrorIteraciones(
+            "Es necesario introducir un número de iteraciones."
+          );
+          isValid = false;
+        } else {
+          setErrorIteraciones("");
+        }
 
-
-        if (isValid){
+        if (isValid) {
           const parametroResponse = await axios.post(
             "http://localhost:3000/api/contenidoEjercicios",
             {
@@ -309,7 +307,6 @@ const Grafica = () => {
             }
           );
         }
-       
       }
 
       if (files.length > 0) {
