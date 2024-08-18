@@ -1,15 +1,12 @@
 import "./grafica.css";
 import {
-  useNavigate,
   useParams,
   useLocation,
-  Navigate,
 } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import MathJax from "react-mathjax";
 import axios from "axios";
 import Modal from "react-modal";
-import MathEditor from "./MathEditor";
 
 const Grafica = () => {
   const { idCurso } = useParams();
@@ -23,6 +20,8 @@ const Grafica = () => {
   const [metodo, setMetodo] = useState("0");
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [errorClusters, setErrorClusters] = useState("");
+  const [errorIteraciones, setErrorIteraciones] = useState("");
 
   const [variable, setVariable] = useState("");
   const [variables, setVariables] = useState([]);
@@ -260,7 +259,7 @@ const Grafica = () => {
           parametro_regularización: parametro || null,
           intercepto: true,
 
-          metodo_inicialización: metodo||null,
+          metodo_inicialización: metodo || null,
 
           numero_clusters: numeroClusters || null,
           numero_iteraciones: numeroIteraciones || null,
@@ -278,18 +277,39 @@ const Grafica = () => {
         enviarPuntos(configuracionResponse);
       }
       if (idCurso === "2") {
-        const parametroResponse = await axios.post(
-          "http://localhost:3000/api/contenidoEjercicios",
-          {
-            idConfiguracion: configuracionResponse.data.idConfiguracion,
-            k_min: k_min ?? null,
-            k_max: k_max ?? null,
-            k_exacto: k_exacto ?? null,
-            iteracion_min: iter_min ?? null,
-            iteracion_max: iter_max ?? null,
-            iteracion_exacto: iter_exacto ?? null,
-          }
-        );
+        let isValid = true;
+
+  // Usar .trim() para eliminar espacios en blanco y verificar si el valor es una cadena vacía
+  if (!numeroClusters?.trim()) {
+    setErrorClusters("Es necesario introducir un número de clústers.");
+    isValid = false;
+  } else {
+    setErrorClusters("");
+  }
+
+  if (!numeroIteraciones?.trim()) {
+    setErrorIteraciones("Es necesario introducir un número de iteraciones.");
+    isValid = false;
+  } else {
+    setErrorIteraciones("");
+  }
+
+
+        if (isValid){
+          const parametroResponse = await axios.post(
+            "http://localhost:3000/api/contenidoEjercicios",
+            {
+              idConfiguracion: configuracionResponse.data.idConfiguracion,
+              k_min: k_min ?? null,
+              k_max: k_max ?? null,
+              k_exacto: k_exacto ?? null,
+              iteracion_min: iter_min ?? null,
+              iteracion_max: iter_max ?? null,
+              iteracion_exacto: iter_exacto ?? null,
+            }
+          );
+        }
+       
       }
 
       if (files.length > 0) {
@@ -660,42 +680,64 @@ const Grafica = () => {
                     <option value="Aleatorio">Aleatorio</option>
                   </select>
                 </div>
-                {metodo !== 'Aleatorio' && metodo == '0' && (
-        <>
-          <div className="input-conf">
-            <label className="param" htmlFor="clusters">
-              Número de Clústers (K)
-            </label>
-            <input
-              type="number"
-              value={numeroClusters}
-              id="clusters"
-              placeholder="Número de clústers"
-              min={0}
-              step={1}
-              onChange={(e) => {
-                setNumeroClusters(e.target.value);
-              }}
-            />
-          </div>
-          <div className="input-conf">
-            <label className="param" htmlFor="iteraciones">
-              Número Máximo de Iteraciones
-            </label>
-            <input
-              type="number"
-              value={numeroIteraciones}
-              id="iteraciones"
-              placeholder="Número de iteraciones"
-              min={0}
-              step={1}
-              onChange={(e) => {
-                setNumeroIteraciones(e.target.value);
-              }}
-            />
-          </div>
-        </>
-      )}
+                {metodo !== "Aleatorio" && metodo == "0" && (
+                  <>
+                    <div className="input-conf">
+                      <label className="param" htmlFor="clusters">
+                        Número de Clústers (K)
+                      </label>
+                      <input
+                        type="number"
+                        value={numeroClusters}
+                        id="clusters"
+                        placeholder="Número de clústers"
+                        min={0}
+                        step={1}
+                        required
+                        onChange={(e) => setNumeroClusters(e.target.value)}
+                        onBlur={() => {
+                          if (!numeroClusters) {
+                            setErrorClusters(
+                              "Es necesario introducir un número de clústers."
+                            );
+                          } else {
+                            setErrorClusters("");
+                          }
+                        }}
+                      />
+                      {errorClusters && (
+                        <p style={{ color: "red" }}>{errorClusters}</p>
+                      )}
+                    </div>
+                    <div className="input-conf">
+                      <label className="param" htmlFor="iteraciones">
+                        Número Máximo de Iteraciones
+                      </label>
+                      <input
+                        type="number"
+                        value={numeroIteraciones}
+                        id="iteraciones"
+                        placeholder="Número de iteraciones"
+                        min={0}
+                        step={1}
+                        required
+                        onChange={(e) => setNumeroIteraciones(e.target.value)}
+                        onBlur={() => {
+                          if (!numeroIteraciones) {
+                            setErrorIteraciones(
+                              "Es necesario introducir un número de iteraciones."
+                            );
+                          } else {
+                            setErrorIteraciones("");
+                          }
+                        }}
+                      />
+                      {errorIteraciones && (
+                        <p style={{ color: "red" }}>{errorIteraciones}</p>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -822,45 +864,49 @@ const Grafica = () => {
               </div>
             </div>
           </div>
-          <div className="section attachment-sections">
-            <div className="attachment-section">
-              <h2>Archivos Subidos</h2>
-              <button
-                type="button"
-                className="subir-button"
-                onClick={() => setFileModalOpen(true)}
-              >
-                Subir
-              </button>
-              <ul className="uploaded-files">
-                {files.map((fileObj, index) => (
-                  <li key={index}>
-                    <span>{fileObj.file.name}</span>
-                    <input
-                      type="text"
-                      value={fileObj.description}
-                      accept=".csv, .txt"
-                      onChange={(e) =>
-                        setFiles(
-                          files.map((f, i) =>
-                            i === index ? { ...f, description: "" } : f
-                          )
-                        )
-                      }
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFiles(files.filter((_, i) => i !== index))
-                      }
-                    >
-                      Eliminar
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          {metodo !== "Aleatorio" && metodo == "0" && (
+            <>
+              <div className="section attachment-sections">
+                <div className="attachment-section">
+                  <h2>Archivos Subidos</h2>
+                  <button
+                    type="button"
+                    className="subir-button"
+                    onClick={() => setFileModalOpen(true)}
+                  >
+                    Subir
+                  </button>
+                  <ul className="uploaded-files">
+                    {files.map((fileObj, index) => (
+                      <li key={index}>
+                        <span>{fileObj.file.name}</span>
+                        <input
+                          type="text"
+                          value={fileObj.description}
+                          accept=".csv, .txt"
+                          onChange={(e) =>
+                            setFiles(
+                              files.map((f, i) =>
+                                i === index ? { ...f, description: "" } : f
+                              )
+                            )
+                          }
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFiles(files.filter((_, i) => i !== index))
+                          }
+                        >
+                          Eliminar
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="input-confz">
             <button type="button" className="save-button" onClick={handleSave}>
