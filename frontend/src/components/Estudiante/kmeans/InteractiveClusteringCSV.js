@@ -1,324 +1,326 @@
 import React, { useState, useEffect } from "react";
-import Papa from 'papaparse';
 import { Scatter, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
-  ScatterController,
-  PointElement,
   CategoryScale,
   LinearScale,
-  Tooltip,
-  Legend,
+  PointElement,
   LineElement,
-} from "chart.js";
-import { FaBookmark } from "react-icons/fa";
-import CardEjercicio from "../Extras/CardEjercicio";
-import Questionnaire from "../Extras/preguntas";
-
-ChartJS.register(
-  ScatterController,
-  PointElement,
-  CategoryScale,
-  LinearScale,
   Tooltip,
   Legend,
-  LineElement
+} from "chart.js";
+import { kmeans } from "ml-kmeans";
+import Papa from "papaparse";
+
+// Registra los componentes de Chart.js que vas a usar
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
 );
 
-const InteractiveClusteringCSV = ({
-  instrucciones,
-  metodo,
-  tema,
-  enunciado,
-  tituloEjercicio,
-  n_iter,
-  preguntas,
-  preguntaIndex,
-  handleAnswer,
-  setPreguntaIndex,
-  handleSubmit,
-}) => {
-  const [nClusters, setNClusters] = useState(4);
-  const [dataPoints, setDataPoints] = useState([]);
-  const [centroids, setCentroids] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [csvData, setCsvData] = useState([]);
+// Función para calcular la distancia euclidiana
+const euclideanDistance = (a, b) =>
+  Math.sqrt(a.reduce((acc, val, i) => acc + (val - b[i]) ** 2, 0));
 
-  const handleClusterChange = (event) => {
-    const newClusterCount = parseInt(event.target.value, 10);
-    if (newClusterCount > 0) {
-      setNClusters(newClusterCount);
-    }
-  };
+// Función para calcular el coeficiente de silueta
+const silhouetteScore = (data, clusters, centroids) => {
+  const n = data.length;
+  const clusterCount = centroids.length;
 
-  const handleAccordionToggle = () => {
-    setIsOpen(prevState => !prevState);
-  };
+  const silhouetteScores = new Array(n).fill(0);
 
-  const fetchCSVData = () => {
-    const url = "http://localhost:3000/ArchivosEjercicios/crime.csv";
-    Papa.parse(url, {
-      download: true,
-      header: true,
-      complete: (results) => {
-        setCsvData(results.data);
-      },
-      error: (error) => {
-        console.error("Error al leer el archivo CSV:", error);
-      },
-    });
-  };
-
-  // Función para calcular la distancia euclidiana entre dos puntos
-  const euclideanDistance = (point1, point2) => {
-    return Math.sqrt(
-      Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
+  for (let i = 0; i < n; i++) {
+    const clusterIndex = clusters[i];
+    const clusterPoints = data.filter(
+      (_, idx) => clusters[idx] === clusterIndex
     );
-  };
 
-  // Función para asignar puntos al clúster más cercano
-  const assignPointsToCentroids = (dataPoints, centroids) => {
-    return dataPoints.map((point) => {
-      let closestCentroid = null;
-      let minDistance = Infinity;
-      centroids.forEach((centroid) => {
-        const distance = euclideanDistance(point, centroid);
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestCentroid = centroid;
-        }
-      });
-      return {
-        ...point,
-        cluster: closestCentroid ? centroids.indexOf(closestCentroid) : -1,
-      };
-    });
-  };
+    const a =
+      clusterPoints.reduce(
+        (sum, point) => sum + euclideanDistance(data[i], point),
+        0
+      ) / clusterPoints.length;
 
-  // Procesar datos del CSV y generar centroides
-  const processData = (data) => {
-    const processedData = data.map(row => ({
-      x: parseFloat(row.x),
-      y: parseFloat(row.y),
-      color: row.color || 'gray',
-    }));
-
-    const centroids = [];
-    // Generar centroides ficticios (puedes modificar esto según tus datos)
-    for (let i = 0; i < nClusters; i++) {
-      centroids.push({
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        color: `hsl(${(i * 360) / nClusters}, 70%, 50%)`,
-      });
+    let minB = Infinity;
+    for (let j = 0; j < clusterCount; j++) {
+      if (j === clusterIndex) continue;
+      const otherClusterPoints = data.filter((_, idx) => clusters[idx] === j);
+      const b =
+        otherClusterPoints.reduce(
+          (sum, point) => sum + euclideanDistance(data[i], point),
+          0
+        ) / otherClusterPoints.length;
+      if (b < minB) minB = b;
     }
 
-    const assignedPoints = assignPointsToCentroids(processedData, centroids);
-    return { centroids, data: assignedPoints };
-  };
+    silhouetteScores[i] = (minB - a) / Math.max(a, minB);
+  }
 
-  // Llamar a fetchCSVData al montar el componente
-  useEffect(() => {
-    fetchCSVData();
-  }, []);
+  return silhouetteScores.reduce((sum, score) => sum + score, 0) / n;
+};
 
-  // Actualizar los datos y centroides cuando cambie el número de clusters o el CSV
-  useEffect(() => {
-    if (csvData.length > 0) {
-      const { centroids: generatedCentroids, dataPoints: generatedDataPoints } = processData(csvData);
-      setCentroids(generatedCentroids);
-      setDataPoints(generatedDataPoints);
-    }
-  }, [csvData, nClusters]);
-
-  const clusteringData = {
-    datasets: [
-      {
-        label: "Puntos de Datos",
-        data: dataPoints || [],
-        backgroundColor: (dataPoints || []).map(point => point.color || 'gray'),
-        borderColor: (dataPoints || []).map(point => point.color || 'gray'),
-        borderWidth: 1,
-        radius: 6,
-      },
-      {
-        label: "Centroides",
-        data: (centroids || []).map(({ x, y, color }) => ({ x, y })),
-        backgroundColor: (centroids || []).map(({ color }) => `${color || 'gray'}B0`),
-        borderColor: (centroids || []).map(({ color }) => color || 'gray'),
-        borderWidth: 3,
-        radius: 10,
-        pointStyle: "circle",
-      },
-    ],
-  };
-
-  const clusteringOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            return context.dataset.label === "Centroides"
-              ? `Centroides: (${context.raw.x.toFixed(1)}, ${context.raw.y.toFixed(1)})`
-              : `Punto de Datos: (${context.raw.x.toFixed(1)}, ${context.raw.y.toFixed(1)})`;
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Eje X",
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Eje Y",
-        },
-      },
-    },
-  };
-
-  // Generar datos para el gráfico del método del codo
-  const kValues = Array.from({ length: nClusters }, (_, i) => i + 1);
-  const distortions = (kValues || []).map((k) => (10 / k) * Math.random() || 0);
-  const minDistortion = Math.min(...(distortions || []));
-  const startDeclineIndex = (distortions || []).findIndex((d) => d === minDistortion);
-
-  const significantDeclineIndex = (distortions || []).findIndex((d, i, arr) => {
-    if (i === 0 || i === arr.length - 1) return false;
-    return d < arr[i - 1] && d < arr[i + 1];
+const KMeansChart = () => {
+  const [numClusters, setNumClusters] = useState(3);
+  const [chartData, setChartData] = useState({ datasets: [] });
+  const [elbowData, setElbowData] = useState({ labels: [], datasets: [] });
+  const [silhouetteData, setSilhouetteData] = useState({
+    labels: [],
+    datasets: [],
   });
 
-  const elbowData = {
-    labels: kValues || [],
-    datasets: [
-      {
-        label: "Distorsión",
-        data: distortions || [],
-        fill: false,
-        borderColor: "blue",
-        tension: 0.1,
-        pointBorderColor: (ctx) =>
-          ctx.dataIndex >= significantDeclineIndex ? "orange" : "blue",
-        pointBackgroundColor: (ctx) =>
-          ctx.dataIndex >= significantDeclineIndex ? "orange" : "blue",
-        pointRadius: 7,
-      },
-    ],
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/ArchivosEjercicios/crime.csv"
+        );
+        const csvData = await response.text();
+        Papa.parse(csvData, {
+          header: true,
+          dynamicTyping: true,
+          complete: (results) => {
+            const parsedData = results.data;
 
-  const elbowOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            return `Distorsión: ${context.raw.toFixed(2)}`;
+            // Extrae las columnas que quieres usar para el clustering
+            const data = parsedData.map((row) => [
+              row.Murder,
+              row.Assault,
+              row.UrbanPop,
+              row.Rape,
+            ]);
+
+            // Aplica K-means
+            const result = kmeans(data, numClusters);
+            const clusters = result.clusters;
+            const centroids = result.centroids;
+
+            const colors = Array.from(
+              { length: numClusters },
+              (_, i) => `hsl(${i * (360 / numClusters)}, 100%, 50%)`
+            );
+
+            const clusterData = data.map((point, index) => ({
+              x: point[0],
+              y: point[1],
+              backgroundColor: colors[clusters[index]],
+              borderColor: colors[clusters[index]],
+              borderWidth: 1,
+            }));
+
+            const centroidData = centroids.map((centroid, index) => ({
+              x: centroid[0],
+              y: centroid[1],
+              backgroundColor: colors[index],
+              borderColor: colors[index],
+              borderWidth: 2,
+              pointRadius: 10,
+            }));
+
+            setChartData({
+              datasets: [
+                {
+                  label: "Clusters",
+                  data: clusterData,
+                  backgroundColor: clusterData.map((d) => d.backgroundColor),
+                  borderColor: clusterData.map((d) => d.borderColor),
+                  borderWidth: 1,
+                },
+                {
+                  label: "Centroids",
+                  data: centroidData,
+                  backgroundColor: centroidData.map((d) => d.backgroundColor),
+                  borderColor: centroidData.map((d) => d.borderColor),
+                  borderWidth: 1,
+                },
+              ],
+            });
+
+            const calculateMetrics = () => {
+              const elbowX = [];
+              const elbowY = [];
+              const silhouetteX = [];
+              const silhouetteY = [];
+
+              for (let k = 1; k <= 10; k++) {
+                const result = kmeans(data, k);
+                const clusters = result.clusters;
+                const centroids = result.centroids;
+
+                const distances = data.map((point, index) => {
+                  const centroid = centroids[clusters[index]];
+                  return euclideanDistance(point, centroid);
+                });
+
+                const wcss = distances.reduce(
+                  (acc, dist) => acc + dist ** 2,
+                  0
+                );
+                elbowX.push(k);
+                elbowY.push(wcss);
+
+                const silhouette = silhouetteScore(data, clusters, centroids);
+                silhouetteX.push(k);
+                silhouetteY.push(silhouette);
+              }
+
+              setElbowData({
+                labels: elbowX,
+                datasets: [
+                  {
+                    label: "WCSS",
+                    data: elbowY,
+                    fill: false,
+                    borderColor: "rgba(75,192,192,1)",
+                    tension: 0.1,
+                  },
+                ],
+              });
+
+              setSilhouetteData({
+                labels: silhouetteX,
+                datasets: [
+                  {
+                    label: "Silhouette Score",
+                    data: silhouetteY,
+                    fill: false,
+                    borderColor: "rgba(75,192,192,1)",
+                    tension: 0.1,
+                  },
+                ],
+              });
+            };
+
+            calculateMetrics();
           },
-        },
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Número de Clústeres (k)",
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Distorsión",
-        },
-      },
-    },
-  };
+        });
+      } catch (error) {
+        console.error("Error fetching or parsing CSV:", error);
+      }
+    };
+
+    fetchData();
+  }, [numClusters]);
 
   return (
-    <div className="scroll-container">
-      {instrucciones && (
-        <div className="accordion-header" onClick={handleAccordionToggle}>
-          <div className="nueva-vista-header">
-            <FaBookmark className="nueva-vista-icon" />
-            <span>Instrucciones</span>
-          </div>
-          <div className={`accordion-icon ${isOpen ? "open" : ""}`}>
-            {isOpen ? "-" : "+"}
-          </div>
-        </div>
-      )}
-      {instrucciones && (
-        <div className={`accordion-content ${isOpen ? "open" : ""}`}>
-          <p>{instrucciones}</p>
-        </div>
-      )}
-
-      <div style={{ marginTop: "20px" }}>
-        <h2>{tituloEjercicio}</h2>
-        <p>{enunciado}</p>
-      </div>
-
-      <div style={{ marginTop: "20px" }}>
-        <label htmlFor="numClusters">Número de Clústeres:</label>
-        <input
-          type="number"
-          id="numClusters"
-          value={nClusters}
-          onChange={handleClusterChange}
-          min="1"
-          max="10"
-          style={{ width: "100px", marginLeft: "10px" }}
+    <div>
+      <h2>K-means Clustering Visualization</h2>
+      <label htmlFor="numClusters">Number of Clusters:</label>
+      <input
+        id="numClusters"
+        type="range"
+        min="1"
+        max="10"
+        value={numClusters}
+        onChange={(e) => setNumClusters(Number(e.target.value))}
+        style={{ marginBottom: "20px" }}
+      />
+      <span>{numClusters}</span>
+      <Scatter
+        data={chartData}
+        options={{
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "top",
+            },
+            tooltip: {
+              callbacks: {
+                label: function (tooltipItem) {
+                  return `(${tooltipItem.raw.x}, ${tooltipItem.raw.y})`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+            },
+            y: {
+              beginAtZero: true,
+            },
+          },
+        }}
+      />
+      <div style={{ marginTop: "30px" }}>
+        <h2>Elbow Method</h2>
+        <Line
+          data={elbowData}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (tooltipItem) {
+                    return `K: ${tooltipItem.label}, WCSS: ${tooltipItem.raw}`;
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Number of Clusters (K)",
+                },
+                beginAtZero: true,
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "WCSS",
+                },
+                beginAtZero: true,
+              },
+            },
+          }}
         />
       </div>
-
-      <div style={{ marginTop: "40px" }}>
-        <h2>Datos de Clustering</h2>
-        <div style={{ width: "100%", height: "400px" }}>
-          <Scatter data={clusteringData} options={clusteringOptions} />
-        </div>
+      <div style={{ marginTop: "30px" }}>
+        <h2>Silhouette Score</h2>
+        <Line
+          data={silhouetteData}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (tooltipItem) {
+                    return `K: ${tooltipItem.label}, Silhouette Score: ${tooltipItem.raw}`;
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Number of Clusters (K)",
+                },
+                beginAtZero: true,
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Silhouette Score",
+                },
+                beginAtZero: true,
+              },
+            },
+          }}
+        />
       </div>
-
-      <div style={{ marginTop: "40px" }}>
-        <h2>Método del Codo</h2>
-        <div style={{ width: "100%", height: "400px" }}>
-          <Line data={elbowData} options={elbowOptions} />
-        </div>
-      </div>
-
-      <div style={{ marginTop: "20px" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>Clúster</th>
-              <th>Inercia</th>
-            </tr>
-          </thead>
-          <tbody>
-            {kValues && kValues.map((k, index) => (
-              <tr key={k}>
-                <td>{k}</td>
-                <td>{distortions[index]?.toFixed(2) || "N/A"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <Questionnaire
-       idCurso={2}
-      />
     </div>
   );
 };
 
-export default InteractiveClusteringCSV;
+export default KMeansChart;
