@@ -12,6 +12,11 @@ import {
 } from "chart.js";
 import { kmeans } from "ml-kmeans";
 import Papa from "papaparse";
+import { FaBookmark } from "react-icons/fa";
+import CardEjercicio from "../Extras/CardEjercicio";
+import Questionnaire from "../Extras/preguntas";
+import "./InteractiveClusteringPlot.css";
+
 
 // Registra los componentes de Chart.js que vas a usar
 ChartJS.register(
@@ -67,21 +72,34 @@ const silhouetteScore = (data, clusters, centroids) => {
 
 // Define colores pastel más fuertes para los clusters
 const pastelColors = [
-  "#FF8C8C",
-  "#FFBF8C",
-  "#FFFF8C",
-  "#B9FBC0",
-  "#A3C2F0",
-  "#FF8C8C",
-  "#FFC3A0",
-  "#B9FBC0",
-  "#A3E4D7",
-  "#D4A5A5",
+  "#FFCC00",
+  "#0066CC",
+  "#CC3333",
+  "#33CC33",
+  "#9933CC",
+  "#FF6633",
+  "#669999",
+  "#FF99CC",
+  "#CCCC33",
+  "#3366FF",
 ];
 
-const KMeansChart = () => {
-  const [numClusters, setNumClusters] = useState(3);
-  const [barRadius, setBarRadius] = useState(5); // Radio de las puntas
+const InteractiveClusteringCSV = ({
+  instrucciones,
+  metodo,
+  tema,
+  enunciado,
+  tituloEjercicio,
+  num_Clusters,
+})=> {
+  const [instruccionesD, setInstruccionesD] = useState(instrucciones);
+  const [metodoD, setMetodoD] = useState(metodo);
+  const [temaD, setTemaD] = useState(tema);
+  const [isOpen, setIsOpen] = useState(false);
+  const [enunciadoD, setEnunciadoD] = useState(enunciado);
+  const [tituloE, setTituloE] = useState(tituloEjercicio);
+
+  const [numClusters, setNumClusters] = useState(num_Clusters || 4);
   const [chartData, setChartData] = useState({ datasets: [] });
   const [elbowData, setElbowData] = useState({ labels: [], datasets: [] });
   const [silhouetteData, setSilhouetteData] = useState({
@@ -102,7 +120,7 @@ const KMeansChart = () => {
           complete: (results) => {
             const parsedData = results.data;
 
-            // Extrae las columnas que quieres usar para el clustering
+
             const data = parsedData.map((row) => [
               row.Murder,
               row.Assault,
@@ -123,16 +141,16 @@ const KMeansChart = () => {
               backgroundColor: colors[clusters[index]],
               borderColor: colors[clusters[index]],
               borderWidth: 1,
-              pointRadius: 8, // Tamaño de los puntos de los clusters
+              pointRadius: 5, 
             }));
 
             const centroidData = centroids.map((centroid, index) => ({
               x: centroid[0],
               y: centroid[1],
               backgroundColor: colors[index],
-              borderColor: "#000000", // Borde negro para los centroides
-              borderWidth: 3, // Borde grueso para los centroides
-              pointRadius: 12, // Tamaño ajustado para los centroides
+              borderColor: "#000000", 
+              borderWidth: 2,
+              pointRadius: 8, 
             }));
 
             setChartData({
@@ -150,8 +168,8 @@ const KMeansChart = () => {
                   data: centroidData,
                   backgroundColor: centroidData.map((d) => d.backgroundColor),
                   borderColor: centroidData.map((d) => d.borderColor),
-                  borderWidth: 3, // Borde negro grueso
-                  pointRadius: 12, // Tamaño ajustado para los centroides
+                  borderWidth: 3, 
+                  pointRadius: 12, 
                 },
               ],
             });
@@ -230,141 +248,136 @@ const KMeansChart = () => {
     fetchData();
   }, [numClusters]);
 
+  const toggleAccordion = () => setIsOpen(!isOpen);
+
   return (
-    <div>
-      <h2>K-means Clustering Visualization</h2>
-      <label htmlFor="numClusters">Number of Clusters:</label>
-      <input
-        id="numClusters"
-        type="range"
-        min="1"
-        max="10"
-        value={numClusters}
-        onChange={(e) => setNumClusters(Number(e.target.value))}
-        style={{ marginBottom: "20px" }}
-      />
-      <span>{numClusters}</span>
-      <div style={{ marginTop: "20px" }}>
-        <label htmlFor="barRadius">Bar Radius:</label>
+    <div className="scroll-container">
+      {instruccionesD && (
+        <div className="accordion-header" onClick={toggleAccordion}>
+          <div className="nueva-vista-header">
+            <FaBookmark className="nueva-vista-icon" />
+            <span>Instrucciones</span>
+          </div>
+          <div className={`accordion-icon ${isOpen ? "open" : ""}`}>
+            {isOpen ? "-" : "+"}
+          </div>
+        </div>
+      )}
+      {instruccionesD && (
+        <div className={`accordion-content ${isOpen ? "open" : ""}`}>
+          <p>{instruccionesD}</p>
+        </div>
+      )}
+      <h2 style={{ textAlign: "center" }}>{temaD}</h2>
+      <CardEjercicio titulo={tituloE} enunciado={enunciadoD} />
+      <div className="k-means-container">
+      <div className="num-clus">
+        <label htmlFor="numClusters">Número de Clusters:</label>
         <input
-          id="barRadius"
+          id="numClusters"
           type="range"
-          min="0"
-          max="20"
-          value={barRadius}
-          onChange={(e) => setBarRadius(Number(e.target.value))}
-          style={{ marginBottom: "20px", display: "block" }}
+          min="1"
+          max="10"
+          value={numClusters}
+          onChange={(e) => setNumClusters(Number(e.target.value))}
+          style={{ marginBottom: "20px" }}
         />
-        <span>{barRadius}px</span>
+        <span>{numClusters}</span>
       </div>
-      <Scatter
-        data={chartData}
-        options={{
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "top",
-            },
-            tooltip: {
-              callbacks: {
-                label: function (tooltipItem) {
-                  return `(${tooltipItem.raw.x}, ${tooltipItem.raw.y})`;
-                },
-              },
-            },
-          },
-          scales: {
-            x: {
-              beginAtZero: true,
-            },
-            y: {
-              beginAtZero: true,
-            },
-          },
-        }}
-      />
-      <div style={{ marginTop: "30px" }}>
-        <h2>Elbow Method</h2>
+        
+         </div>
+      <div className="elbow-chart ">
+        <h2>Método del codo</h2>
         <Line
           data={elbowData}
           options={{
             responsive: true,
-            plugins: {
-              legend: {
-                position: "top",
-              },
-              tooltip: {
-                callbacks: {
-                  label: function (tooltipItem) {
-                    return `K: ${tooltipItem.label}, WCSS: ${tooltipItem.raw}`;
-                  },
-                },
-              },
-            },
             scales: {
               x: {
-                title: {
-                  display: true,
-                  text: "Number of Clusters (K)",
-                },
                 beginAtZero: true,
               },
               y: {
-                title: {
-                  display: true,
-                  text: "WCSS",
-                },
                 beginAtZero: true,
               },
             },
           }}
         />
       </div>
-      <div style={{ marginTop: "30px" }}>
-        <h2>Siluette Method</h2>
-        <Bar
-          data={silhouetteData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                position: "top",
+      <hr className="divider" />
+     
+      
+
+      <div style={{ marginTop: "20px" }} className="graficasK">
+
+      <div className="silhouette">
+          <h2>Gráfica de silueta</h2>
+          <Bar
+            data={silhouetteData}
+            options={{
+              indexAxis: "y",
+              responsive: true,
+              scales: {
+                x: {
+                  beginAtZero: true,
+                },
+                y: {
+                  beginAtZero: true,
+                },
               },
-              tooltip: {
-                callbacks: {
-                  label: function (tooltipItem) {
-                    return `K: ${tooltipItem.label}, Silhouette Score: ${tooltipItem.raw}`;
+
+              plugins: {
+                legend: {
+                  position: "top",
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function (tooltipItem) {
+                      return `Score: ${tooltipItem.raw}`;
+                    },
                   },
                 },
               },
-            },
-            indexAxis: "y", // Esto cambia las barras a horizontal
-            elements: {
-              bar: {
-                borderRadius: 15, // Modifica el radio de las puntas de las barras
-              },
-            },
-            scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: "Silhouette Score",
+            }}
+          />
+        </div>
+        <div className="k-means">
+          <h2>Gráfica K-means</h2>
+          <Scatter
+            data={chartData}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "top",
                 },
-                beginAtZero: true,
-              },
-              y: {
-                title: {
-                  display: true,
-                  text: "Number of Clusters (K)",
+                tooltip: {
+                  callbacks: {
+                    label: function (tooltipItem) {
+                      return `(${tooltipItem.raw.x}, ${tooltipItem.raw.y})`;
+                    },
+                  },
                 },
-                beginAtZero: true,
               },
-            },
-          }}
-        />
+              scales: {
+                x: {
+                  beginAtZero: true,
+                },
+                y: {
+                  beginAtZero: true,
+                },
+              },
+            }}
+          />
+        </div>
+
+       
+      </div>
+      <hr className="divider" />
+      <div style={{ marginTop: "20px" }}>
+        <Questionnaire idCurso={2} />
       </div>
     </div>
   );
 };
 
-export default KMeansChart;
+export default InteractiveClusteringCSV;

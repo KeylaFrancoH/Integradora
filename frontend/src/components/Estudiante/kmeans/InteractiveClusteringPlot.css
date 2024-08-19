@@ -3,42 +3,15 @@
     padding: 20px;
   }
   
-  .accordion-header {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f7f7f7;
-  }
-  
-  .accordion-icon {
-    font-weight: bold;
-    font-size: 18px;
-  }
-  
-  .accordion-content {
-    display: none;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-top: none;
-    background-color: #fff;
-  }
-  
-  .accordion-content.open {
-    display: block;
-  }
-  
+ 
   .highlight-row {
-    background-color: #ffcccb; /* Color de fondo para filas que comienzan a disminuir */
+    background-color: #ffcccb; 
   }
   
   .graficasK{
     display: flex;
     justify-content: space-between;
-    align-items: center;
+   gap: 20px;
     margin-bottom: 10px;
   }
   table {
@@ -94,4 +67,11 @@
     margin-bottom: 10px;
     padding-top: 30px;
     gap:20px;
+  }
+
+  .k-means-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
   }

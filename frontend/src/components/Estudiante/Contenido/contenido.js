@@ -13,10 +13,8 @@ import {
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import InteractiveChart from "../graficaInteractiva/graficaInteractiva";
-import InteractiveClusteringPlot from "../kmeans/InteractiveClusteringPlot";
+import KMeansChart from "../kmeans/InteractiveClusteringPlot";
 import InteractiveClusteringCSV from "../kmeans/InteractiveClusteringCSV";
-import ElbowPlot from "../graficaCodo/codo";
-import KMeansChart from "../kmeans/prueba";
 const StepCard = ({ title, content }) => (
   <div className="step-card">
     <h2>{title}</h2>
@@ -26,7 +24,6 @@ const StepCard = ({ title, content }) => (
 
 // Componente para mostrar puntos
 const PointsList = ({ points }) => {
-  console.log("POINTSSSS", points);
   const pointsElements = [];
 
   if (points.length > 0) {
@@ -461,34 +458,20 @@ const Contenido = () => {
             tituloEjercicio={tituloEjercicio}
           />
         ) : idCurso === 2 ? (
-          metodo !== "0" /*
-              <InteractiveClusteringPlot
-                instrucciones={instrucciones}
-                metodo={metodo}
-                tema={temaTitle}
-                enunciado={enunciado}
-                tituloEjercicio={tituloEjercicio}
-                n_cluster={numero_clusters}
-                n_iter={numero_iteraciones}
-              /> */ ? (
+          metodo !== "0"  ? (
             <KMeansChart  instrucciones={instrucciones}
             metodo={metodo}
             tema={temaTitle}
             enunciado={enunciado}
             tituloEjercicio={tituloEjercicio}/>
           ) : (
-            <InteractiveClusteringCSV file={"crime.csv"} />
-          )
-        ) : /*
-          <ElbowPlot
-            instrucciones={instrucciones}
+            <InteractiveClusteringCSV instrucciones={instrucciones}
             metodo={metodo}
             tema={temaTitle}
             enunciado={enunciado}
-            tituloEjercicio={tituloEjercicio}
-            n_cluster={numero_clusters}
-            n_iter={numero_iteraciones}
-          />*/
+            tituloEjercicio={tituloEjercicio} num_Clusters={numero_clusters} />
+          )
+        ) :
         null,
     },
   ];
