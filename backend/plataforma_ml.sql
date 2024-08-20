@@ -1,4 +1,4 @@
-#drop schema Plataforma_ML;
+drop schema Plataforma_ML;
 CREATE SCHEMA IF NOT EXISTS Plataforma_ML;
 USE Plataforma_ML;
 
@@ -133,8 +133,8 @@ CREATE TABLE IF NOT EXISTS ArchivoEjercicios (
     FOREIGN KEY (idTema) REFERENCES Tema(idTema)
 );
 
-
-
+INSERT INTO Usuario (Nombre, Apellido, Correo, Contrasena, idAdmin)
+VALUES ('Keyla', 'Franco', 'juan.perez@example.com', 'password123', 1);
 
 INSERT INTO Curso (idCurso, Titulo, Descripcion) VALUES
 (1, 'Aprendizaje Supervisado', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'),
@@ -165,3 +165,79 @@ INSERT INTO Grafico (idGrafico, idCurso, Tipo_grafico, etiqueta) VALUES
 (9, 2, 'Gráfico de Validación Cruzada ', true),
 (10, 2, 'Gráfico de Búsqueda de Cuadrícula (Grid Search) ', true),
 (11, 1, 'Gráfico de Ajuste de Línea ', true);
+
+INSERT INTO tema (idTema, idCurso, Titulo, Subtitulo, Material)
+VALUES (1, 1, 'Regrésion Lineal', '', 'La regresión lineal es un método estadístico fundamental para analizar la relación entre una variable dependiente y una o más variables independientes. Su objetivo principal es ajustar una línea recta a los datos de manera que minimice la diferencia entre los valores observados y los valores predichos por el modelo. Esta línea se define por dos parámetros clave: la pendiente y la intersección. La pendiente representa el cambio en la variable dependiente por cada unidad de cambio en la variable independiente, mientras que la intersección es el valor de la variable dependiente cuando la variable independiente es cero.
+En la práctica de la regresión lineal, encontrar los valores óptimos para estos parámetros es crucial para obtener un modelo preciso. Para lograr esto, se emplea el descenso del gradiente, una técnica de optimización que ajusta iterativamente los parámetros del modelo para minimizar una función de coste. Este proceso busca la mejor combinación de parámetros que reduzca el error entre las predicciones del modelo y los datos reales. La función de coste mide cuán lejos están las predicciones del modelo de los valores reales, y el descenso del gradiente ajusta los parámetros para reducir este error.
+En el ámbito del Machine Learning, los hiperparámetros juegan un papel importante en la configuración del modelo. Estos son parámetros que se establecen antes del entrenamiento y que afectan el rendimiento del modelo. Elegir incorrectamente los hiperparámetros puede resultar en un modelo que no generaliza bien a nuevos datos, lo que puede llevar al subajuste, donde el modelo no captura adecuadamente la relación en los datos de entrenamiento. El ajuste adecuado de estos hiperparámetros, junto con el uso efectivo del descenso del gradiente, es crucial para lograr un modelo de regresión lineal que sea tanto preciso como generalizable.
+');
+
+
+
+INSERT INTO enlaces (idTema, Enlace)
+VALUES (1, 'https://www.youtube.com/watch?v=sRuzK3-8Rms');
+
+INSERT INTO enlaces (idTema, Enlace)
+VALUES (1, 'https://forms.gle/NHDXsivzkPGprvkJ6');
+
+INSERT INTO enlaces (idTema, Enlace)
+VALUES (1, 'https://forms.gle/R3FGr3fcSw4VJxnMA');
+
+
+INSERT INTO configuracion (idTema, Titulo, Enunciado, idFormula, idGrafico, habilitado, intentos, instrucciones)
+VALUES (1, 'Gráfica de Regresión', '', 3, 1, 1, 1, 'Modifique los valores de la gráfica para encontrar la solución a las preguntas de la encuesta. No olvidar llenar el formulario de Post evaluación y satisfacción.');
+
+
+INSERT INTO puntos (idConfiguracion, punto_X, punto_Y)
+VALUES (1, 100, 180);
+
+INSERT INTO puntos (idConfiguracion, punto_X, punto_Y)
+VALUES (1, 150, 220);
+
+INSERT INTO puntos (idConfiguracion, punto_X, punto_Y)
+VALUES (1, 200, 280);
+
+INSERT INTO puntos (idConfiguracion, punto_X, punto_Y)
+VALUES (1, 250, 320);
+
+INSERT INTO puntos (idConfiguracion, punto_X, punto_Y)
+VALUES (1, 300, 370);
+
+INSERT INTO puntos (idConfiguracion, punto_X, punto_Y)
+VALUES (1, 350, 410);
+
+
+INSERT INTO parametro (idParametro, idConfiguracion, formula, parametro_regularización, intercepto, metodo_inicialización, numero_clusters, numero_iteraciones)
+VALUES (1, 1, 'J(\beta_0, \beta_1) = \frac{1}{2m} \sum_{i=1}^m \left( y_i - (\beta_0 + \beta_1 x_i) \right)^2', '', 1, '', 0, 0);
+
+INSERT INTO tema (idTema, idCurso, Titulo, Subtitulo, Material)
+VALUES (2, 2, 'K-Means', '', 'El algoritmo K-means es una técnica de aprendizaje no supervisado utilizada para la agrupación de datos. Su objetivo principal es particionar un conjunto de datos en un número definido de clústeres, donde cada clúster contiene datos que son más similares entre sí que con los datos de otros clústeres. Para lograr esto, el algoritmo asigna cada punto de datos al clúster cuyo centroide (el promedio de los puntos en el clúster) es el más cercano, y luego recalcula los centroides de los clústeres en función de las nuevas asignaciones. El proceso se repite iterativamente hasta que los centroides se estabilizan y el algoritmo converge. Una de las principales limitaciones del algoritmo K-means es que requiere que el número de clústeres se especifique de antemano. Esta necesidad de definir el número de clústeres, conocido como "k", puede ser problemática ya que una elección incorrecta puede llevar a una segmentación inadecuada de los datos. Si el número de clústeres es muy pequeño, los datos pueden estar agrupados de manera demasiado general, mientras que un número demasiado grande puede resultar en clústeres con poca cohesión. Esto afecta negativamente la calidad de la segmentación y la interpretación de los resultados. El método del codo (Elbow Method) es una técnica comúnmente utilizada para determinar el número óptimo de clústeres en el algoritmo K-means. En esta técnica, se ejecuta el algoritmo K-means para diferentes valores de k y se calcula la suma de los errores cuadráticos dentro del clúster (SSE) para cada valor de k. El objetivo es identificar el punto en el que la reducción en SSE comienza a desacelerarse, lo que indica el número adecuado de clústeres. Este punto de inflexión, o "codo", proporciona una estimación del valor óptimo de k para el modelo.');
+
+
+
+
+
+INSERT INTO enlaces (idTema, Enlace)
+VALUES (2, 'https://www.youtube.com/watch?v=2BICD8fzlDs');
+
+
+INSERT INTO configuracion (idTema, Titulo, Enunciado, idFormula, idGrafico, habilitado, intentos, instrucciones)
+VALUES (2, 'Gráficas de K-Means', '', 6, 5, 1, 1, 'Modifique los valores de la gráfica para encontrar la solución a las preguntas de la encuesta. No olvidar llenar el formulario de Post evaluación y satisfacción.');
+
+INSERT INTO archivoejercicios (idConfiguracion, idTema, rutaArchivo, descripcion)
+VALUES (2, 2, 'http://localhost:3000/ArchivosEjercicios/crime.csv', '');
+
+INSERT INTO enlaces (idTema, Enlace)
+VALUES (2, 'https://forms.gle/R3FGr3fcSw4VJxnMA');
+
+INSERT INTO enlaces (idTema, Enlace)
+VALUES (2, 'https://forms.gle/NHDXsivzkPGprvkJ6');
+INSERT INTO parametro (idConfiguracion, formula, parametro_regularización, intercepto, metodo_inicialización, numero_clusters, numero_iteraciones)
+VALUES (2, 'J = \sum_{i=1}^k \sum_{x \in C_i} \| x - \mu_i \|^2', '', 1, 0, 0, 0);
+
+
+
+
+
+
+
