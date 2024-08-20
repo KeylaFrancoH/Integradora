@@ -260,3 +260,55 @@ textarea.material-content {
 .modal button:first-child {
   margin-right: auto;
 }
+
+.modal-button-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px; /* Espacio entre los botones */
+  margin-top: 10px; /* Espacio entre los botones y los inputs */
+}
+
+.modalb1, .modalb2 {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.modalb1 {
+  background: #007bff;
+  color: #fff;
+}
+
+.modalb1:hover {
+  background: #0056b3;
+}
+
+.modalb2 {
+  background: #6c757d;
+  color: #fff;
+}
+
+.modalb2:hover {
+  background: #5a6268;
+}
+
+
+h2{
+  font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+    font-family: 'Roboto', sans-serif;
+}

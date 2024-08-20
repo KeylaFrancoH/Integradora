@@ -17,7 +17,6 @@ import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
 import "./InteractiveClusteringPlot.css";
 
-
 // Registra los componentes de Chart.js que vas a usar
 ChartJS.register(
   CategoryScale,
@@ -91,7 +90,7 @@ const InteractiveClusteringCSV = ({
   enunciado,
   tituloEjercicio,
   num_Clusters,
-})=> {
+}) => {
   const [instruccionesD, setInstruccionesD] = useState(instrucciones);
   const [metodoD, setMetodoD] = useState(metodo);
   const [temaD, setTemaD] = useState(tema);
@@ -120,7 +119,6 @@ const InteractiveClusteringCSV = ({
           complete: (results) => {
             const parsedData = results.data;
 
-
             const data = parsedData.map((row) => [
               row.Murder,
               row.Assault,
@@ -141,16 +139,16 @@ const InteractiveClusteringCSV = ({
               backgroundColor: colors[clusters[index]],
               borderColor: colors[clusters[index]],
               borderWidth: 1,
-              pointRadius: 5, 
+              pointRadius: 5,
             }));
 
             const centroidData = centroids.map((centroid, index) => ({
               x: centroid[0],
               y: centroid[1],
               backgroundColor: colors[index],
-              borderColor: "#000000", 
+              borderColor: "#000000",
               borderWidth: 2,
-              pointRadius: 8, 
+              pointRadius: 8,
             }));
 
             setChartData({
@@ -168,8 +166,8 @@ const InteractiveClusteringCSV = ({
                   data: centroidData,
                   backgroundColor: centroidData.map((d) => d.backgroundColor),
                   borderColor: centroidData.map((d) => d.borderColor),
-                  borderWidth: 3, 
-                  pointRadius: 12, 
+                  borderWidth: 3,
+                  pointRadius: 12,
                 },
               ],
             });
@@ -271,22 +269,21 @@ const InteractiveClusteringCSV = ({
       <h2 style={{ textAlign: "center" }}>{temaD}</h2>
       <CardEjercicio titulo={tituloE} enunciado={enunciadoD} />
       <div className="k-means-container">
-      <div className="num-clus">
-        <label htmlFor="numClusters">Número de Clusters:</label>
-        <input
-          id="numClusters"
-          type="range"
-          min="1"
-          max="10"
-          value={numClusters}
-          onChange={(e) => setNumClusters(Number(e.target.value))}
-          style={{ marginBottom: "20px" }}
-        />
-        <span>{numClusters}</span>
+        <div className="num-clus">
+          <label htmlFor="numClusters">Número de Clusters:</label>
+          <input
+            id="numClusters"
+            type="range"
+            min="1"
+            max="10"
+            value={numClusters}
+            onChange={(e) => setNumClusters(Number(e.target.value))}
+            style={{ marginBottom: "20px" }}
+          />
+          <span>{numClusters}</span>
+        </div>
       </div>
-        
-         </div>
-      <div className="elbow-chart ">
+      <div className="elbow-chart " style={{ width: "60%", height: "30%" }}>
         <h2>Método del codo</h2>
         <Line
           data={elbowData}
@@ -304,12 +301,9 @@ const InteractiveClusteringCSV = ({
         />
       </div>
       <hr className="divider" />
-     
-      
 
       <div style={{ marginTop: "20px" }} className="graficasK">
-
-      <div className="silhouette">
+        <div className="silhouette">
           <h2>Gráfica de silueta</h2>
           <Bar
             data={silhouetteData}
@@ -369,8 +363,6 @@ const InteractiveClusteringCSV = ({
             }}
           />
         </div>
-
-       
       </div>
       <hr className="divider" />
       <div style={{ marginTop: "20px" }}>

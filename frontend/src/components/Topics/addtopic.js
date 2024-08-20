@@ -47,30 +47,32 @@ const AddTopic = () => {
     if (uploadedFiles.length > 0) {
       try {
         const formData = new FormData();
-        formData.append('tema', titulo); // Usar 'titulo' como tema
+        formData.append("tema", titulo); // Usar 'titulo' como tema
         uploadedFiles.forEach(({ file }) => {
-          formData.append('file', file);
+          formData.append("file", file);
         });
 
-        const response = await fetch('http://localhost:3000/upload', {
-          method: 'POST',
+        const response = await fetch("http://localhost:3000/upload", {
+          method: "POST",
           body: formData,
         });
 
         if (!response.ok) {
-          throw new Error('Error al subir archivos');
+          throw new Error("Error al subir archivos");
         }
 
-        console.log('Archivos subidos exitosamente');
+        console.log("Archivos subidos exitosamente");
       } catch (error) {
         console.error(error);
-        setErrorMessage('Hubo un problema al subir los archivos.');
+        setErrorMessage("Hubo un problema al subir los archivos.");
         return;
       }
     }
 
     // Navegar a la siguiente página
-    navigate(`/anadir-tema/${idCurso}/grafica`, { state: { cursoTitulo, data } });
+    navigate(`/anadir-tema/${idCurso}/grafica`, {
+      state: { cursoTitulo, data },
+    });
   };
 
   const handleOpenModal = () => setModalIsOpen(true);
@@ -251,12 +253,14 @@ const AddTopic = () => {
           value={fileDescription}
           onChange={(e) => setFileDescription(e.target.value)}
         />
-        <button type="button" onClick={handleAddFile}>
-          Añadir archivo
-        </button>
-        <button type="button" onClick={handleCloseModal}>
-          Cerrar
-        </button>
+        <div className="modal-button-container">
+          <a className="modalb1" type="button" onClick={handleAddFile}>
+            Añadir archivo
+          </a>
+          <a className="modalb2" type="button" onClick={handleCloseModal}>
+            Cerrar
+          </a>
+        </div>
       </Modal>
     </div>
   );
