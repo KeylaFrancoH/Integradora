@@ -1,76 +1,101 @@
 import React, { useState } from 'react';
 import './preguntas.css';
-
 const questions = [
   {
     id: 1,
     idCurso: 1,
-    text: "¿Cuál es el objetivo principal de la regresión lineal?",
+    idTema: 1,
+    text: "¿Cómo afecta agregar más puntos a la gráfica de regresión lineal a la pendiente de la línea de ajuste?",
     points: 10,
     options: [
-      "Ajustar una línea que minimice el error entre los datos",
-      "Maximizar la precisión del modelo",
-      "Predecir la variable dependiente"
+      "a) La pendiente siempre aumenta.",
+      "b) La pendiente siempre disminuye.",
+      "c) La pendiente puede aumentar, disminuir o mantenerse igual dependiendo de los puntos añadidos.",
+      "d) La pendiente no se ve afectada por la adición de puntos."
     ],
-    correctAnswer: 0,
+    correctAnswer: 2,
     attempts: 1,
-    feedback: "El objetivo principal de la regresión lineal es ajustar una línea que minimice el error entre los datos y la línea ajustada."
+    feedback: "La pendiente puede variar dependiendo de los puntos añadidos. Si los puntos siguen la tendencia general, la pendiente podría no cambiar significativamente, pero si son puntos extremos, la pendiente podría aumentar o disminuir."
   },
   {
     id: 2,
     idCurso: 1,
-    text: "¿Qué representa la pendiente (coeficiente) en una ecuación de regresión lineal?",
+    idTema: 1,
+    text: "Si se eliminan puntos extremos de la gráfica, ¿cómo cambia la ecuación de la línea de regresión?",
     points: 10,
     options: [
-      "El cambio en la variable dependiente por unidad de cambio en la variable independiente",
-      "La intersección en el eje y",
-      "La desviación estándar de los datos"
+      "a) La pendiente y la intersección de la línea de regresión permanecen iguales.",
+      "b) La pendiente y la intersección de la línea de regresión cambian.",
+      "c) Solo la intersección cambia, mientras que la pendiente permanece igual.",
+      "d) Solo la pendiente cambia, mientras que la intersección permanece igual."
     ],
-    correctAnswer: 0,
+    correctAnswer: 1,
+    attempts: 1,
+    feedback: "Eliminar puntos extremos generalmente cambia tanto la pendiente como la intersección, ya que estos puntos tienen una gran influencia en la línea de regresión."
+  },
+  {
+    id: 3,
+    idCurso: 1,
+    idTema: 1,
+    text: "¿Qué sucede con el coeficiente de determinación (R²) cuando se agregan o eliminan puntos en la gráfica?",
+    points: 10,
+    options: [
+      "a) R² siempre aumenta cuando se agregan puntos.",
+      "b) R² siempre disminuye cuando se eliminan puntos.",
+      "c) R² puede aumentar o disminuir dependiendo de la posición de los puntos añadidos o eliminados.",
+      "d) R² no se ve afectado por la adición o eliminación de puntos."
+    ],
+    correctAnswer: 2,
     attempts: 2,
-    feedback: "La pendiente en una ecuación de regresión lineal representa el cambio en la variable dependiente por unidad de cambio en la variable independiente."
+    feedback: "El coeficiente de determinación (R²) puede aumentar o disminuir según si los puntos añadidos o eliminados refuerzan o debilitan la relación lineal."
   },
   {
     id: 1,
     idCurso: 2,
-    text: "¿Cuál es el objetivo principal del algoritmo K-means?",
+    idTema: 2,
+    text: "¿Cuál es el propósito de la gráfica del codo en el proceso de clustering?",
     points: 10,
     options: [
-      "Minimizar la suma de las distancias cuadradas entre los puntos y el centro del cluster",
-      "Maximizar la separación entre los clusters",
-      "Encontrar la media de todas las variables"
+      "a) Evaluar la homogeneidad de los clusters.",
+      "b) Determinar el número óptimo de clusters.",
+      "c) Visualizar la dispersión de datos dentro de un cluster.",
+      "d) Comparar la distancia entre centroides."
     ],
-    correctAnswer: 0,
+    correctAnswer: 1,
     attempts: 1,
-    feedback: "El objetivo principal del algoritmo K-means es minimizar la suma de las distancias cuadradas entre los puntos y el centro del cluster."
+    feedback: "La gráfica del codo se utiliza para identificar el número óptimo de clusters observando el punto donde la reducción de WCSS comienza a estabilizarse."
   },
   {
     id: 2,
     idCurso: 2,
-    text: "¿Cómo se determina el número de clusters (K) en K-means?",
+    idTema: 2,
+    text: "¿Qué representa la gráfica de silueta en el contexto del clustering?",
     points: 10,
     options: [
-      "Mediante el método del codo",
-      "Utilizando una validación cruzada",
-      "Basado en la distancia entre puntos"
+      "a) La variación del WCSS (Within-Cluster Sum of Squares) a medida que se cambian los clusters.",
+      "b) La calidad de los clusters basada en la similitud de los puntos dentro del mismo cluster en comparación con otros clusters.",
+      "c) La posición de los centroides en relación con los puntos de datos.",
+      "d) El número total de puntos en cada cluster."
     ],
-    correctAnswer: 0,
-    attempts: 2,
-    feedback: "El número de clusters (K) en K-means se determina comúnmente utilizando el método del codo, que busca el punto donde la reducción en la suma de las distancias cuadradas se estabiliza."
+    correctAnswer: 1,
+    attempts: 1,
+    feedback: "La gráfica de silueta mide qué tan bien se agrupan los puntos en su propio cluster en comparación con otros clusters, indicando la calidad del clustering."
   },
   {
     id: 3,
     idCurso: 2,
-    text: "¿Qué sucede si el valor de K en K-means es muy alto?",
+    idTema: 2,
+    text: "En la gráfica del codo, ¿qué se interpreta generalmente cuando el valor del WCSS (Within-Cluster Sum of Squares) alcanza un mínimo absoluto en un punto específico?",
     points: 10,
     options: [
-      "Los clusters pueden ser muy pequeños y específicos, lo que puede llevar al sobreajuste.",
-      "Los clusters serán demasiado grandes y poco específicos.",
-      "El algoritmo no podrá converger correctamente."
+      "a) Se ha encontrado el número óptimo de clusters.",
+      "b) Los datos no se pueden agrupar en más de un cluster.",
+      "c) Todos los puntos de datos están perfectamente agrupados en un solo cluster.",
+      "d) La dispersión dentro de los clusters es máxima."
     ],
     correctAnswer: 0,
-    attempts: 1,
-    feedback: "Si el valor de K es muy alto, los clusters pueden ser muy pequeños y específicos, lo que puede llevar al sobreajuste."
+    attempts: 2,
+    feedback: "Cuando el WCSS alcanza un mínimo absoluto, se ha encontrado el número óptimo de clusters, donde la adición de más clusters no mejora significativamente la agrupación."
   }
 ];
 
