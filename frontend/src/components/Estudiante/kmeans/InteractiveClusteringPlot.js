@@ -26,11 +26,9 @@ ChartJS.register(
   Legend
 );
 
-// Función para calcular la distancia euclidiana
 const euclideanDistance = (a, b) =>
   Math.sqrt(a.reduce((acc, val, i) => acc + (val - b[i]) ** 2, 0));
 
-// Función para calcular el coeficiente de silueta
 const silhouetteScore = (data, clusters, centroids) => {
   const n = data.length;
   const clusterCount = centroids.length;

@@ -8,12 +8,12 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #00274C; /* Color del fondo del encabezado */
+    background-color: #00274C; 
     padding: 10px;
   }
   
   .logo {
-    height: 50px; /* Ajusta el tamaño del logo según sea necesario */
+    height: 50px; 
   }
   
   .nav a {
@@ -25,14 +25,14 @@ body {
   
 
   .logout {
-    padding: 10px 20px; /* Ajusta el espacio interno del botón */
-    border: none; /* Opcional: quita el borde si es necesario */
+    padding: 10px 20px; 
+    border: none; 
     background-color: #00909E;
-    color: #fff; /* Cambia el color del texto */
-    font-size: 16px; /* Ajusta el tamaño del texto */
-    border-radius: 5px; /* Opcional: para bordes redondeados */
-    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-    margin: 0 30px; /* Espacio externo a los lados del botón */
+    color: #fff; 
+    font-size: 16px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    margin: 0 30px; 
 
 }
 

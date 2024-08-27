@@ -7,31 +7,31 @@ html, body, #root {
 .nueva-vista-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Asegura que el contenido esté centrado horizontalmente */
+  align-items: center; 
   padding: 20px;
   width: 100vw;
   box-sizing: border-box;
 }
 
 .header-container {
-  width: 80vw; /* Ajusta el ancho al mismo que los botones de navegación */
-  text-align: left; /* Alinea el texto a la izquierda */
+  width: 80vw; 
+  text-align: left; 
   margin-bottom: 20px;
 }
 
 .clases {
-  margin-left: 0; /* Ajusta el margen izquierdo si es necesario */
+  margin-left: 0; 
 }
 
 .underline {
   height: 2px;
-  background-color: #000; /* Color de la línea subrayada */
-  margin-top: 5px; /* Espacio entre el h1 y la línea */
-  width: 100%; /* Asegura que la línea ocupe todo el ancho del contenedor */
+  background-color: #000; 
+  margin-top: 5px; 
+  width: 100%; 
 }
 
 .accordion {
-  width: 80vw; /* Igual al ancho del contenedor del título */
+  width: 80vw; 
   margin: 20px 0;
 }
 

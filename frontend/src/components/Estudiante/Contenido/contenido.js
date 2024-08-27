@@ -372,7 +372,13 @@ const Contenido = () => {
   const stepContents = [
     {
       title: <div className="vista1titulo">{temaTitle}</div>,
-      content: <div>{material}</div>,
+      content: (
+        <div className="material-texto">
+          {material.split("\n").map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+      ),
     },
     {
       title: <div className="vista1titulo">Enlaces de Consulta</div>,
@@ -566,7 +572,7 @@ const Contenido = () => {
         </button>
       </div>
       <div className="step-container">
-        <StepCard
+        <StepCard className="scroll-container"
           title={stepContents[currentStep - 1].title}
           content={stepContents[currentStep - 1].content}
         />

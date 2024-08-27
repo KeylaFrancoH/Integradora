@@ -264,8 +264,8 @@ textarea.material-content {
 .modal-button-container {
   display: flex;
   justify-content: flex-start;
-  gap: 10px; /* Espacio entre los botones */
-  margin-top: 10px; /* Espacio entre los botones y los inputs */
+  gap: 10px; 
+  margin-top: 10px; 
 }
 
 .modalb1, .modalb2 {

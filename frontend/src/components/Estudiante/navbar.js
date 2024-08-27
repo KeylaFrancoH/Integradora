@@ -1,6 +1,6 @@
 import React from 'react';
 import './navbar.css';
-import logo from '../../assets/fiec.png'; // Ajusta la ruta según tu estructura de carpetas
+import logo from '../../assets/fiec.png'; 
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 const Navbar = () => {

@@ -1,7 +1,7 @@
 {
   "integradora": {
     "username": "root",
-    "password": "root",
+    "password": "21042001",
     "database": "plataforma_ml",
     "host": "127.0.0.1",
     "dialect": "mysql",

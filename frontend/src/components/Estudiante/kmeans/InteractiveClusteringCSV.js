@@ -17,7 +17,7 @@ import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
 import "./InteractiveClusteringPlot.css";
 
-// Registra los componentes de Chart.js que vas a usar
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,11 +28,9 @@ ChartJS.register(
   Legend
 );
 
-// Función para calcular la distancia euclidiana
 const euclideanDistance = (a, b) =>
   Math.sqrt(a.reduce((acc, val, i) => acc + (val - b[i]) ** 2, 0));
 
-// Función para calcular el coeficiente de silueta
 const silhouetteScore = (data, clusters, centroids) => {
   const n = data.length;
   const clusterCount = centroids.length;
@@ -69,7 +67,6 @@ const silhouetteScore = (data, clusters, centroids) => {
   return silhouetteScores.reduce((sum, score) => sum + score, 0) / n;
 };
 
-// Define colores pastel más fuertes para los clusters
 const pastelColors = [
   "#FFCC00",
   "#0066CC",
@@ -126,7 +123,6 @@ const InteractiveClusteringCSV = ({
               row.Rape,
             ]);
 
-            // Aplica K-means
             const result = kmeans(data, numClusters);
             const clusters = result.clusters;
             const centroids = result.centroids;
@@ -213,7 +209,6 @@ const InteractiveClusteringCSV = ({
                 ],
               });
 
-              // Ordenar y actualizar los datos de silueta en orden descendente
               const reversedSilhouetteX = silhouetteX.slice().reverse();
               const reversedSilhouetteY = silhouetteY.slice().reverse();
 

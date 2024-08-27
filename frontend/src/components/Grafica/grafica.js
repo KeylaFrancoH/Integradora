@@ -199,7 +199,7 @@ const Grafica = () => {
 
   const handleSave = async () => {
     try {
-      // Enviar datos de `data` a /api/temas
+    
       const temaResponse = await axios.post("http://localhost:3000/api/temas", {
         idCurso,
         Titulo: dataRecibida.titulo,
@@ -207,7 +207,7 @@ const Grafica = () => {
         Material: dataRecibida.material,
       });
 
-      // Guardar archivos subidos
+
 
       for (const archivo of dataRecibida.uploadedFiles) {
         await axios.post("http://localhost:3000/api/archivos", {
@@ -276,7 +276,6 @@ const Grafica = () => {
       if (idCurso === "2") {
         let isValid = true;
 
-        // Usar .trim() para eliminar espacios en blanco y verificar si el valor es una cadena vacía
         if (!numeroClusters?.trim()) {
           setErrorClusters("Es necesario introducir un número de clústers.");
           isValid = false;

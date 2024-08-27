@@ -1,4 +1,4 @@
-/* Contenedor principal */
+
 .main-container {
   max-width: 1000px;
   margin: 0 auto;
@@ -7,7 +7,6 @@
   border-radius: 8px;
 }
 
-/* Título principal */
 header h1 {
   font-size: 28px;
   color: #2c3e50;
@@ -16,7 +15,6 @@ header h1 {
   font-weight: bold;
 }
 
-/* Contenedor del formulario */
 form {
   background: #ffffff;
   border-radius: 8px;
@@ -25,7 +23,6 @@ form {
   border: 1px solid #e0e0e0;
 }
 
-/* Títulos de sección */
 .section h2 {
   font-size: 22px;
   color: #2c3e50;
@@ -34,7 +31,6 @@ form {
   font-weight: bold;
 }
 
-/* Inputs y botones */
 input[type="text"],
 input[type="number"],
 textarea,
@@ -133,7 +129,6 @@ label {
   text-align: center;
 }
 
-/* Subir archivo */
 .upload-btn-wrapper {
   position: relative;
   overflow: hidden;
@@ -170,13 +165,11 @@ label {
   color: #007bff;
 }
 
-/* Radio button con etiqueta */
 .radio-label {
   font-size: 1rem;
   color: #007bff;
 }
 
-/* Inputs y etiquetas en línea */
 .inline-group {
   display: flex;
   align-items: center;
@@ -191,7 +184,6 @@ label {
   flex: 1;
 }
 
-/* Sección de gráficos y etiquetas */
 .grafica-container,
 .etiquetas-container {
   display: flex;
@@ -204,7 +196,6 @@ label {
   margin-top: 5px;
 }
 
-/* Configuración de ejercicios */
 .configuracion-ejercicios-container {
   display: flex;
   flex-direction: column;
@@ -222,7 +213,6 @@ label {
   flex: 0 0 auto;
 }
 
-/* Contenedores de variables y puntos */
 .variables-container,
 .puntos-container {
   display: flex;
@@ -299,7 +289,6 @@ label {
   font-weight: bold;
 }
 
-/* Estilos para el modal */
 .ReactModal__Overlay {
   background-color: rgba(0, 0, 0, 0.5) !important;
 }
