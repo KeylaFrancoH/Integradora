@@ -372,6 +372,8 @@ const KMeansChart = ({
                     display: true,
                     text: "Cluster Label",
                   },
+
+                  reverse: true,
                 },
               },
               plugins: {

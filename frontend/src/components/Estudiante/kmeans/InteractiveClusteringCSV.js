@@ -102,6 +102,40 @@ const InteractiveClusteringCSV = ({
     labels: [],
     datasets: [],
   });
+  const silhouetteScore = (data, clusters, centroids) => {
+    const n = data.length;
+    const clusterCount = centroids.length;
+    const silhouetteScores = new Array(n).fill(0);
+
+    for (let i = 0; i < n; i++) {
+      const clusterIndex = clusters[i];
+      const clusterPoints = data.filter(
+        (_, idx) => clusters[idx] === clusterIndex
+      );
+
+      const a =
+        clusterPoints.reduce(
+          (sum, point) => sum + euclideanDistance(data[i], point),
+          0
+        ) / clusterPoints.length;
+
+      let minB = Infinity;
+      for (let j = 0; j < clusterCount; j++) {
+        if (j === clusterIndex) continue;
+        const otherClusterPoints = data.filter((_, idx) => clusters[idx] === j);
+        const b =
+          otherClusterPoints.reduce(
+            (sum, point) => sum + euclideanDistance(data[i], point),
+            0
+          ) / otherClusterPoints.length;
+        if (b < minB) minB = b;
+      }
+
+      silhouetteScores[i] = (minB - a) / Math.max(a, minB);
+    }
+
+    return silhouetteScores;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,6 +161,11 @@ const InteractiveClusteringCSV = ({
             const clusters = result.clusters;
             const centroids = result.centroids;
 
+            const silhouetteScores = silhouetteScore(
+              data,
+              clusters,
+              centroids
+            );
             const colors = pastelColors.slice(0, numClusters);
 
             const clusterData = data.map((point, index) => ({
@@ -200,7 +239,7 @@ const InteractiveClusteringCSV = ({
                 labels: elbowX,
                 datasets: [
                   {
-                    label: "WCSS",
+                    label: "Codo",
                     data: elbowY,
                     fill: false,
                     borderColor: "#FF6F61",
@@ -209,29 +248,39 @@ const InteractiveClusteringCSV = ({
                 ],
               });
 
-              const reversedSilhouetteX = silhouetteX.slice().reverse();
-              const reversedSilhouetteY = silhouetteY.slice().reverse();
+              const averageSilhouetteScores = Array(numClusters)
+          .fill(0)
+          .map((_, i) => {
+            const clusterScores = silhouetteScores.filter(
+              (_, idx) => clusters[idx] === i
+            );
+            const sum = clusterScores.reduce((a, b) => a + b, 0);
+            return clusterScores.length > 0 ? sum / clusterScores.length : 0;
+          });
 
-              setSilhouetteData({
-                labels: reversedSilhouetteX,
-                datasets: [
-                  {
-                    label: "Silhouette Score",
-                    data: reversedSilhouetteY,
-                    backgroundColor: reversedSilhouetteX.map(
-                      (k) => pastelColors[k - 1]
-                    ),
-                    borderColor: reversedSilhouetteX.map(
-                      (k) => pastelColors[k - 1]
-                    ),
-                    borderWidth: 1,
-                  },
-                ],
-              });
-            };
+        let silhouetteByCluster = [];
+        for (let i = 0; i < numClusters; i++) {
+          silhouetteByCluster[i] = silhouetteScores
+            .filter((_, idx) => clusters[idx] === i)
+            .sort((a, b) => b - a);
+        }
 
-            calculateMetrics();
-          },
+        setSilhouetteData({
+          labels: [...Array(numClusters).keys()],
+          datasets: [
+            {
+              label: "Average Silhouette Score",
+              data: averageSilhouetteScores,
+              backgroundColor: pastelColors.slice(0, numClusters),
+              borderColor: pastelColors.slice(0, numClusters),
+              borderWidth: 1,
+            },
+          ],
+        });
+      };
+
+      calculateMetrics();
+    },
         });
       } catch (error) {
         console.error("Error fetching or parsing CSV:", error);
@@ -269,7 +318,7 @@ const InteractiveClusteringCSV = ({
           <input
             id="numClusters"
             type="range"
-            min="1"
+            min="2"
             max="10"
             value={numClusters}
             onChange={(e) => setNumClusters(Number(e.target.value))}
@@ -308,22 +357,24 @@ const InteractiveClusteringCSV = ({
               scales: {
                 x: {
                   beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Silhouette Score",
+                  },
                 },
                 y: {
                   beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Cluster Label",
+                  },
+
+                  reverse: true,
                 },
               },
-
               plugins: {
                 legend: {
-                  position: "top",
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function (tooltipItem) {
-                      return `Score: ${tooltipItem.raw}`;
-                    },
-                  },
+                  display: false,
                 },
               },
             }}
