@@ -127,21 +127,58 @@ const KMeansChart = ({
     [93, 84, 68, 103],
     [109, 241, 46, 228],
   ];
+  const silhouetteScore = (data, clusters, centroids) => {
+    const n = data.length;
+    const clusterCount = centroids.length;
+    const silhouetteScores = new Array(n).fill(0);
 
+    for (let i = 0; i < n; i++) {
+      const clusterIndex = clusters[i];
+      const clusterPoints = data.filter(
+        (_, idx) => clusters[idx] === clusterIndex
+      );
+
+      const a =
+        clusterPoints.reduce(
+          (sum, point) => sum + euclideanDistance(data[i], point),
+          0
+        ) / clusterPoints.length;
+
+      let minB = Infinity;
+      for (let j = 0; j < clusterCount; j++) {
+        if (j === clusterIndex) continue;
+        const otherClusterPoints = data.filter((_, idx) => clusters[idx] === j);
+        const b =
+          otherClusterPoints.reduce(
+            (sum, point) => sum + euclideanDistance(data[i], point),
+            0
+          ) / otherClusterPoints.length;
+        if (b < minB) minB = b;
+      }
+
+      silhouetteScores[i] = (minB - a) / Math.max(a, minB);
+    }
+
+    return silhouetteScores;
+  };
   useEffect(() => {
     const kmeansOptions = {
       maxIterations: numIter,
-      nInit: 10,           
-  tolerance: 0.0001,   
-  init: 'k-means++'  
+      nInit: 10,
+      tolerance: 0.0001,
+      init: "k-means++",
     };
 
     const calculateClusters = () => {
       const result = kmeans(exampleData, numClusters, 400);
-    
+
       const clusters = result.clusters;
       const centroids = result.centroids;
-
+      const silhouetteScores = silhouetteScore(
+        exampleData,
+        clusters,
+        centroids
+      );
       const colors = pastelColors.slice(0, numClusters);
 
       const clusterData = exampleData.map((point, index) => ({
@@ -220,19 +257,31 @@ const KMeansChart = ({
             },
           ],
         });
-        const reversedSilhouetteX = silhouetteX.slice().reverse();
-        const reversedSilhouetteY = silhouetteY.slice().reverse();
+        const averageSilhouetteScores = Array(numClusters)
+          .fill(0)
+          .map((_, i) => {
+            const clusterScores = silhouetteScores.filter(
+              (_, idx) => clusters[idx] === i
+            );
+            const sum = clusterScores.reduce((a, b) => a + b, 0);
+            return clusterScores.length > 0 ? sum / clusterScores.length : 0;
+          });
+
+        let silhouetteByCluster = [];
+        for (let i = 0; i < numClusters; i++) {
+          silhouetteByCluster[i] = silhouetteScores
+            .filter((_, idx) => clusters[idx] === i)
+            .sort((a, b) => b - a);
+        }
 
         setSilhouetteData({
-          labels: reversedSilhouetteX,
+          labels: [...Array(numClusters).keys()],
           datasets: [
             {
-              label: "Silhouette Score",
-              data: reversedSilhouetteY,
-              backgroundColor: reversedSilhouetteX.map(
-                (k) => pastelColors[k - 1]
-              ),
-              borderColor: reversedSilhouetteX.map((k) => pastelColors[k - 1]),
+              label: "Average Silhouette Score",
+              data: averageSilhouetteScores,
+              backgroundColor: pastelColors.slice(0, numClusters),
+              borderColor: pastelColors.slice(0, numClusters),
               borderWidth: 1,
             },
           ],
@@ -246,7 +295,7 @@ const KMeansChart = ({
   }, [numClusters]);
 
   const toggleAccordion = () => setIsOpen(!isOpen);
-  
+
   return (
     <div className="scroll-container">
       {instruccionesD && (
@@ -268,21 +317,20 @@ const KMeansChart = ({
       <h2 style={{ textAlign: "center" }}>{temaD}</h2>
       <CardEjercicio titulo={tituloE} enunciado={enunciadoD} />
       <div className="k-means-container">
-      <div className="num-clus">
-        <label htmlFor="numClusters">Número de Clusters:</label>
-        <input
-          id="numClusters"
-          type="range"
-          min="1"
-          max="10"
-          value={numClusters}
-          onChange={(e) => setNumClusters(Number(e.target.value))}
-          style={{ marginBottom: "20px" }}
-        />
-        <span>{numClusters}</span>
+        <div className="num-clus">
+          <label htmlFor="numClusters">Número de Clusters:</label>
+          <input
+            id="numClusters"
+            type="range"
+            min="2"
+            max="10"
+            value={numClusters}
+            onChange={(e) => setNumClusters(Number(e.target.value))}
+            style={{ marginBottom: "20px" }}
+          />
+          <span>{numClusters}</span>
+        </div>
       </div>
-        
-         </div>
       <div className="elbow-chart ">
         <h2>Método del codo</h2>
         <Line
@@ -301,12 +349,9 @@ const KMeansChart = ({
         />
       </div>
       <hr className="divider" />
-     
-      
 
       <div style={{ marginTop: "20px" }} className="graficasK">
-
-      <div className="silhouette">
+        <div className="silhouette">
           <h2>Gráfica de silueta</h2>
           <Bar
             data={silhouetteData}
@@ -316,22 +361,22 @@ const KMeansChart = ({
               scales: {
                 x: {
                   beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Silhouette Score",
+                  },
                 },
                 y: {
                   beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Cluster Label",
+                  },
                 },
               },
-
               plugins: {
                 legend: {
-                  position: "top",
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function (tooltipItem) {
-                      return `Score: ${tooltipItem.raw}`;
-                    },
-                  },
+                  display: false,
                 },
               },
             }}
@@ -366,8 +411,6 @@ const KMeansChart = ({
             }}
           />
         </div>
-
-       
       </div>
       <hr className="divider" />
       <div style={{ marginTop: "20px" }}>
