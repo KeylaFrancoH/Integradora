@@ -16,7 +16,7 @@ import { FaBookmark } from "react-icons/fa";
 import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
 import "./InteractiveClusteringPlot.css";
-
+import { log } from "@tensorflow/tfjs-core/dist/log";
 
 ChartJS.register(
   CategoryScale,
@@ -102,9 +102,11 @@ const InteractiveClusteringCSV = ({
     labels: [],
     datasets: [],
   });
+  const [averageSilhouetteScore, setAverageSilhouetteScore] = useState(0);
   const silhouetteScore = (data, clusters, centroids) => {
     const n = data.length;
     const clusterCount = centroids.length;
+
     const silhouetteScores = new Array(n).fill(0);
 
     for (let i = 0; i < n; i++) {
@@ -117,7 +119,8 @@ const InteractiveClusteringCSV = ({
         clusterPoints.reduce(
           (sum, point) => sum + euclideanDistance(data[i], point),
           0
-        ) / clusterPoints.length;
+        ) /
+        (clusterPoints.length - 1);
 
       let minB = Infinity;
       for (let j = 0; j < clusterCount; j++) {
@@ -160,12 +163,10 @@ const InteractiveClusteringCSV = ({
             const result = kmeans(data, numClusters);
             const clusters = result.clusters;
             const centroids = result.centroids;
-
-            const silhouetteScores = silhouetteScore(
-              data,
-              clusters,
-              centroids
-            );
+           
+            const silhouetteScores = silhouetteScore(data, clusters, centroids);
+          
+              
             const colors = pastelColors.slice(0, numClusters);
 
             const clusterData = data.map((point, index) => ({
@@ -213,7 +214,10 @@ const InteractiveClusteringCSV = ({
               const silhouetteX = [];
               const silhouetteY = [];
 
-              for (let k = 1; k <= numClusters; k++) {
+              let totalSilhouetteScore = 0;
+              let totalDataPoints = 0;
+
+              for (let k = 2; k <= numClusters; k++) {
                 const result = kmeans(data, k);
                 const clusters = result.clusters;
                 const centroids = result.centroids;
@@ -231,9 +235,21 @@ const InteractiveClusteringCSV = ({
                 elbowY.push(wcss);
 
                 const silhouette = silhouetteScore(data, clusters, centroids);
+
+                totalSilhouetteScore += silhouette.reduce((acc, val) => acc + val, 0);
+                totalDataPoints += silhouette.length;
+                
+                console.log(totalSilhouetteScore);
+                
+
                 silhouetteX.push(k);
-                silhouetteY.push(silhouette);
+                silhouetteY.push(
+                  silhouette.reduce((acc, val) => acc + val, 0) /
+                    silhouette.length
+                );
               }
+              const avgSilhouette = totalSilhouetteScore / totalDataPoints;
+              setAverageSilhouetteScore(avgSilhouette);
 
               setElbowData({
                 labels: elbowX,
@@ -265,22 +281,23 @@ const InteractiveClusteringCSV = ({
             .sort((a, b) => b - a);
         }
 
-        setSilhouetteData({
-          labels: [...Array(numClusters).keys()],
-          datasets: [
-            {
-              label: "Average Silhouette Score",
-              data: averageSilhouetteScores,
-              backgroundColor: pastelColors.slice(0, numClusters),
-              borderColor: pastelColors.slice(0, numClusters),
-              borderWidth: 1,
-            },
-          ],
-        });
-      };
 
-      calculateMetrics();
-    },
+              setSilhouetteData({
+                labels: [...Array(numClusters).keys()],
+                datasets: [
+                  {
+                    label: "Average Silhouette Score",
+                    data: averageSilhouetteScores,
+                    backgroundColor: pastelColors.slice(0, numClusters),
+                    borderColor: pastelColors.slice(0, numClusters),
+                    borderWidth: 1,
+                  },
+                ],
+              });
+            };
+
+            calculateMetrics();
+          },
         });
       } catch (error) {
         console.error("Error fetching or parsing CSV:", error);
@@ -379,6 +396,9 @@ const InteractiveClusteringCSV = ({
               },
             }}
           />
+          <p style={{ textAlign: "center" }}>
+            Average Silhouette Score: {averageSilhouetteScore.toFixed(2)}
+          </p>
         </div>
         <div className="k-means">
           <h2>Gráfica K-means</h2>
