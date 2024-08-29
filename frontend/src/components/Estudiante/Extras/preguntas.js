@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './preguntas.css';
+import successImage from '../../../img/victory.png';
+import retryImage from '../../../img/retroalimentacion.png';
 const questions = [
   {
     id: 1,
@@ -110,6 +112,9 @@ const Questionnaire = ({ idCurso }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [finished, setFinished] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(null); // null, true, or false
+  const [attemptsUsed, setAttemptsUsed] = useState(Array(filteredQuestions.length).fill(0));
+  const [scored, setScored] = useState(Array(filteredQuestions.length).fill(false)); // Para rastrear si se puntuó correctamente
 
   const handleAnswerChange = (event) => {
     const { value } = event.target;
@@ -119,65 +124,68 @@ const Questionnaire = ({ idCurso }) => {
   const handleSubmit = () => {
     const current = filteredQuestions[currentQuestion];
     const response = selectedOption;
-
+    
     if (response === null) {
       alert("Por favor, selecciona una opción.");
       return;
     }
+    
+    const isCorrect = response === current.correctAnswer;
+    let newAttemptsLeft = [...attemptsLeft];
+    let newAttemptsUsed = [...attemptsUsed];
+    newAttemptsUsed[currentQuestion] += 1;
 
-    if (response === current.correctAnswer) {
+    // Si la respuesta es correcta y aún no se ha puntuado para esta pregunta
+    if (isCorrect && !scored[currentQuestion]) {
+      setIsAnswerCorrect(true);
       setModalMessage("¡Felicidades! Respuesta correcta.");
-      setResponses(prev => {
-        const newResponses = [...prev];
-        newResponses[currentQuestion] = response;
-        return newResponses;
+      setScored(prev => {
+        const newScored = [...prev];
+        newScored[currentQuestion] = true;
+        return newScored;
       });
-      if (currentQuestion < filteredQuestions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-        setSelectedOption(null);
-      } else {
-        // Calculate the final score
-        const score = responses.reduce((total, response, index) => {
-          return response === filteredQuestions[index].correctAnswer ? total + filteredQuestions[index].points : total;
-        }, 0) + (response === current.correctAnswer ? current.points : 0);
-        setModalMessage(`Cuestionario finalizado.`);
-        setFinished(true);
-      }
     } else {
-      let newAttemptsLeft = [...attemptsLeft];
+      setIsAnswerCorrect(false); // Respuesta incorrecta
+      setModalFeedback(current.feedback);
       newAttemptsLeft[currentQuestion] -= 1;
-      setModalFeedback(current.feedback); // Ensure feedback is set here
+
       if (newAttemptsLeft[currentQuestion] <= 0) {
+        setModalMessage(`Intentos agotados. La respuesta correcta es: ${current.options[current.correctAnswer]}.`);
         setResponses(prev => {
           const newResponses = [...prev];
           newResponses[currentQuestion] = response;
           return newResponses;
         });
-        if (currentQuestion < filteredQuestions.length - 1) {
-          setCurrentQuestion(currentQuestion + 1);
-          setSelectedOption(null);
-        } else {
-          setFinished(true);
-          setModalMessage(`Respuesta incorrecta. La respuesta correcta es: ${current.options[current.correctAnswer]}. Cuestionario finalizado.`);
-        }
       } else {
         setModalMessage(`Respuesta incorrecta. Intentos restantes: ${newAttemptsLeft[currentQuestion]}.`);
-        setAttemptsLeft(newAttemptsLeft);
       }
-      setShowModal(true);
     }
 
-    if (response === current.correctAnswer) {
-      setShowModal(true);
+    setAttemptsLeft(newAttemptsLeft);
+    setAttemptsUsed(newAttemptsUsed);
+    setShowModal(true);
+
+    // Maneja el avance a la siguiente pregunta o el final del cuestionario
+    if (isCorrect || newAttemptsLeft[currentQuestion] <= 0) {
+      if (currentQuestion < filteredQuestions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedOption(null);
+      } else {
+        setFinished(true);
+        setModalMessage(`Cuestionario finalizado.`);
+      }
     }
   };
-
+  
   const calculateFinalScore = () => {
     return responses.reduce((total, response, index) => {
-      return response === filteredQuestions[index].correctAnswer ? total + filteredQuestions[index].points : total;
+      if (scored[index]) {
+        return total + filteredQuestions[index].points;
+      }
+      return total;
     }, 0);
   };
-
+  
   return (
     <div className="questionnaire">
       <h1 className="title">Cuestionario</h1>
@@ -222,8 +230,16 @@ const Questionnaire = ({ idCurso }) => {
         <div className="modal-cuestionario">
           <div className="modal-content--cuestionario">
             <span className="close" onClick={() => setShowModal(false)}>&times;</span>
+            <div className="modal-header">
             <p>{modalMessage}</p>
+            {isAnswerCorrect ? (
+              <img src={successImage} alt="Respuesta correcta" />
+            ) : (
+              <img src={retryImage} alt="Respuesta incorrecta" />
+            )}
             {modalFeedback && <p><strong>Retroalimentación:</strong> {modalFeedback}</p>}
+            </div>
+            
           </div>
         </div>
       )}
