@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import Plot from "react-plotly.js";
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { FaBookmark } from "react-icons/fa";
@@ -19,7 +20,6 @@ import { metrics } from "scikitjs";
 import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
 import "./graficaInteractiva.css";
-
 
 sk.setBackend(tf);
 
@@ -162,60 +162,42 @@ const InteractiveChart = ({
   };
 
   const chartData = {
-    labels: data.map((d) => d.punto_X),
-    datasets: [
+    data: [
       {
-        label: "Datos",
-        data: data.map((d) => d.punto_Y),
-        backgroundColor: "blue",
-        borderColor: "blue",
-        borderWidth: 0,
-        pointRadius: 5,
-        showLine: false, 
+        x: data.map((d) => d.punto_X),
+        y: data.map((d) => d.punto_Y),
+        mode: "markers",
+        type: "scatter",
+        name: "Datos",
+        marker: { color: "blue", size: 10 },
       },
       {
-        label: "Regresión Lineal",
-       
-        data: [
-          {
-            x: Math.min(...data.map((d) => d.punto_X)),
-            y: a * Math.min(...data.map((d) => d.punto_X)) + b,
-          },
-          {
-            x: Math.max(...data.map((d) => d.punto_X)),
-            y: a * Math.max(...data.map((d) => d.punto_X)) + b,
-          },
+        x: [
+          Math.min(...data.map((d) => d.punto_X)),
+          Math.max(...data.map((d) => d.punto_X)),
         ],
-        borderColor: "red",
-        borderWidth: 2,
-        fill: false,
-        pointRadius: 0,
-        showLine: true,
+        y: [
+          a * Math.min(...data.map((d) => d.punto_X)) + b,
+          a * Math.max(...data.map((d) => d.punto_X)) + b,
+        ],
+        mode: "lines",
+        type: "scatter",
+        name: "Regresión Lineal",
+        line: { color: "red", width: 2 },
       },
     ],
   };
 
-  const options = {
-    responsive: true,
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Punto X",
-        },
-        ticks: {
-          autoSkip: true,
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Punto Y",
-        },
-      },
+  const layout = {
+    title: temaD,
+    xaxis: {
+      title: "Punto X",
     },
+    yaxis: {
+      title: "Punto Y",
+    },
+    autosize: true,
   };
-
   return (
     <div className="scroll-container">
       {instruccionesD && (
@@ -240,7 +222,7 @@ const InteractiveChart = ({
       <div>
         <div className="graph-container">
           <div className="chart-section">
-            <Line data={chartData} options={options} className="chart" />
+            <Plot data={chartData.data} layout={layout} className="chart" />
           </div>
           <div className="data-section">
             <h4>Datos (Editables):</h4>
