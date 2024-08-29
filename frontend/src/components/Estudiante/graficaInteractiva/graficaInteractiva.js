@@ -19,7 +19,8 @@ import * as sk from "scikitjs";
 import { metrics } from "scikitjs";
 import CardEjercicio from "../Extras/Ejercicios/CardEjercicio";
 import Questionnaire from "../Extras/Preguntas/preguntas";
-import Accordion from "../Extras/Instrucciones/Acordion";
+import Accordion from "../Extras/Componentes/Acordion";
+import ListItem from "../Extras/Componentes/ListItem";
 import "./graficaInteractiva.css";
 
 sk.setBackend(tf);
@@ -243,31 +244,14 @@ const InteractiveChart = ({
               </MathJax.Provider>
               <h3>Evaluación de la Regresión</h3>
               <ul>
-                <li>
-                  <strong>Coeficiente (a):</strong> {a.toFixed(2)}
-                </li>
-                <li>
-                  <strong>Intercepto (b):</strong> {b.toFixed(2)}
-                </li>
-                <li>
-                  <strong>Mean Squared Error (MSE):</strong> {mse.toFixed(2)}
-                </li>
-                <li>
-                  <strong>Mean Absolute Error (MAE):</strong> {mae.toFixed(2)}
-                </li>
-                <li>
-                  <strong>Root Mean Squared Error (RMSE):</strong>{" "}
-                  {rmse.toFixed(2)}
-                </li>
-                <li>
-                  <strong>R² Score:</strong> {r2.toFixed(2)}
-                </li>
-                <li>
-                  <strong>Pearson Correlation:</strong> {pearson.toFixed(2)}
-                </li>
-                <li>
-                  <strong>Variance:</strong> {variance.toFixed(2)}
-                </li>
+                <ListItem label="Coeficiente (a)" value={a} />
+                <ListItem label="Intercepto (b)" value={b} />
+                <ListItem label="Mean Squared Error (MSE)" value={mse} />
+                <ListItem label="Mean Absolute Error (MAE)" value={mae} />
+                <ListItem label="Root Mean Squared Error (RMSE)" value={rmse} />
+                <ListItem label="R² Score" value={r2} />
+                <ListItem label="Pearson Correlation" value={pearson} />
+                <ListItem label="Variance" value={variance} />
               </ul>
               <h4>Pasos del Ajuste</h4>
               <ul>

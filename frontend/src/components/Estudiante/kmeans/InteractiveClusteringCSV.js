@@ -15,7 +15,7 @@ import { Bar, Line, Scatter } from "react-chartjs-2";
 import { FaBookmark } from "react-icons/fa";
 import CardEjercicio from "../Extras/Ejercicios/CardEjercicio";
 import Questionnaire from "../Extras/Preguntas/preguntas";
-import Accordion from "../Extras/Instrucciones/Acordion";
+import Accordion from "../Extras/Componentes/Acordion";
 import "./InteractiveClusteringPlot.css";
 
 ChartJS.register(
