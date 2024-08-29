@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './preguntas.css';
-import successImage from '../../../img/victory.png';
-import retryImage from '../../../img/retroalimentacion.png';
+import successImage from '../../../../img/victory.png';
+import retryImage from '../../../../img/retroalimentacion.png';
 const questions = [
   {
     id: 1,
@@ -165,7 +165,6 @@ const Questionnaire = ({ idCurso }) => {
     setAttemptsUsed(newAttemptsUsed);
     setShowModal(true);
 
-    // Maneja el avance a la siguiente pregunta o el final del cuestionario
     if (isCorrect || newAttemptsLeft[currentQuestion] <= 0) {
       if (currentQuestion < filteredQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);

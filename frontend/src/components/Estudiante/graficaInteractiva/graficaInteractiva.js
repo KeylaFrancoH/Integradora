@@ -17,8 +17,9 @@ import MathJax from "react-mathjax";
 import regression from "regression";
 import * as sk from "scikitjs";
 import { metrics } from "scikitjs";
-import CardEjercicio from "../Extras/CardEjercicio";
-import Questionnaire from "../Extras/preguntas";
+import CardEjercicio from "../Extras/Ejercicios/CardEjercicio";
+import Questionnaire from "../Extras/Preguntas/preguntas";
+import Accordion from "../Extras/Instrucciones/Acordion";
 import "./graficaInteractiva.css";
 
 sk.setBackend(tf);
@@ -200,22 +201,7 @@ const InteractiveChart = ({
   };
   return (
     <div className="scroll-container">
-      {instruccionesD && (
-        <div className="accordion-header" onClick={toggleAccordion}>
-          <div className="nueva-vista-header">
-            <FaBookmark className="nueva-vista-icon" />
-            <span>Instrucciones</span>
-          </div>
-          <div className={`accordion-icon ${isOpen ? "open" : ""}`}>
-            {isOpen ? "-" : "+"}
-          </div>
-        </div>
-      )}
-      {instruccionesD && (
-        <div className={`accordion-content ${isOpen ? "open" : ""}`}>
-          <p>{instruccionesD}</p>
-        </div>
-      )}
+      <Accordion instrucciones={instruccionesD} />
       <h2 style={{ textAlign: "center" }}>{temaD}</h2>
       <CardEjercicio titulo={tituloE} enunciado={enunciadoD} />
 

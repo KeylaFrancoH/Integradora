@@ -13,8 +13,9 @@ import Papa from "papaparse";
 import React, { useEffect, useState } from "react";
 import { Bar, Line, Scatter } from "react-chartjs-2";
 import { FaBookmark } from "react-icons/fa";
-import CardEjercicio from "../Extras/CardEjercicio";
-import Questionnaire from "../Extras/preguntas";
+import CardEjercicio from "../Extras/Ejercicios/CardEjercicio";
+import Questionnaire from "../Extras/Preguntas/preguntas";
+import Accordion from "../Extras/Instrucciones/Acordion";
 import "./InteractiveClusteringPlot.css";
 
 ChartJS.register(
@@ -310,22 +311,7 @@ const InteractiveClusteringCSV = ({
 
   return (
     <div className="scroll-container">
-      {instruccionesD && (
-        <div className="accordion-header" onClick={toggleAccordion}>
-          <div className="nueva-vista-header">
-            <FaBookmark className="nueva-vista-icon" />
-            <span>Instrucciones</span>
-          </div>
-          <div className={`accordion-icon ${isOpen ? "open" : ""}`}>
-            {isOpen ? "-" : "+"}
-          </div>
-        </div>
-      )}
-      {instruccionesD && (
-        <div className={`accordion-content ${isOpen ? "open" : ""}`}>
-          <p>{instruccionesD}</p>
-        </div>
-      )}
+       <Accordion instrucciones={instruccionesD} />
       <h2 style={{ textAlign: "center" }}>{temaD}</h2>
       <CardEjercicio titulo={tituloE} enunciado={enunciadoD} />
       <div className="k-means-container">
