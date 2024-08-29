@@ -7,15 +7,15 @@
 }
 
 .titulo {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #2c3e50;
-    text-align: left;
-    margin-bottom: 2rem;
-    background: #1C2A49;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    padding: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: left;
+  margin-bottom: 2rem;
+  background: #1C2A49;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 1rem;
 }
 
 .cards {

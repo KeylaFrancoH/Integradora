@@ -169,4 +169,28 @@
     display: block;
     margin-bottom: 5px;
   }
+
+  .modal-header {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .modal-header img {
+    margin-bottom: 15px; 
+    max-width: 100px;
+  }
+  
+  .modal-header p {
+    margin: 10px 0; 
+  }
+  
+  .modal-feedback {
+    margin-top: 10px; 
+    color: #444;
+    font-size: 1rem;
+  }
+  
   

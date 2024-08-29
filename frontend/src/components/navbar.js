@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FaUser, FaHome, FaBars } from 'react-icons/fa';
-import './navbar.css';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { FaUser, FaHome, FaBars } from "react-icons/fa";
+import "./navbar.css";
 
 const NavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -12,13 +12,10 @@ const NavBar = () => {
   };
 
   return (
-    <div className={`sidebar ${sidebarOpen ? 'show' : ''}`}>
+    <div className={`sidebar ${sidebarOpen ? "show" : ""}`}>
       <FaBars className="menu-toggle" onClick={toggleSidebar} />
       <div className="menu-content">
-        <Link to="/perfil" className={location.pathname === '/perfil' ? 'active' : ''}>
-          <FaUser className="icon" /> Perfil
-        </Link>
-        <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
+        <Link to="/" className={location.pathname === "/" ? "active" : ""}>
           <FaHome className="icon" /> Inicio
         </Link>
       </div>

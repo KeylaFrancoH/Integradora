@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import './preguntas.css';
-import successImage from '../../../../img/victory.png';
-import retryImage from '../../../../img/retroalimentacion.png';
+import React, { useState } from "react";
+import "./preguntas.css";
+import successImage from "../../../../img/victory.png";
+import retryImage from "../../../../img/retroalimentacion.png";
 const questions = [
   {
     id: 1,
@@ -13,11 +13,12 @@ const questions = [
       "a) La pendiente siempre aumenta.",
       "b) La pendiente siempre disminuye.",
       "c) La pendiente puede aumentar, disminuir o mantenerse igual dependiendo de los puntos añadidos.",
-      "d) La pendiente no se ve afectada por la adición de puntos."
+      "d) La pendiente no se ve afectada por la adición de puntos.",
     ],
     correctAnswer: 2,
     attempts: 1,
-    feedback: "La pendiente puede variar dependiendo de los puntos añadidos. Si los puntos siguen la tendencia general, la pendiente podría no cambiar significativamente, pero si son puntos extremos, la pendiente podría aumentar o disminuir."
+    feedback:
+      "La pendiente puede variar dependiendo de los puntos añadidos. Si los puntos siguen la tendencia general, la pendiente podría no cambiar significativamente, pero si son puntos extremos, la pendiente podría aumentar o disminuir.",
   },
   {
     id: 2,
@@ -29,11 +30,12 @@ const questions = [
       "a) La pendiente y la intersección de la línea de regresión permanecen iguales.",
       "b) La pendiente y la intersección de la línea de regresión cambian.",
       "c) Solo la intersección cambia, mientras que la pendiente permanece igual.",
-      "d) Solo la pendiente cambia, mientras que la intersección permanece igual."
+      "d) Solo la pendiente cambia, mientras que la intersección permanece igual.",
     ],
     correctAnswer: 1,
     attempts: 1,
-    feedback: "Eliminar puntos extremos generalmente cambia tanto la pendiente como la intersección, ya que estos puntos tienen una gran influencia en la línea de regresión."
+    feedback:
+      "Eliminar puntos extremos generalmente cambia tanto la pendiente como la intersección, ya que estos puntos tienen una gran influencia en la línea de regresión.",
   },
   {
     id: 3,
@@ -45,11 +47,12 @@ const questions = [
       "a) R² siempre aumenta cuando se agregan puntos.",
       "b) R² siempre disminuye cuando se eliminan puntos.",
       "c) R² puede aumentar o disminuir dependiendo de la posición de los puntos añadidos o eliminados.",
-      "d) R² no se ve afectado por la adición o eliminación de puntos."
+      "d) R² no se ve afectado por la adición o eliminación de puntos.",
     ],
     correctAnswer: 2,
     attempts: 2,
-    feedback: "El coeficiente de determinación (R²) puede aumentar o disminuir según si los puntos añadidos o eliminados refuerzan o debilitan la relación lineal."
+    feedback:
+      "El coeficiente de determinación (R²) puede aumentar o disminuir según si los puntos añadidos o eliminados refuerzan o debilitan la relación lineal.",
   },
   {
     id: 1,
@@ -61,11 +64,12 @@ const questions = [
       "a) Evaluar la homogeneidad de los clusters.",
       "b) Determinar el número óptimo de clusters.",
       "c) Visualizar la dispersión de datos dentro de un cluster.",
-      "d) Comparar la distancia entre centroides."
+      "d) Comparar la distancia entre centroides.",
     ],
     correctAnswer: 1,
     attempts: 1,
-    feedback: "La gráfica del codo se utiliza para identificar el número óptimo de clusters observando el punto donde la reducción de WCSS comienza a estabilizarse."
+    feedback:
+      "La gráfica del codo se utiliza para identificar el número óptimo de clusters observando el punto donde la reducción de WCSS comienza a estabilizarse.",
   },
   {
     id: 2,
@@ -77,11 +81,12 @@ const questions = [
       "a) La variación del WCSS (Within-Cluster Sum of Squares) a medida que se cambian los clusters.",
       "b) La calidad de los clusters basada en la similitud de los puntos dentro del mismo cluster en comparación con otros clusters.",
       "c) La posición de los centroides en relación con los puntos de datos.",
-      "d) El número total de puntos en cada cluster."
+      "d) El número total de puntos en cada cluster.",
     ],
     correctAnswer: 1,
     attempts: 1,
-    feedback: "La gráfica de silueta mide qué tan bien se agrupan los puntos en su propio cluster en comparación con otros clusters, indicando la calidad del clustering."
+    feedback:
+      "La gráfica de silueta mide qué tan bien se agrupan los puntos en su propio cluster en comparación con otros clusters, indicando la calidad del clustering.",
   },
   {
     id: 3,
@@ -93,19 +98,26 @@ const questions = [
       "a) Se ha encontrado el número óptimo de clusters.",
       "b) Los datos no se pueden agrupar en más de un cluster.",
       "c) Todos los puntos de datos están perfectamente agrupados en un solo cluster.",
-      "d) La dispersión dentro de los clusters es máxima."
+      "d) La dispersión dentro de los clusters es máxima.",
     ],
     correctAnswer: 0,
     attempts: 2,
-    feedback: "Cuando el WCSS alcanza un mínimo absoluto, se ha encontrado el número óptimo de clusters, donde la adición de más clusters no mejora significativamente la agrupación."
-  }
+    feedback:
+      "Cuando el WCSS alcanza un mínimo absoluto, se ha encontrado el número óptimo de clusters, donde la adición de más clusters no mejora significativamente la agrupación.",
+  },
 ];
 
 const Questionnaire = ({ idCurso }) => {
-  const filteredQuestions = questions.filter(question => question.idCurso === idCurso);
-  
-  const [responses, setResponses] = useState(Array(filteredQuestions.length).fill(null));
-  const [attemptsLeft, setAttemptsLeft] = useState(filteredQuestions.map(question => question.attempts));
+  const filteredQuestions = questions.filter(
+    (question) => question.idCurso === idCurso
+  );
+
+  const [responses, setResponses] = useState(
+    Array(filteredQuestions.length).fill(null)
+  );
+  const [attemptsLeft, setAttemptsLeft] = useState(
+    filteredQuestions.map((question) => question.attempts)
+  );
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalFeedback, setModalFeedback] = useState("");
@@ -113,8 +125,12 @@ const Questionnaire = ({ idCurso }) => {
   const [finished, setFinished] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null); // null, true, or false
-  const [attemptsUsed, setAttemptsUsed] = useState(Array(filteredQuestions.length).fill(0));
-  const [scored, setScored] = useState(Array(filteredQuestions.length).fill(false)); // Para rastrear si se puntuó correctamente
+  const [attemptsUsed, setAttemptsUsed] = useState(
+    Array(filteredQuestions.length).fill(0)
+  );
+  const [scored, setScored] = useState(
+    Array(filteredQuestions.length).fill(false)
+  ); // Para rastrear si se puntuó correctamente
 
   const handleAnswerChange = (event) => {
     const { value } = event.target;
@@ -124,12 +140,12 @@ const Questionnaire = ({ idCurso }) => {
   const handleSubmit = () => {
     const current = filteredQuestions[currentQuestion];
     const response = selectedOption;
-    
+
     if (response === null) {
       alert("Por favor, selecciona una opción.");
       return;
     }
-    
+
     const isCorrect = response === current.correctAnswer;
     let newAttemptsLeft = [...attemptsLeft];
     let newAttemptsUsed = [...attemptsUsed];
@@ -139,7 +155,7 @@ const Questionnaire = ({ idCurso }) => {
     if (isCorrect && !scored[currentQuestion]) {
       setIsAnswerCorrect(true);
       setModalMessage("¡Felicidades! Respuesta correcta.");
-      setScored(prev => {
+      setScored((prev) => {
         const newScored = [...prev];
         newScored[currentQuestion] = true;
         return newScored;
@@ -150,14 +166,20 @@ const Questionnaire = ({ idCurso }) => {
       newAttemptsLeft[currentQuestion] -= 1;
 
       if (newAttemptsLeft[currentQuestion] <= 0) {
-        setModalMessage(`Intentos agotados. La respuesta correcta es: ${current.options[current.correctAnswer]}.`);
-        setResponses(prev => {
+        setModalMessage(
+          `Intentos agotados. La respuesta correcta es: ${
+            current.options[current.correctAnswer]
+          }.`
+        );
+        setResponses((prev) => {
           const newResponses = [...prev];
           newResponses[currentQuestion] = response;
           return newResponses;
         });
       } else {
-        setModalMessage(`Respuesta incorrecta. Intentos restantes: ${newAttemptsLeft[currentQuestion]}.`);
+        setModalMessage(
+          `Respuesta incorrecta. Intentos restantes: ${newAttemptsLeft[currentQuestion]}.`
+        );
       }
     }
 
@@ -175,7 +197,7 @@ const Questionnaire = ({ idCurso }) => {
       }
     }
   };
-  
+
   const calculateFinalScore = () => {
     return responses.reduce((total, response, index) => {
       if (scored[index]) {
@@ -184,7 +206,7 @@ const Questionnaire = ({ idCurso }) => {
       return total;
     }, 0);
   };
-  
+
   return (
     <div className="questionnaire">
       <h1 className="title">Cuestionario</h1>
@@ -192,7 +214,10 @@ const Questionnaire = ({ idCurso }) => {
         <div className="question">
           <h2>Ejercicio {filteredQuestions[currentQuestion].id}</h2>
           <p>{filteredQuestions[currentQuestion].text}</p>
-          <p><strong>Puntuación:</strong> {filteredQuestions[currentQuestion].points}</p>
+          <p>
+            <strong>Puntuación:</strong>{" "}
+            {filteredQuestions[currentQuestion].points}
+          </p>
           <div className="options">
             {filteredQuestions[currentQuestion].options.map((option, i) => (
               <div key={i} className="option">
@@ -204,11 +229,17 @@ const Questionnaire = ({ idCurso }) => {
                   checked={selectedOption === i}
                   onChange={handleAnswerChange}
                 />
-                <label htmlFor={`q${filteredQuestions[currentQuestion].id}o${i}`}>{option}</label>
+                <label
+                  htmlFor={`q${filteredQuestions[currentQuestion].id}o${i}`}
+                >
+                  {option}
+                </label>
               </div>
             ))}
           </div>
-          <p><strong>Intentos restantes:</strong> {attemptsLeft[currentQuestion]}</p>
+          <p>
+            <strong>Intentos restantes:</strong> {attemptsLeft[currentQuestion]}
+          </p>
           <button onClick={handleSubmit}>Calificar</button>
         </div>
       ) : (
@@ -218,27 +249,45 @@ const Questionnaire = ({ idCurso }) => {
             <div key={index} className="question">
               <h3>Ejercicio {question.id}</h3>
               <p>{question.text}</p>
-              <p><strong>Respuesta dada:</strong> {responses[index] !== null ? question.options[responses[index]] : "No respondida"}</p>
-              <p><strong>Respuesta correcta:</strong> {question.options[question.correctAnswer]}</p>
+              <p>
+                <strong>Respuesta dada:</strong>{" "}
+                {responses[index] !== null
+                  ? question.options[responses[index]]
+                  : "No respondida"}
+              </p>
+              <p>
+                <strong>Respuesta correcta:</strong>{" "}
+                {question.options[question.correctAnswer]}
+              </p>
             </div>
           ))}
-          <p><strong>Puntuación Total:</strong> {calculateFinalScore()}/{filteredQuestions.length * 10}</p>
+          <p>
+            <strong>Puntuación Total:</strong> {calculateFinalScore()}/
+            {filteredQuestions.length * 10}
+          </p>
         </div>
       )}
       {showModal && (
         <div className="modal-cuestionario">
           <div className="modal-content--cuestionario">
-            <span className="close" onClick={() => setShowModal(false)}>&times;</span>
+            <span className="close" onClick={() => setShowModal(false)}>
+              &times;
+            </span>
             <div className="modal-header">
-            <p>{modalMessage}</p>
-            {isAnswerCorrect ? (
-              <img src={successImage} alt="Respuesta correcta" />
-            ) : (
-              <img src={retryImage} alt="Respuesta incorrecta" />
-            )}
-            {modalFeedback && <p><strong>Retroalimentación:</strong> {modalFeedback}</p>}
+              {isAnswerCorrect ? (
+                <img src={successImage} alt="Respuesta correcta" />
+              ) : (
+                <img src={retryImage} alt="Respuesta incorrecta" />
+              )}
+
+              <p>{modalMessage}</p>
+
+              {modalFeedback && (
+                <p className="modal-feedback">
+                  <strong>Retroalimentación:</strong> {modalFeedback}
+                </p>
+              )}
             </div>
-            
           </div>
         </div>
       )}
