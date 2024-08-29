@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Scatter, Line, Bar } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
   BarElement,
-  Tooltip,
+  CategoryScale,
+  Chart as ChartJS,
   Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
 } from "chart.js";
 import { kmeans } from "ml-kmeans";
 import Papa from "papaparse";
+import React, { useEffect, useState } from "react";
+import { Bar, Line, Scatter } from "react-chartjs-2";
 import { FaBookmark } from "react-icons/fa";
 import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
 import "./InteractiveClusteringPlot.css";
-import { log } from "@tensorflow/tfjs-core/dist/log";
 
 ChartJS.register(
   CategoryScale,

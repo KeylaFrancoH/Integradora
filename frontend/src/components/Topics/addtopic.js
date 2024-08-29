@@ -30,7 +30,6 @@ const AddTopic = () => {
     }
     setErrorMessage("");
 
-    // Preparar datos para el servidor
     const data = {
       idCurso,
       titulo,
@@ -43,11 +42,10 @@ const AddTopic = () => {
       })),
     };
 
-    // Subir archivos al servidor si hay archivos seleccionados en uploadedFiles
     if (uploadedFiles.length > 0) {
       try {
         const formData = new FormData();
-        formData.append("tema", titulo); // Usar 'titulo' como tema
+        formData.append("tema", titulo); 
         uploadedFiles.forEach(({ file }) => {
           formData.append("file", file);
         });
@@ -69,7 +67,6 @@ const AddTopic = () => {
       }
     }
 
-    // Navegar a la siguiente página
     navigate(`/anadir-tema/${idCurso}/grafica`, {
       state: { cursoTitulo, data },
     });

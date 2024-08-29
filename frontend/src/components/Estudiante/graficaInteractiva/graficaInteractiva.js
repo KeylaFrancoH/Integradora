@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
-import MathJax from "react-mathjax";
+import * as tf from "@tensorflow/tfjs";
 import {
-  Chart as ChartJS,
-  LineElement,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
+  LineElement,
   PointElement,
   Title,
   Tooltip,
-  Legend,
 } from "chart.js";
+import React, { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
 import { FaBookmark } from "react-icons/fa";
-import * as tf from "@tensorflow/tfjs"; // Importa TensorFlow
-import * as sk from "scikitjs"; // Importa scikitjs
-import { LinearRegression, metrics } from "scikitjs";
-import regression from "regression"; // Asegúrate de importar la librería de regresión correcta
-import "./graficaInteractiva.css";
+import MathJax from "react-mathjax";
+import regression from "regression";
+import * as sk from "scikitjs";
+import { metrics } from "scikitjs";
 import CardEjercicio from "../Extras/CardEjercicio";
 import Questionnaire from "../Extras/preguntas";
+import "./graficaInteractiva.css";
 
-// Configura el backend de scikitjs con TensorFlow
+
 sk.setBackend(tf);
 
 ChartJS.register(
@@ -109,13 +109,11 @@ const InteractiveChart = ({
   const calculateAndDrawRegression = (data) => {
     if (data.length === 0) return;
 
-    // Convertir los datos a puntos para la regresión
     const points = data.map((item) => [item.punto_X, item.punto_Y]);
 
     if (points.length === 0) return;
 
     try {
-      // Ajuste del modelo usando la librería 'regression-js'
       const result = regression.linear(points);
 
       const slope = result.equation[0];
@@ -125,7 +123,6 @@ const InteractiveChart = ({
         throw new Error("Coeficientes del modelo no están definidos.");
       }
 
-      // Predicción de y usando la ecuación de la recta
       const yPred = points.map((point) => slope * point[0] + intercept);
 
       const yPoints = points.map((point) => point[1]);
@@ -138,13 +135,11 @@ const InteractiveChart = ({
         yPoints
       );
 
-      // Cálculo de la varianza
       const meanY = yPoints.reduce((a, b) => a + b, 0) / yPoints.length;
       const variance =
         yPoints.reduce((acc, y) => acc + Math.pow(y - meanY, 2), 0) /
         yPoints.length;
 
-      // Actualización del estado con los resultados
       setA(slope);
       setB(intercept);
       setMSE(mse);
@@ -154,7 +149,6 @@ const InteractiveChart = ({
       setPearson(pearson);
       setVariance(variance);
 
-      // Preparación de los pasos para la visualización
       const steps = data.map((point, i) => {
         const x = point.punto_X;
         const y = point.punto_Y;
@@ -177,11 +171,11 @@ const InteractiveChart = ({
         borderColor: "blue",
         borderWidth: 0,
         pointRadius: 5,
-        showLine: false, // Solo puntos
+        showLine: false, 
       },
       {
         label: "Regresión Lineal",
-        // Aquí se ajusta la línea de regresión para que cubra todo el rango de los datos
+       
         data: [
           {
             x: Math.min(...data.map((d) => d.punto_X)),

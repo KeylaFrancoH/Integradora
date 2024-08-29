@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from "react";
-import "./contenido.css";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
-  FaBook,
-  FaPencilAlt,
-  FaVideo,
-  FaPuzzlePiece,
   FaArrowLeft,
   FaArrowRight,
-  FaShareAlt,
-  FaExternalLinkAlt,
+  FaBook,
+  FaPencilAlt,
+  FaPuzzlePiece,
+  FaVideo,
 } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
 import InteractiveChart from "../graficaInteractiva/graficaInteractiva";
-import KMeansChart from "../kmeans/InteractiveClusteringPlot";
 import InteractiveClusteringCSV from "../kmeans/InteractiveClusteringCSV";
+import KMeansChart from "../kmeans/InteractiveClusteringPlot";
+import ContenidoEjerciciosList from "./ComponentesContenido/ContenidoEjerciciosList";
+import EnlacesConsulta from "./ComponentesContenido/EnlacesConsulta";
+import ParametrosList from "./ComponentesContenido/ParametrosList";
+import PointsList from "./ComponentesContenido/PointList";
+import "./contenido.css";
+
 const StepCard = ({ title, content }) => (
   <div className="step-card">
     <h2>{title}</h2>
@@ -22,174 +25,6 @@ const StepCard = ({ title, content }) => (
   </div>
 );
 
-// Componente para mostrar puntos
-const PointsList = ({ points }) => {
-  const pointsElements = [];
-
-  if (points.length > 0) {
-    points.forEach((point) => {
-      const { idPuntos, punto_X, punto_Y } = point;
-
-      pointsElements.push(
-        <div key={idPuntos} className="point-item">
-          <p>
-            <strong>Ubicación X:</strong> {punto_X}
-          </p>
-          <p>
-            <strong>Ubicación Y:</strong> {punto_Y}
-          </p>
-        </div>
-      );
-    });
-  }
-
-  return (
-    <div className="points-container">
-      <h3>Puntos:</h3>
-      {pointsElements.length > 0 ? (
-        pointsElements
-      ) : (
-        <p>No hay puntos disponibles.</p>
-      )}
-    </div>
-  );
-};
-
-// Componente para mostrar parámetros
-const ParametrosList = ({ parametros }) => {
-  const parametrosElements = [];
-
-  if (parametros.length > 0) {
-    parametros.forEach((parametro) => {
-      const {
-        idParametro,
-        formula,
-        parametro_regularización,
-        intercepto,
-        metodo_inicialización,
-        numero_clusters,
-        numero_iteraciones,
-      } = parametro;
-
-      parametrosElements.push(
-        <div key={idParametro} className="parametro-item">
-          <p>
-            <strong>Fórmula:</strong> {formula}
-          </p>
-          <p>
-            <strong>Regularización:</strong> {parametro_regularización}
-          </p>
-          <p>
-            <strong>Intercepto:</strong> {intercepto ? "Sí" : "No"}
-          </p>
-          <p>
-            <strong>Método de Inicialización:</strong> {metodo_inicialización}
-          </p>
-          <p>
-            <strong>Número de Clusters:</strong> {numero_clusters}
-          </p>
-          <p>
-            <strong>Número de Iteraciones:</strong> {numero_iteraciones}
-          </p>
-        </div>
-      );
-    });
-  }
-
-  return (
-    <div className="parametros-container">
-      <h3>Parámetros:</h3>
-      {parametrosElements.length > 0 ? (
-        parametrosElements
-      ) : (
-        <p>No hay parámetros disponibles.</p>
-      )}
-    </div>
-  );
-};
-
-const ContenidoEjerciciosList = ({ ejercicios }) => (
-  <div className="ejercicios-container">
-    <h3>Contenido de Ejercicios:</h3>
-    {ejercicios.length > 0 ? (
-      ejercicios.map((ejercicio) => (
-        <div key={ejercicio.idContenidoEjercicios} className="ejercicio-item">
-          <p>
-            <strong>K Mínimo:</strong> {ejercicio.k_min}
-          </p>
-          <p>
-            <strong>K Máximo:</strong> {ejercicio.k_max}
-          </p>
-          <p>
-            <strong>K Exacto:</strong> {ejercicio.k_exacto}
-          </p>
-          <p>
-            <strong>Iteración Mínima:</strong> {ejercicio.iteracion_min}
-          </p>
-          <p>
-            <strong>Iteración Máxima:</strong> {ejercicio.iteracion_max}
-          </p>
-          <p>
-            <strong>Iteración Exacta:</strong> {ejercicio.iteracion_exacto}
-          </p>
-        </div>
-      ))
-    ) : (
-      <p>No hay contenido de ejercicios disponible.</p>
-    )}
-  </div>
-);
-const EnlacesConsulta = ({ enlaces }) => {
-  const handleShare = (enlace) => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: "Consulta Enlace",
-          url: enlace,
-        })
-        .then(() => console.log("Enlace compartido exitosamente"))
-        .catch((error) => console.error("Error al compartir:", error));
-    } else {
-      alert(
-        "La funcionalidad de compartir no está disponible en este navegador."
-      );
-    }
-  };
-
-  const handleOpenLink = (enlace) => {
-    window.open(enlace, "_blank", "noopener,noreferrer");
-  };
-
-  return (
-    <div>
-      {enlaces.length > 0 ? (
-        enlaces.map((enlace, index) => (
-          <div key={index} className="enlace-card">
-            <a className="enlace">{enlace.Enlace}</a>
-            <div className="button-container">
-              <button
-                className="share-button"
-                onClick={() => handleShare(enlace.Enlace)}
-              >
-                <FaShareAlt />
-              </button>
-              <button
-                className="open-button"
-                onClick={() => handleOpenLink(enlace.Enlace)}
-              >
-                <FaExternalLinkAlt />
-              </button>
-            </div>
-          </div>
-        ))
-      ) : (
-        <div>No hay enlaces disponibles.</div>
-      )}
-    </div>
-  );
-};
-
-// Componente del Navegador de Secuencia
 const Contenido = () => {
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
@@ -219,23 +54,19 @@ const Contenido = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Obtener material del tema
         const temaResponse = await axios.get(
           `http://localhost:3000/api/temas/${idCurso}/${temaId}`
         );
         setMaterial(temaResponse.data.Material);
 
-        // Obtener enlaces completos
         const enlaceCompletoResponse = await axios.get(
           `http://localhost:3000/api/enlaces`
         );
 
-        // Asegurarse de que los datos son un array
         const enlacesArray = Array.isArray(enlaceCompletoResponse.data)
           ? enlaceCompletoResponse.data
           : [];
 
-        // Extraer solo los idTema
         const idTemasArray = enlacesArray.map((enlace) => enlace.idTema);
         console.log("IDTEMAS:", idTemasArray);
 
@@ -247,9 +78,7 @@ const Contenido = () => {
           const enlacesData = Array.isArray(enlacesResponse.data)
             ? enlacesResponse.data
             : [];
-          //Extraer Contenido
           try {
-            // Realiza la solicitud a la API
             const contenido = await axios.get(
               `http://localhost:3000/api/temas/${temaId}`
             );
@@ -261,7 +90,6 @@ const Contenido = () => {
             console.error("Error al recuperar los datos:", error);
           }
 
-          // Separar enlaces de video y otros enlaces
           const enlacesVideos = enlacesData.filter((enlace) =>
             enlace.Enlace.includes("youtube.com")
           );
@@ -276,7 +104,6 @@ const Contenido = () => {
 
         try {
           if (temaId) {
-            // Verifica si temaId existe
             const archivosResponse = await axios.get(
               `http://localhost:3000/api/archivos/tema/${temaId}`
             );
@@ -285,7 +112,6 @@ const Contenido = () => {
               ? archivosResponse.data
               : [];
 
-            // Extraer enlaces y descripciones
             const archivosLinksExtraidos = archivos.map(
               (archivo) => archivo.archivo
             );
@@ -308,7 +134,6 @@ const Contenido = () => {
           setDescripciones([]);
         }
 
-        // Obtener configuraciones y establecer idConfiguracion
         const configuracionesResponse = await axios.get(
           `http://localhost:3000/api/configuraciones?temaId=${temaId}`
         );
@@ -324,7 +149,6 @@ const Contenido = () => {
           const configId = configuracionesData[0].idConfiguracion;
           setIdConfiguracion(configId);
           if (idCurso == 1) {
-            // Obtener puntos usando idConfiguracion
             const puntosResponse = await axios.get(
               `http://localhost:3000/api/puntos/configuracion/${temaId}`
             );
@@ -464,21 +288,25 @@ const Contenido = () => {
             tituloEjercicio={tituloEjercicio}
           />
         ) : idCurso === 2 ? (
-          metodo !== "0"  ? (
-            <KMeansChart  instrucciones={instrucciones}
-            metodo={metodo}
-            tema={temaTitle}
-            enunciado={enunciado}
-            tituloEjercicio={tituloEjercicio}/>
+          metodo !== "0" ? (
+            <KMeansChart
+              instrucciones={instrucciones}
+              metodo={metodo}
+              tema={temaTitle}
+              enunciado={enunciado}
+              tituloEjercicio={tituloEjercicio}
+            />
           ) : (
-            <InteractiveClusteringCSV instrucciones={instrucciones}
-            metodo={metodo}
-            tema={temaTitle}
-            enunciado={enunciado}
-            tituloEjercicio={tituloEjercicio} num_Clusters={numero_clusters} />
+            <InteractiveClusteringCSV
+              instrucciones={instrucciones}
+              metodo={metodo}
+              tema={temaTitle}
+              enunciado={enunciado}
+              tituloEjercicio={tituloEjercicio}
+              num_Clusters={numero_clusters}
+            />
           )
-        ) :
-        null,
+        ) : null,
     },
   ];
 
@@ -499,7 +327,6 @@ const Contenido = () => {
 
   const goToNextStep = () => {
     let newStep = currentStep + 1;
-    // Encuentra el siguiente paso que esté habilitado
     while (
       newStep <= 5 &&
       ((newStep === 2 && !showSection2Button) ||
@@ -572,7 +399,8 @@ const Contenido = () => {
         </button>
       </div>
       <div className="step-container">
-        <StepCard className="scroll-container"
+        <StepCard
+          className="scroll-container"
           title={stepContents[currentStep - 1].title}
           content={stepContents[currentStep - 1].content}
         />
