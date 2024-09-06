@@ -6,18 +6,41 @@
 
 ## Getting started
 
-1.[Clone the repository](INSTALLATION-INSTRUCTIONS.md#step-1-clone-the-repository)
+# Instructivo de instalación
 
-2.[Create Your MySQL Account and Databases](INSTALLATION-INSTRUCTIONS.md#Step-2-Create-Your-MySQL-Account-and-Database)
+## Clonar el repositorio
 
-3.[Edit the Environment File](INSTALLATION-INSTRUCTIONS.md#Step-3-Edit-the-Environment-File)
+Clonar el repositorio [https://github.com/Rjzaruma/Integradora.git](https://github.com/Rjzaruma/Integradora.git).
 
-4.[Update MySQL](INSTALLATION-INSTRUCTIONS.md#Step-4-Update-MySQL)
+## Configuración de MySQL
 
-5.[Install Backend Dependencies](INSTALLATION-INSTRUCTIONS.md#Step-5-Install-Backend-Dependencies)
+1. Ir a **MySQL Workbench** y correr el script para cargar la base de datos y los registros de prueba: `plataforma_ml.sql`.
 
-6.[Run the Backend Server](INSTALLATION-INSTRUCTIONS.md#Step-7-Run-the-Backend-Server)
+## Instalar dependencias y configuración de entorno
 
-7.[Install Frontend Dependencies](INSTALLATION-INSTRUCTIONS.md#Step-8-Install-Frontend-Dependencies)
+1. Ir a la carpeta **frontend**.
+2. Abrir un **CMD** y correr los siguientes comandos:
 
-8.[Run the Frontend Server](INSTALLATION-INSTRUCTIONS.md#Step-9-Run-the-Frontend-Server)
+    ```bash
+    npm i papaparse --legacy-peer-deps
+    npm i react-modal --legacy-peer-deps
+    ```
+
+3. Ir a la carpeta **backend**.
+4. Entrar a la carpeta **config**.
+5. Abrir el archivo `config.json` y cambiar `username` y `password` a las credenciales de MySQL. Dejar los demás valores por defecto.
+
+## Correr la plataforma
+
+1. Abrir un **CMD** en la carpeta **backend** y ejecutar el comando:
+
+    ```bash
+    npm run server
+    ```
+
+2. Abrir un **CMD** en la carpeta **frontend** y ejecutar el comando:
+
+    ```bash
+    npm start
+    ```
+
